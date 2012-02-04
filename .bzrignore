@@ -1,0 +1,7 @@
+./.installed.cfg
+./bin/
+./develop-eggs/
+./instance/
+./parts/
+./python/
+./src/schooltool.cando.egg-info/

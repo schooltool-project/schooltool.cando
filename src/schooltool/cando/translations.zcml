@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           i18n_domain="schooltool.cando">
+
+  <include package="schooltool.common" />
+
+  <i18n:registerTranslations directory="locales" />
+  <include package="schooltool.cando" />
+
+</configure>
