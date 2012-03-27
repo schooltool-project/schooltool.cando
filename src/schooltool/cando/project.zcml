@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".project.Project">
+    <allow interface="zope.interface.common.mapping.IReadMapping" />
+    <require
+        permission="schooltool.view"
+        attributes="keys __iter__ values items __len__ deployed title"
+        />
+    <require
+        permission="schooltool.edit"
+        interface="zope.interface.common.mapping.IWriteMapping"
+        set_schema=".interfaces.IProject"
+        />
+  </class>
+
+  <class class=".project.Projects">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.IProjects" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.IProjects" />
+  </class>
+
+  <class class=".project.CourseProject">
+    <allow interface="zope.interface.common.mapping.IReadMapping" />
+    <require
+        permission="schooltool.view"
+        attributes="keys __iter__ values items __len__ deployed title"
+        />
+    <require
+        permission="schooltool.edit"
+        interface="zope.interface.common.mapping.IWriteMapping"
+        set_schema=".interfaces.ICourseProject"
+        />
+  </class>
+
+  <class class=".project.CourseProjects">
+    <require
+        permission="schooltool.view"
+        attributes="keys __iter__ values items __len__ title"
+        />
+    <require
+        permission="schooltool.edit"
+        interface="zope.interface.common.mapping.IWriteMapping"
+        set_schema=".interfaces.ICourseProject"
+        />
+    <require
+        permission="schooltool.view"
+        attributes="isDeployed"
+        />
+    <require
+        permission="schooltool.edit"
+        attributes="deploy"
+        />
+  </class>
+
+  <adapter factory=".project.getCourseProjects" />
+  <adapter factory=".project.getCourseProjectsCourse" />
+  <adapter factory=".project.getSectionProjects" />
+  <adapter factory=".project.getSectionProjectsSection" />
+
+</configure>

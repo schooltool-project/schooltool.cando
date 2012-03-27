@@ -16,12 +16,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+"""Integration with SchoolTool"""
 
-from zope.i18nmessageid import MessageFactory
-CanDoMessage = MessageFactory("schooltool.cando")
+from schooltool.relationship import URIObject
 
-import interfaces
-import model
-import skill
-import project
+from schooltool.app.relationships import URICourse
+from schooltool.cando.skill import URISkillSet
+from schooltool.relationship import RelationshipSchema
 
+
+URICourseSkillSets = URIObject(
+    'http://schooltool.org/ns/cando/skillset/course_skillsets',
+    'Course skillsets',
+    'Skill sets of the course.')
+
+CourseSkillSets = RelationshipSchema(
+    URICourseSkillSets,
+    course=URICourse,
+    skillset=URISkillSet)
+
+# XXX: maybe course-skillset relationship views
+# XXX: helper: linking of all node skillsets to course
+# XXX: helper: copying (with resetting required=False) of skillsets
+#              (and linking to course)

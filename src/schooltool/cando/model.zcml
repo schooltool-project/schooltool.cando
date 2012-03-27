@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <!-- layers -->
+
+  <interface
+      interface=".interfaces.ILayerContainerContainer"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.LayerContainerContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <interface
+      interface=".interfaces.ILayerContainer"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.LayerContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <interface
+      interface=".interfaces.ILayer"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.Layer">
+    <require permission="schooltool.view"
+             interface=".interfaces.ILayer" />
+    <require permission="schooltool.edit"
+             set_schema=".interfaces.ILayer" />
+  </class>
+
+  <adapter
+      for=".interfaces.ILayerContainer"
+      factory="schooltool.app.app.SimpleNameChooser"
+      provides="zope.container.interfaces.INameChooser" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.LayerStartUp"
+      name="schooltool.cando.layer" />
+
+  <adapter factory=".model.RemoveLayersWhenSchoolYearIsDeleted"
+           name="layers" />
+  <adapter factory=".model.getLayerContainer" />
+  <adapter factory=".model.getLayerContainerForApp" />
+  <adapter factory=".model.getSchoolYearForLayerContainer" />
+
+  <!-- nodes -->
+
+  <interface
+      interface=".interfaces.INodeContainerContainer"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.NodeContainerContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <interface
+      interface=".interfaces.INodeContainer"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.NodeContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <interface
+      interface=".interfaces.INode"
+      type="zope.app.content.interfaces.IContentType"
+      />
+
+  <class class=".model.Node">
+    <require permission="schooltool.view"
+             interface=".interfaces.INode" />
+    <require permission="schooltool.edit"
+             set_schema=".interfaces.INode" />
+  </class>
+
+  <adapter
+      for=".interfaces.INodeContainer"
+      factory="schooltool.app.app.SimpleNameChooser"
+      provides="zope.container.interfaces.INameChooser" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.NodeStartUp"
+      name="schooltool.cando.node" />
+
+  <adapter factory=".model.RemoveNodesWhenSchoolYearIsDeleted"
+           name="nodes" />
+  <adapter factory=".model.getNodeContainer" />
+  <adapter factory=".model.getNodeContainerForApp" />
+  <adapter factory=".model.getSchoolYearForNodeContainer" />
+
+  <subscriber
+      for="schooltool.relationship.interfaces.IBeforeRelationshipEvent"
+      handler=".model.preventLayerCycles"
+    />
+
+</configure>

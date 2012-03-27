@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <include package="zodbbrowser" />
+
+  <include file="security.zcml" />
+
+  <include file="model.zcml" />
+  <include file="skill.zcml" />
+  <include file="project.zcml" />
+
   <include package=".browser" />
 
 </configure>
