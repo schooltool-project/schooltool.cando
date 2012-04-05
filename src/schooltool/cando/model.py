@@ -17,6 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 """Skills document model."""
+import itertools
 
 from persistent import Persistent
 from zope.container.btree import BTreeContainer
@@ -38,6 +39,7 @@ from schooltool.relationship import URIObject
 from schooltool.relationship import RelationshipSchema, RelationshipProperty
 from schooltool.relationship.interfaces import InvalidRelationship
 from schooltool.relationship.interfaces import IBeforeRelationshipEvent
+from schooltool.relationship.interfaces import IBeforeRemovingRelationshipEvent
 from schooltool.schoolyear.interfaces import ISchoolYear
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.schoolyear.subscriber import ObjectEventAdapterSubscriber
@@ -290,7 +292,7 @@ def _expand_nodes(nodes, functor, recursive=True):
     while open:
         p = open.pop()
         if p not in parents:
-            if recursive:
+            if recursive or p in nodes:
                 open.update(set(functor(p)).difference(parents))
             if p not in nodes:
                 parents.add(p)
@@ -347,10 +349,11 @@ def nodeLinkDoesntViolateModel(event):
     parent = removeSecurityProxy(match.parent)
     child = removeSecurityProxy(match.child)
 
-    if not child.layers:
-        valid_layers = _expand_nodes(set(child.layers),
-                                     functor=lambda n: n.parents)
-        # XXX: expand only nearest layers
+    child_layers = set(child.layers)
+    if child_layers:
+        valid_layers = _expand_nodes(child_layers,
+                                     functor=lambda n: n.parents,
+                                     recursive=False)
         validateAgainstNode(child, parent, valid_layers)
 
     def expand_children_if_without_layers(node):
@@ -361,8 +364,161 @@ def nodeLinkDoesntViolateModel(event):
     check_children = _expand_nodes(nodes=[child],
                                    functor=expand_children_if_without_layers)
     for node in check_children:
-        if not node.layers:
-            valid_layers = _expand_nodes(set(node.layers),
-                                         functor=lambda n: n.parents)
-            # XXX: only parent layers
+        node_layers = set(node.layers)
+        if node_layers:
+            valid_layers = set(itertools.chain(*[n.parents for n in node_layers]))
             validateAgainstNode(node, parent, valid_layers)
+
+
+class InvalidLayerLink(InvalidRelationship):
+
+    def __init__(self, layer=None, node=None, offends_node=None):
+        self.layer = layer
+        self.node = node
+        self.offends_node = offends_node
+        InvalidRelationship.__init__(
+            self, layer, node, offends_node)
+
+    def __str__(self):
+        return '%s' % (
+            '\n'.join([
+                    'setting layer %s' % self.layer,
+                    'for node %s' % self.node,
+                    'offends node %s' % self.offends_node,
+                    ]))
+
+
+def makeLayerValidator(functor, valid_set, invalid_set):
+    def validator(node):
+        node_layers = set(node.layers)
+        offending_layers = node_layers.intersection(invalid_set)
+        if offending_layers:
+            raise InvalidLayerLink(offends_node=node)
+        if not node_layers.isdisjoint(valid_set):
+            # valid layer found, stop expanding
+            return []
+        return functor(node)
+    return validator
+
+
+@adapter(IBeforeRelationshipEvent)
+def nodeLayerDoesntViolateModel(event):
+    match = event.match(NodeLayer)
+    if match is None:
+        return
+    node = removeSecurityProxy(match.node)
+    layer = removeSecurityProxy(match.layer)
+
+    get_layer_parents = lambda l:LayerLink.query(child=l)
+    get_layer_children = lambda l:LayerLink.query(parent=l)
+
+    immediate_parents = set(_expand_nodes(
+            [layer], functor=get_layer_parents, recursive=False))
+    distant_parents = set(_expand_nodes(
+            immediate_parents, functor=get_layer_parents))
+    all_parents = immediate_parents.union(distant_parents)
+
+    immediate_children = set(_expand_nodes(
+            [layer], functor=get_layer_children, recursive=False))
+    distant_children = set(_expand_nodes(
+            immediate_children, functor=get_layer_children))
+    all_children = immediate_children.union(distant_children)
+
+    valid_parents = immediate_parents
+    invalid_parents = distant_parents.union(all_children)
+
+    get_node_parents = lambda l:NodeLink.query(child=l)
+    get_node_children = lambda l:NodeLink.query(parent=l)
+
+    try:
+        _expand_nodes([node], functor=makeLayerValidator(
+                functor=get_node_parents,
+                valid_set=valid_parents,
+                invalid_set=invalid_parents,
+                ))
+    except InvalidLayerLink, e:
+        raise InvalidLayerLink(
+            layer=layer, node=node, offends_node=e.offends_node)
+
+    valid_children = immediate_children
+    invalid_children = distant_children.union(all_parents)
+
+    try:
+        _expand_nodes([node], functor=makeLayerValidator(
+                functor=get_node_children,
+                valid_set=valid_children,
+                invalid_set=invalid_children,
+                ))
+    except InvalidLayerLink, e:
+        raise InvalidLayerLink(
+            layer=layer, node=node, offends_node=e.offends_node)
+
+
+class CannotRemoveLayer(InvalidRelationship):
+
+    def __init__(self, layer=None, node=None,
+                 parent_nodes=None, child_nodes=None):
+        self.layer = layer
+        self.node = node
+        self.parent_nodes = parent_nodes
+        self.child_nodes = child_nodes
+        InvalidRelationship.__init__(
+            self, layer, node, parent_nodes, child_nodes)
+
+    def __str__(self):
+        return '%s' % (
+            '\n'.join([
+                    'setting layer %s' % self.layer,
+                    'for node %s' % self.node,
+                    'breaks parents %s' % ', '.join(
+                        sorted([str(l) for l in self.parent_nodes])),
+                    'and children %s' % ', '.join(
+                        sorted([str(l) for l in self.child_nodes])),
+                    ]))
+
+
+def makeNodeWithLayersFinder(layers, functor, result):
+    def find_node_with_layers(node):
+        matched_layers = layers.intersection(set(node.layers))
+        if matched_layers:
+            result.append(node)
+            return []
+        return functor(node)
+    return find_node_with_layers
+
+
+@adapter(IBeforeRemovingRelationshipEvent)
+def removingLayerDoesntViolateModel(event):
+    match = event.match(NodeLayer)
+    if match is None:
+        return
+    node = removeSecurityProxy(match.node)
+    layer = removeSecurityProxy(match.layer)
+    get_layer_parents = lambda l:LayerLink.query(child=l)
+    get_layer_children = lambda l:LayerLink.query(parent=l)
+    immediate_parents = set(_expand_nodes(
+            [layer], functor=get_layer_parents, recursive=False))
+    immediate_children = set(_expand_nodes(
+            [layer], functor=get_layer_children, recursive=False))
+
+    get_node_parents = lambda l:NodeLink.query(child=l)
+    parent_nodes_in_model = []
+    _expand_nodes(
+        [node],
+        functor=makeNodeWithLayersFinder(
+            immediate_parents, get_node_parents, parent_nodes_in_model
+            ))
+
+    get_node_children = lambda l:NodeLink.query(parent=l)
+    child_nodes_in_model = []
+    _expand_nodes(
+        [node],
+        functor=makeNodeWithLayersFinder(
+            immediate_children, get_node_children, child_nodes_in_model
+            ))
+
+    if parent_nodes_in_model and child_nodes_in_model:
+        raise CannotRemoveLayer(
+            layer=layer, node=node,
+            parent_nodes=parent_nodes_in_model,
+            child_nodes=child_nodes_in_model)
