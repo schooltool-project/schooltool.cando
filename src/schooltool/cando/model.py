@@ -195,6 +195,23 @@ class Node(Persistent, Contained):
     def __init__(self, description=u''):
         self.description = description
 
+    def findPaths(self):
+        paths = [(self,)]
+        expanded = True
+        while expanded:
+            expanded = False
+            prev_paths = paths
+            paths = []
+            for path in prev_paths:
+                parents = sorted(list(path[0].parents), key=lambda n:n.__name__)
+                if parents:
+                    for parent in parents:
+                        paths.append((parent,)+path)
+                        expanded = True
+                else:
+                    paths.append(path)
+        return paths
+
     def __repr__(self):
         return '<%s %r %s>' % (self.__class__.__name__, self.description,
                                ', '.join([str(l) for l in self.layers]))

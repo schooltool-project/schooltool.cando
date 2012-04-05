@@ -87,6 +87,12 @@ class INode(Interface):
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
 
+    def findPaths():
+        """
+          Return a list of paths (tuples) that lead
+          (parent-to-child) to this node.
+        """
+
 
 class INodeContained(INode, IContained, IAttributeAnnotatable):
     pass
