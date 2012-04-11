@@ -5,4 +5,24 @@
            xmlns:report="http://namespaces.schooltool.org/report"
            i18n_domain="schooltool.cando">
 
+  <configure package="schooltool.export">
+
+    <flourish:viewlet
+        name="import-skills.html"
+        title="Import Skill XLS"
+        class="schooltool.skin.flourish.page.LinkViewlet"
+        manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
+        permission="schooltool.edit"
+        />
+
+    <flourish:page
+       name="import-skills.html"
+       subtitle="Import Skill Data"
+       for="schooltool.schoolyear.interfaces.ISchoolYear"
+       content_template="templates/f_import.pt"
+       class="schooltool.cando.browser.importer.SkillsMegaImporter"
+       permission="schooltool.edit" />
+
+  </configure>
+
 </configure>
