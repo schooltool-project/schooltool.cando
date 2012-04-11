@@ -59,14 +59,16 @@ class Skill(Requirement):
     implements(interfaces.ISkill)
 
     external_id = u''
+    label = u''
     required = False
 
     equivalent = RelationshipProperty(URIEquivalent, URISkill, URISkill)
 
-    def __init__(self, title, required=False, external_id=u''):
+    def __init__(self, title, required=False, external_id=u'', label=u''):
         Requirement.__init__(self, title)
         self.required = required
         self.external_id = external_id
+        self.label = label
 
     def findAllEquivalent(self):
         """Find indirectly equivalent skills."""
@@ -103,11 +105,13 @@ class SkillSetContainer(BTreeContainer):
 class SkillSet(Requirement):
     implements(interfaces.ISkillSet)
 
+    external_id = u''
     description = u''
 
-    def __init__(self, title, description=u''):
+    def __init__(self, title, description=u'', external_id=u''):
         Requirement.__init__(self, title)
         self.description = description
+        self.external_id = external_id
 
     def add(self, skill):
         skill_copy = skill.copy()

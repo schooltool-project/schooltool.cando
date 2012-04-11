@@ -32,6 +32,7 @@ class ISkill(IRequirement, IAttributeAnnotatable):
 
     external_id = zope.schema.TextLine(title=_("External ID"))
     required = zope.schema.Bool(title=_("Required"))
+    label = zope.schema.TextLine(title=_("Short label"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
 
@@ -47,6 +48,8 @@ class ISkillSetContainer(IContainer):
 
 
 class ISkillSet(IRequirement):
+
+    external_id = zope.schema.TextLine(title=_("External ID"))
 
     description = zope.schema.TextLine(
         title=_("Description"))
