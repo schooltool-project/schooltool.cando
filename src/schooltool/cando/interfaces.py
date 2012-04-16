@@ -32,6 +32,8 @@ class ISkill(IRequirement, IAttributeAnnotatable):
 
     external_id = zope.schema.TextLine(title=_("External ID"))
     required = zope.schema.Bool(title=_("Required"))
+    retired = zope.schema.Bool(title=_("Retired"),
+                               description=_("Skill is no longer used"))
     label = zope.schema.TextLine(title=_("Short label"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
@@ -129,4 +131,33 @@ class ICourseProjects(IRequirement):
 
     def deploy(self, key, section):
         """Deploy this project to that section."""
+
+
+class ICourseSkills(IRequirement):
+    contains('.ICourseSkillset')
+
+
+class ICourseSkillSet(IContained):
+
+    skillset_name = zope.schema.TextLine(title=u"SkillSet __name__.")
+
+    skillset = Attribute(u"The global skillset.")
+
+    required = zope.schema.Dict(
+        key_type=zope.schema.TextLine(title=u"Skill __name__ in skilset."),
+        value_type=zope.schema.Bool(title=u"Is skill required"))
+
+    retired = zope.schema.Dict(
+        key_type=zope.schema.TextLine(title=u"Skill __name__ in skilset."),
+        value_type=zope.schema.Bool(title=u"Retired skills should not be used."))
+
+
+class ICourseSkill(ISkill):
+    """Proxy for the real global skill"""
+
+    course_skillset = Attribute(u"The course skillset.")
+
+
+class ISectionSkills(IWorksheets):
+    pass
 

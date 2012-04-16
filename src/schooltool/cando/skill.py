@@ -61,6 +61,7 @@ class Skill(Requirement):
     external_id = u''
     label = u''
     required = False
+    retired = False
 
     equivalent = RelationshipProperty(URIEquivalent, URISkill, URISkill)
 
