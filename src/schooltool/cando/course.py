@@ -96,6 +96,7 @@ class CourseSkill(SpecificationDecoratorBase):
     __slots__ = ('course_skillset', )
 
     def __init__(self, skill, course_skillset):
+        SpecificationDecoratorBase.__init__(self, skill)
         self.course_skillset = course_skillset
 
     @property
