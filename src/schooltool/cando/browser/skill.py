@@ -175,7 +175,11 @@ class SkillSetSkillTable(table.ajax.Table):
             title=_(u'Required'),
             getter=lambda i, f: i.required and _('required') or _('optional'))
         directlyProvides(required, zc.table.interfaces.ISortableColumn)
-        return [required] + default
+        external_id = zc.table.column.GetterColumn(
+            name='external_id',
+            title=_(u'External ID'),
+            getter=lambda i, f: i.external_id or '')
+        return [required, external_id] + default
 
 
 class SkillSetLinks(flourish.page.RefineLinksViewlet):
