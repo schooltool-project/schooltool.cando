@@ -30,11 +30,14 @@ from schooltool.cando import CanDoMessage as _
 
 class ISkill(IRequirement, IAttributeAnnotatable):
 
-    external_id = zope.schema.TextLine(title=_("External ID"))
-    required = zope.schema.Bool(title=_("Required"))
+    external_id = zope.schema.TextLine(title=_("External ID"),
+                                       required=False)
+    required = zope.schema.Bool(title=_("Required"),
+                                description=_("Is skill required or optional"))
     retired = zope.schema.Bool(title=_("Retired"),
                                description=_("Skill is no longer used"))
     label = zope.schema.TextLine(title=_("Short label"), required=False)
+    description = zope.schema.Text(title=_("Full description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
 
@@ -55,7 +58,8 @@ class ISkillSet(IRequirement):
                                        required=False)
 
     description = zope.schema.Text(
-        title=_("Description"))
+        title=_("Description"),
+        required=False)
 
 
 class ILayerContainerContainer(IContainer):

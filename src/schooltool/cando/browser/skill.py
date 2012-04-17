@@ -38,8 +38,8 @@ from schooltool.skin import flourish
 from schooltool import table
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando.interfaces import ISkillSetContainer
-from schooltool.cando.interfaces import ISkillSet
-from schooltool.cando.skill import SkillSet
+from schooltool.cando.interfaces import ISkillSet, ISkill
+from schooltool.cando.skill import SkillSet, Skill
 from schooltool.common.inlinept import InlineViewPageTemplate
 
 from schooltool.common import SchoolToolMessage as _
@@ -128,7 +128,7 @@ class SkillSetAddView(flourish.form.AddForm):
 
 class SkillSetView(flourish.form.DisplayForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'description', 'external_id')
+    fields = fields.select('description', 'external_id')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
@@ -158,6 +158,16 @@ class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
 
 class SkillSetSkillTable(table.ajax.Table):
 
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+    def sortOn(self):
+        return (("required", True), ("title", False))
+
     def columns(self):
         default = table.ajax.Table.columns(self)
         required = zc.table.column.GetterColumn(
@@ -166,4 +176,43 @@ class SkillSetSkillTable(table.ajax.Table):
             getter=lambda i, f: i.required and _('required') or _('optional'))
         directlyProvides(required, zc.table.interfaces.ISortableColumn)
         return [required] + default
+
+
+class SkillSetLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class SkillAddView(flourish.form.AddForm):
+
+    label = None
+    legend = _('Skill')
+
+    fields = z3c.form.field.Fields(ISkill)
+    fields = fields.select('title', 'description', 'label',
+                           'required', 'external_id')
+
+    def updateActions(self):
+        super(SkillAddView, self).updateActions()
+        self.actions['add'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
+
+    def create(self, data):
+        skill = Skill(data['title'])
+        z3c.form.form.applyChanges(self, skill, data)
+        self._skill = skill
+        return skill
+
+    def add(self, skill):
+        chooser = INameChooser(self.context)
+        if skill.external_id:
+            name = skill.external_id
+        else:
+            name = unicode(skill.title).encode('punycode')
+            name = name[:8]+str(len(self.context)+1)
+        name = chooser.chooseName(name, skill)
+        self.context[name] = skill
+        return skill
 

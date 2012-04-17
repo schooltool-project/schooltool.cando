@@ -132,7 +132,7 @@
       class=".skill.SkillSetAddView"
       title="Skills"
       subtitle="New Skill Set"
-      content_template="templates/skillset_add.pt"
+      content_template="templates/form.pt"
       permission="schooltool.edit"
       />
 
@@ -141,7 +141,7 @@
       for="schooltool.cando.interfaces.ISkillSet"
       class=".skill.SkillSetEditView"
       subtitle="Edit"
-      content_template="templates/skillset_add.pt"
+      content_template="templates/form.pt"
       permission="schooltool.edit"
       />
 
@@ -151,6 +151,34 @@
       class=".skill.SkillSetView"
       content_template="templates/skillset.pt"
       permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="skillset_links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".skill.SkillSetLinks"
+      for="schooltool.cando.interfaces.ISkillSet"
+      title="Add"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Skill"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".skill.SkillSetLinks"
+      view=".skill.SkillSetView"
+      permission="schooltool.edit"
+      />
+
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".skill.SkillAddView"
+      subtitle="New Skill"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
       />
 
 </configure>
