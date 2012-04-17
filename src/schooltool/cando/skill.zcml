@@ -14,6 +14,21 @@
         interface=".interfaces.ISkill" />
   </class>
 
+  <class class=".skill.SkillSet">
+    <require
+        permission="schooltool.view"
+        interface="zope.interface.common.mapping.IEnumerableMapping" />
+    <require
+        permission="schooltool.view"
+        attributes="title description external_id"
+        />
+    <require
+        permission="schooltool.edit"
+        interface="zope.interface.common.mapping.IWriteMapping"
+        set_schema=".interfaces.ISkillSet"
+        />
+  </class>
+
   <class class=".skill.SkillSetContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"

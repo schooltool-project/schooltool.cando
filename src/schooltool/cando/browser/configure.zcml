@@ -88,4 +88,32 @@
       class=".skill.ManageSkillsOverview"
       />
 
+  <flourish:viewlet
+      name="skillset_container"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".skill.SkillSetContainerLinks"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      title="Add"
+      permission="schooltool.edit"
+      view=".skill.SkillSetContainerView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Skill Set"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".skill.SkillSetContainerLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      class=".skill.SkillSetAddView"
+      title="Skills"
+      subtitle="New Skill Set"
+      content_template="templates/skillset_add.pt"
+      permission="schooltool.edit"
+      />
+
 </configure>

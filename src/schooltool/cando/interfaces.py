@@ -51,9 +51,10 @@ class ISkillSetContainer(IContainer):
 
 class ISkillSet(IRequirement):
 
-    external_id = zope.schema.TextLine(title=_("External ID"))
+    external_id = zope.schema.TextLine(title=_("External ID"),
+                                       required=False)
 
-    description = zope.schema.TextLine(
+    description = zope.schema.Text(
         title=_("Description"))
 
 
