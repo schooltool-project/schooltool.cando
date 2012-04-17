@@ -23,7 +23,7 @@ Skill views.
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.interface import implements, directlyProvides
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -31,6 +31,7 @@ from zope.traversing.browser.interfaces import IAbsoluteURL
 import z3c.form.field
 import z3c.form.form
 import zc.table.column
+import zc.table.interfaces
 
 from schooltool.skin import flourish
 from schooltool import table
@@ -127,3 +128,15 @@ class SkillSetAddView(flourish.form.AddForm):
 class SkillSetView(flourish.form.DisplayForm):
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('title', 'description', 'external_id')
+
+
+class SkillSetSkillTable(table.ajax.Table):
+
+    def columns(self):
+        default = table.ajax.Table.columns(self)
+        required = zc.table.column.GetterColumn(
+            name='required',
+            title=_(u'Required'),
+            getter=lambda i, f: i.required and _('required') or _('optional'))
+        directlyProvides(required, zc.table.interfaces.ISortableColumn)
+        return [required] + default

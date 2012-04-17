@@ -57,6 +57,22 @@
       />
 
   <flourish:viewlet
+      name="table"
+      class=".skill.SkillSetSkillTable"
+      for="schooltool.cando.interfaces.ISkillSet"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".skill.SkillSetSkillTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="done"
       before="table batch"
       after="filter"
