@@ -218,18 +218,37 @@ class SkillAddView(flourish.form.AddForm):
 
     label = None
     legend = _('Skill')
+    add_next = False
 
     fields = z3c.form.field.Fields(ISkill)
     fields = fields.select('title', 'description', 'label',
                            'required', 'external_id')
 
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
+    def handleSubmit(self, action):
+        super(SkillAddView, self).handleAdd.func(self, action)
+
+    @z3c.form.button.buttonAndHandler(_('Submit and add'), name='submitadd')
+    def handleSubmitAndAdd(self, action):
+        super(SkillAddView, self).handleAdd.func(self, action)
+        if self._finishedAdd:
+            self.add_next = True
+
+    @z3c.form.button.buttonAndHandler(_('Cancel'))
+    def handleCancel(self, action):
+        super(SkillAddView, self).handleCancel.func(self, action)
+
     def updateActions(self):
         super(SkillAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
+        self.actions['submitadd'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
     def nextURL(self):
-        return absoluteURL(self.context, self.request)
+        url = absoluteURL(self.context, self.request)
+        if self.add_next:
+            return url + '/add.html'
+        return url
 
     def create(self, data):
         if not data['label']:
