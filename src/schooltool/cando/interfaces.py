@@ -37,6 +37,7 @@ class ISkill(IRequirement, IAttributeAnnotatable):
     retired = zope.schema.Bool(title=_("Retired"),
                                description=_("Skill is no longer used"))
     label = zope.schema.TextLine(title=_("Short label"), required=False)
+
     description = zope.schema.Text(title=_("Full description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
@@ -57,9 +58,7 @@ class ISkillSet(IRequirement):
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)
 
-    description = zope.schema.Text(
-        title=_("Description"),
-        required=False)
+    label = zope.schema.TextLine(title=_("Short label"), required=False)
 
 
 class ILayerContainerContainer(IContainer):

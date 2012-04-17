@@ -60,6 +60,7 @@ class Skill(Requirement):
 
     external_id = u''
     label = u''
+    description = u''
     required = False
     retired = False
 
@@ -107,12 +108,12 @@ class SkillSet(Requirement):
     implements(interfaces.ISkillSet)
 
     external_id = u''
-    description = u''
+    label = u''
 
-    def __init__(self, title, description=u'', external_id=u''):
+    def __init__(self, title, external_id=u'', label=u''):
         Requirement.__init__(self, title)
-        self.description = description
         self.external_id = external_id
+        self.label = label
 
     def add(self, skill):
         skill_copy = skill.copy()

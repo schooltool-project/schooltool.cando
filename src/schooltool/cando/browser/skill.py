@@ -45,6 +45,13 @@ from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.common import SchoolToolMessage as _
 
 
+class LabelBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
+
+    @property
+    def title(self):
+        return self.context.label or self.context.title
+
+
 class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
@@ -54,13 +61,24 @@ class SkillSetContainerView(flourish.page.Page):
 
 class SkillSetTable(table.ajax.Table):
 
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
     def columns(self):
         default = table.ajax.Table.columns(self)
         skills = zc.table.column.GetterColumn(
             name='skills',
             title=_(u'Skills'),
             getter=lambda i, f: str(len(i)))
-        return default + [skills]
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or '')
+        return [label] + default + [skills]
 
 
 class SkillSetContainerAbsoluteURLAdapter(BrowserView):
@@ -101,7 +119,7 @@ class SkillSetAddView(flourish.form.AddForm):
     legend = _('Skill set')
 
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'description', 'external_id')
+    fields = fields.select('title', 'label', 'external_id')
 
     def updateActions(self):
         super(SkillSetAddView, self).updateActions()
@@ -112,6 +130,12 @@ class SkillSetAddView(flourish.form.AddForm):
         return absoluteURL(self.context, self.request)
 
     def create(self, data):
+        if not data['label']:
+            title = unicode(data['title'])
+            if len(title) < 10:
+                data['label'] = title
+            else:
+                data['label'] = title[:7]+'...'
         skillset = SkillSet(data['title'])
         z3c.form.form.applyChanges(self, skillset, data)
         self._skillset = skillset
@@ -128,12 +152,12 @@ class SkillSetAddView(flourish.form.AddForm):
 
 class SkillSetView(flourish.form.DisplayForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('description', 'external_id')
+    fields = fields.select('label', 'external_id')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'description', 'external_id')
+    fields = fields.select('title', 'label', 'external_id')
 
     legend = _('Skill set')
 
@@ -179,7 +203,11 @@ class SkillSetSkillTable(table.ajax.Table):
             name='external_id',
             title=_(u'External ID'),
             getter=lambda i, f: i.external_id or '')
-        return [required, external_id] + default
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or '')
+        return [required, external_id, label] + default
 
 
 class SkillSetLinks(flourish.page.RefineLinksViewlet):
@@ -204,6 +232,8 @@ class SkillAddView(flourish.form.AddForm):
         return absoluteURL(self.context, self.request)
 
     def create(self, data):
+        if not data['label']:
+            data['label'] = u'%02d' % (len(self.context) + 1)
         skill = Skill(data['title'])
         z3c.form.form.applyChanges(self, skill, data)
         self._skill = skill

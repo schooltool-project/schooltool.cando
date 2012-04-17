@@ -12,11 +12,18 @@
 
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ISkillSet"
+      class=".skill.LabelBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      class=".skill.LabelBreadcrumb"
+      for="schooltool.cando.interfaces.ISkill"
       />
 
   <flourish:page_breadcrumbs
       show_page_title="false"
-      title=""
+      class=".skill.LabelBreadcrumb"
+      view=".skill.SkillView"
       for="schooltool.cando.interfaces.ISkill"
       />
 

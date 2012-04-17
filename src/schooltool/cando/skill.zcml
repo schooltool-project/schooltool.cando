@@ -20,7 +20,7 @@
         interface="zope.interface.common.mapping.IEnumerableMapping" />
     <require
         permission="schooltool.view"
-        attributes="title description external_id"
+        attributes="title label external_id"
         />
     <require
         permission="schooltool.edit"
