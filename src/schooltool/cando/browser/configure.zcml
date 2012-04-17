@@ -16,6 +16,12 @@
 
   <flourish:page_breadcrumbs
       show_page_title="false"
+      title=""
+      for="schooltool.cando.interfaces.ISkill"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
       title="Skills"
       view=".skill.SkillSetContainerView"
       />
@@ -177,6 +183,24 @@
       for="schooltool.cando.interfaces.ISkillSet"
       class=".skill.SkillAddView"
       subtitle="New Skill"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".skill.SkillView"
+      subtitle="View Skill"
+      content_template="templates/skill.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".skill.SkillEditView"
+      subtitle="Edit"
       content_template="templates/form.pt"
       permission="schooltool.edit"
       />

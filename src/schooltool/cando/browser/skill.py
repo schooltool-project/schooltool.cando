@@ -216,3 +216,43 @@ class SkillAddView(flourish.form.AddForm):
         self.context[name] = skill
         return skill
 
+
+class SkillView(flourish.form.DisplayForm):
+
+    label = None
+    legend = _('Skill')
+
+    fields = z3c.form.field.Fields(ISkill)
+    fields = fields.select('description', 'label',
+                           'required', 'external_id')
+
+    @property
+    def title(self):
+        return self.context.__parent__.title
+
+
+class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
+    fields = z3c.form.field.Fields(ISkill)
+    fields = fields.select('title', 'description', 'label',
+                           'required', 'external_id')
+
+    legend = _('Skill')
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
+    def handleApply(self, action):
+        super(SkillEditView, self).handleApply.func(self, action)
+        if (self.status == self.successMessage or
+            self.status == self.noChangesMessage):
+            url = absoluteURL(self.context, self.request)
+            self.request.response.redirect(url)
+
+    @z3c.form.button.buttonAndHandler(_("Cancel"))
+    def handle_cancel_action(self, action):
+        url = absoluteURL(self.context, self.request)
+        self.request.response.redirect(url)
+
+    def updateActions(self):
+        super(SkillEditView, self).updateActions()
+        self.actions['apply'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
