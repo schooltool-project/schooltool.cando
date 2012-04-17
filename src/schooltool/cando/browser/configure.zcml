@@ -137,6 +137,15 @@
       />
 
   <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".skill.SkillSetEditView"
+      subtitle="Edit"
+      content_template="templates/skillset_add.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ISkillSet"
       class=".skill.SkillSetView"

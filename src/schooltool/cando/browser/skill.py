@@ -30,6 +30,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 import z3c.form.field
 import z3c.form.form
+import z3c.form.button
 import zc.table.column
 import zc.table.interfaces
 
@@ -130,6 +131,31 @@ class SkillSetView(flourish.form.DisplayForm):
     fields = fields.select('title', 'description', 'external_id')
 
 
+class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
+    fields = z3c.form.field.Fields(ISkillSet)
+    fields = fields.select('title', 'description', 'external_id')
+
+    legend = _('Skill set')
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
+    def handleApply(self, action):
+        super(SkillSetEditView, self).handleApply.func(self, action)
+        if (self.status == self.successMessage or
+            self.status == self.noChangesMessage):
+            url = absoluteURL(self.context, self.request)
+            self.request.response.redirect(url)
+
+    @z3c.form.button.buttonAndHandler(_("Cancel"))
+    def handle_cancel_action(self, action):
+        url = absoluteURL(self.context, self.request)
+        self.request.response.redirect(url)
+
+    def updateActions(self):
+        super(SkillSetEditView, self).updateActions()
+        self.actions['apply'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+
 class SkillSetSkillTable(table.ajax.Table):
 
     def columns(self):
@@ -140,3 +166,4 @@ class SkillSetSkillTable(table.ajax.Table):
             getter=lambda i, f: i.required and _('required') or _('optional'))
         directlyProvides(required, zc.table.interfaces.ISortableColumn)
         return [required] + default
+
