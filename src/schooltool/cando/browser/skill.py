@@ -122,3 +122,8 @@ class SkillSetAddView(flourish.form.AddForm):
         name = chooser.chooseName(name, skillset)
         self.context[name] = skillset
         return skillset
+
+
+class SkillSetView(flourish.form.DisplayForm):
+    fields = z3c.form.field.Fields(ISkillSet)
+    fields = fields.select('title', 'description', 'external_id')

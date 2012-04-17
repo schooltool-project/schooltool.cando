@@ -10,6 +10,10 @@
       title="Skills"
       />
 
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSet"
+      />
+
   <flourish:page_breadcrumbs
       show_page_title="false"
       title="Skills"
@@ -114,6 +118,14 @@
       subtitle="New Skill Set"
       content_template="templates/skillset_add.pt"
       permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".skill.SkillSetView"
+      content_template="templates/skillset.pt"
+      permission="schooltool.view"
       />
 
 </configure>
