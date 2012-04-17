@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".course.CourseSkills">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ICourseSkills" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ICourseSkills" />
+  </class>
+
+  <class class=".course.CourseSkillSet">
+    <allow interface="zope.interface.common.mapping.IReadMapping" />
+    <require
+        permission="schooltool.view"
+        attributes="keys __iter__ values items __len__ deployed title"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ICourseSkillSet"
+        />
+  </class>
+
+  <adapter factory=".course.getCourseSkills" />
+
+  <class class=".course.SectionSkills">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ISectionSkills" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ISectionSkills" />
+  </class>
+
+  <adapter factory=".course.getSectionSkills" />
+
+</configure>
