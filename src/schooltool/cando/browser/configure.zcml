@@ -5,6 +5,17 @@
            xmlns:report="http://namespaces.schooltool.org/report"
            i18n_domain="schooltool.cando">
 
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      title="Skills"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      title="Skills"
+      view=".skill.SkillSetContainerView"
+      />
+
   <configure package="schooltool.export">
 
     <flourish:viewlet
@@ -24,5 +35,57 @@
        permission="schooltool.edit" />
 
   </configure>
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      class=".skill.SkillSetContainerView"
+      permission="schooltool.view"
+      title="Skills"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".skill.SkillSetTable"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".skill.SkillSetTable"
+      view=".skill.SkillSetContainerView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="skills"
+      adapter="schooltool.cando.interfaces.ISkillSetContainer"
+      />
+
+  <zope:adapter
+      factory=".skill.SkillSetContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".skill.SkillSetContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <flourish:viewlet
+      name="manage-skills-overview"
+      after="manage-courses-overview"
+      view="schooltool.app.browser.app.ManageSchool"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".skill.ManageSkillsOverview"
+      />
 
 </configure>
