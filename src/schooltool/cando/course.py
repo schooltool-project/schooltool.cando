@@ -55,22 +55,21 @@ class ReadOnlyContainer(KeyError):
 class CourseSkillSet(GenericWorksheet):
     implements(ICourseSkillSet)
 
-    skillset_name = None
     required = None
     retired = None
 
-    def __init__(self, *args, **kw):
-        super(CourseSkillSet, self).__init__()
+    def __init__(self, skillset):
+        super(CourseSkillSet, self).__init__(skillset.title)
         self.required = PersistentDict()
         self.retired = PersistentDict()
 
     @Lazy
     def skillset(self):
-        if self.skillset_name is None:
+        if self.__name__ is None:
             return None
         app = ISchoolToolApplication(None)
         ssc = ISkillSetContainer(app)
-        return ssc.get(self.skillset_name)
+        return ssc.get(self.__name__)
 
     def keys(self):
         skillset = self.skillset
@@ -80,7 +79,9 @@ class CourseSkillSet(GenericWorksheet):
     def __getitem__(self, key):
         skillset = self.skillset
         skill = skillset[key]
-        return CourseSkill(skill, self)
+        cs = CourseSkill(skill)
+        cs.__parent__ = self
+        return cs
 
     def __setitem__(self, key, newobject):
         raise ReadOnlyContainer(key)
@@ -93,33 +94,29 @@ class CourseSkill(SpecificationDecoratorBase):
     """A skill proxy that allows overriding of required/retired attributes."""
     implements(ICourseSkill)
 
-    __slots__ = ('course_skillset', )
-
-    def __init__(self, skill, course_skillset):
-        SpecificationDecoratorBase.__init__(self, skill)
-        self.course_skillset = course_skillset
+    __slots__ = ('__parent__', )
 
     @property
     def required(self):
-        if self.__name__ not in self.course_skillset.required:
+        if self.__name__ not in self.__parent__.required:
             unproxied = getProxiedObject(self)
             return unproxied.required
-        return self.course_skillset.required[self.__name__]
+        return self.__parent__.required[self.__name__]
 
     @required.setter
     def required(self, value):
-        self.course_skillset.required[self.__name__] = value
+        self.__parent__.required[self.__name__] = value
 
     @property
     def retired(self):
-        if self.__name__ not in self.course_skillset.retired:
+        if self.__name__ not in self.__parent__.retired:
             unproxied = getProxiedObject(self)
             return unproxied.retired
-        return self.course_skillset.retired[self.__name__]
+        return self.__parent__.retired[self.__name__]
 
     @retired.setter
     def retired(self, value):
-        self.course_skillset.retired[self.__name__] = value
+        self.__parent__.retired[self.__name__] = value
 
 
 @adapter(ICourse)
@@ -129,12 +126,12 @@ def getCourseSkills(course):
     try:
         return annotations[COURSE_SKILLS_KEY]
     except KeyError:
-        projects = CourseSkills(_('Course Skills'))
-        annotations[COURSE_SKILLS_KEY] = projects
+        skills = CourseSkills(_('Course Skills'))
+        annotations[COURSE_SKILLS_KEY] = skills
         # Sigh, this is not good.
-        projects, event = containedEvent(projects, course, 'projects')
+        skills, event = containedEvent(skills, course, 'skills')
         notify(event)
-        return projects
+        return skills
 
 getCourseSkills.factory = CourseSkills
 
@@ -179,12 +176,12 @@ def getSectionSkills(section):
     try:
         return annotations[SECTION_SKILLS_KEY]
     except KeyError:
-        projects = SectionSkills(_('Section Skills'))
-        annotations[SECTION_SKILLS_KEY] = projects
+        skills = SectionSkills(_('Section Skills'))
+        annotations[SECTION_SKILLS_KEY] = skills
         # Sigh, this is not good.
-        projects, event = containedEvent(projects, section, 'projects')
+        skills, event = containedEvent(skills, section, 'skills')
         notify(event)
-        return projects
+        return skills
 
 getSectionSkills.factory = SectionSkills
 

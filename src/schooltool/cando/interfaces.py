@@ -143,8 +143,6 @@ class ICourseSkills(IRequirement):
 
 class ICourseSkillSet(IContained):
 
-    skillset_name = zope.schema.TextLine(title=u"SkillSet __name__.")
-
     skillset = Attribute(u"The global skillset.")
 
     required = zope.schema.Dict(

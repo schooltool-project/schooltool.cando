@@ -14,7 +14,7 @@
     <allow interface="zope.interface.common.mapping.IReadMapping" />
     <require
         permission="schooltool.view"
-        attributes="keys __iter__ values items __len__ deployed title"
+        attributes="keys __iter__ values items __len__ deployed title skillset"
         />
     <require
         permission="schooltool.edit"
@@ -22,7 +22,8 @@
         />
   </class>
 
-  <adapter factory=".course.getCourseSkills" />
+  <adapter factory=".course.getCourseSkills"
+           trusted="True" />
 
   <class class=".course.SectionSkills">
     <require
@@ -33,6 +34,17 @@
         interface=".interfaces.ISectionSkills" />
   </class>
 
-  <adapter factory=".course.getSectionSkills" />
+  <adapter factory=".course.getSectionSkills"
+           trusted="True" />
+
+
+  <class class=".course.CourseSkill">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ICourseSkill" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ICourseSkill" />
+  </class>
 
 </configure>
