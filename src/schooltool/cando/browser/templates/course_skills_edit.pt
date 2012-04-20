@@ -1,0 +1,8 @@
+<tal:block i18n:domain="schooltool">
+  <h3>
+    <tal:block replace="context/skillset/title" />
+  </h3>
+
+  <div tal:content="structure context/schooltool:content/ajax/table_edit" />
+
+</tal:block>

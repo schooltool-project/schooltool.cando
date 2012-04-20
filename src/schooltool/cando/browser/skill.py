@@ -150,6 +150,8 @@ class SkillSetAddView(flourish.form.AddForm):
         return skillset
 
 
+# XXX: after adding skillset, redirect to it's edit view.
+
 class SkillSetView(flourish.form.DisplayForm):
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('label', 'external_id')
@@ -282,6 +284,10 @@ class SkillView(flourish.form.DisplayForm):
     @property
     def title(self):
         return self.context.__parent__.title
+
+    @property
+    def can_edit(self):
+        return flourish.canEdit(self.context)
 
 
 class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
