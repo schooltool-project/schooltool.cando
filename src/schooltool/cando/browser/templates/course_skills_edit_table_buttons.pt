@@ -1,0 +1,12 @@
+<tal:block i18n:domain="schooltool"
+           define="submit_id string:${view/manager/html_id}-submit;
+                   cancel_id string:${view/manager/html_id}-cancel">
+  <div class="buttons">
+    <input type="submit" name="SUBMIT_BUTTON" value="Submit"
+           tal:attributes="id submit_id"
+           class="button-ok" i18n:attributes="value" />
+    <input type="submit" name="CANCEL_BUTTON" value="Cancel"
+           tal:attributes="id cancel_id"
+           class="button-cancel" i18n:attributes="value" />
+  </div>
+</tal:block>

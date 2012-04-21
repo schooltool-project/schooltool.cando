@@ -5,6 +5,8 @@
            xmlns:report="http://namespaces.schooltool.org/report"
            i18n_domain="schooltool.cando">
 
+  <!-- Skills and skillsets -->
+
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ISkillSetContainer"
       title="Skills"
@@ -210,6 +212,176 @@
       subtitle="Edit"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      />
+
+  <!-- Course skills -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkills"
+      title="Skills"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      view=".course.CourseSkillsView"
+      title="Skills"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      class=".course.CourseSkillSetBreadcrumb"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view=".course.CourseSkillSetView"
+      class=".course.CourseSkillSetBreadcrumb"
+      />
+
+  <flourish:viewlet
+      name="manage-course-skills"
+      after="manage-course-worksheets"
+      for="schooltool.course.interfaces.ICourse"
+      view="schooltool.course.browser.course.FlourishCourseView"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".course.CourseSkillsOverview"
+      />
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.course.interfaces.ICourse"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      name="skills"
+      adapter="schooltool.cando.interfaces.ICourseSkills"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseSkillsView"
+      permission="schooltool.view"
+      subtitle="Assigned Skills"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".course.CourseSkillsTable"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".course.CourseSkillsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="course_skills"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".course.CourseSkillsLinks"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      title="Assign"
+      permission="schooltool.edit"
+      view=".course.CourseSkillsView"
+      />
+
+  <flourish:viewlet
+      name="assign.html"
+      title="Skill Set"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".course.AvailableSkillSetTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".course.CourseAssignSkillSetView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="assign.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseAssignSkillSetView"
+      title="Skills"
+      subtitle="Assign Skill Set"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      class=".course.CourseSkillSetView"
+      subtitle="Assigned Skills"
+      content_template="templates/course_skillset.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      class=".course.CourseSkillSetEditView"
+      subtitle="Edit Skills"
+      content_template="templates/course_skills_edit.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".course.CourseSkillSetSkillTable"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".course.CourseSkillSetSkillTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table_edit"
+      class=".course.CourseEditSkillSetSkillsTable"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".course.CourseEditSkillSetSkillsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="buttons"
+      after="table"
+      manager=".course.CourseEditSkillSetSkillsTable"
+      template="templates/course_skills_edit_table_buttons.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ICourseSkill"
+      class=".course.CourseSkillView"
+      subtitle="View Skill"
+      content_template="templates/skill.pt"
+      permission="schooltool.view"
       />
 
 </configure>

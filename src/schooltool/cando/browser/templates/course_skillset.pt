@@ -1,0 +1,21 @@
+<tal:block i18n:domain="schooltool">
+  <h3>
+    <tal:block replace="context/skillset/title" />
+    <a class="modify" href="" title="Edit this skill set"
+       tal:attributes="href string:${context/@@absolute_url}/edit.html"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
+  </h3>
+
+  <div tal:content="structure context/schooltool:content/ajax/table" />
+
+  <h3>
+    <a tal:attributes="href context/__parent__/@@absolute_url"
+       i18n:translate="">Done</a>
+  </h3>
+
+</tal:block>

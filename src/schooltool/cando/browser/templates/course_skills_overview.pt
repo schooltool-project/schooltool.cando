@@ -1,0 +1,19 @@
+<div class="manage-view" i18n:domain="schooltool"
+     tal:define="skills view/skills">
+  <h3>
+    <a title="Assign Course Skills"
+       tal:attributes="href skills/@@absolute_url"
+       i18n:attributes="title"
+       i18n:translate="">
+      Skills
+    </a>
+  </h3>
+  <p i18n:translate="" tal:condition="skills">
+    There are
+    <metal:block tal:replace="python:len(skills)" i18n:name="count"/>
+    sets of skills assigned.
+  </p>
+  <p i18n:translate="" tal:condition="not: skills">
+    There are no skills assigned.
+  </p>
+</div>
