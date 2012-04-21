@@ -40,6 +40,7 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.interfaces import ISkillSet, ISkill
 from schooltool.cando.skill import SkillSet, Skill
+from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 
 from schooltool.common import SchoolToolMessage as _
@@ -153,6 +154,7 @@ class SkillSetAddView(flourish.form.AddForm):
 # XXX: after adding skillset, redirect to it's edit view.
 
 class SkillSetView(flourish.form.DisplayForm):
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('label', 'external_id')
 
@@ -273,6 +275,8 @@ class SkillAddView(flourish.form.AddForm):
 
 
 class SkillView(flourish.form.DisplayForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
 
     label = None
     legend = _('Skill')
