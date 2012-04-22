@@ -41,6 +41,14 @@
         name="import-skills.html"
         title="Import Skill XLS"
         class="schooltool.skin.flourish.page.LinkViewlet"
+        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        permission="schooltool.edit"
+        />
+
+    <flourish:viewlet
+        name="import-skills.html"
+        title="Import Skill XLS"
+        class="schooltool.skin.flourish.page.LinkViewlet"
         manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
         permission="schooltool.edit"
         />
@@ -48,9 +56,17 @@
     <flourish:page
        name="import-skills.html"
        subtitle="Import Skill Data"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       content_template="templates/f_import.pt"
+       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+       permission="schooltool.edit" />
+
+    <flourish:page
+       name="import-skills.html"
+       subtitle="Import Skill Data"
        for="schooltool.schoolyear.interfaces.ISchoolYear"
        content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.SkillsMegaImporter"
+       class="schooltool.cando.browser.importer.YearlySkillsMegaImporter"
        permission="schooltool.edit" />
 
   </configure>
