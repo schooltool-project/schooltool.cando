@@ -214,16 +214,17 @@ class NodesImporter(ImporterBase):
             node_layers = self.getTextFromCell(sh, row, 3)
 
             node = nodes[name]
+
             for parent in list(node.parents):
                 layer.parents.remove(parent)
-            for layer in list(node.layers):
-                node.layers.remove(layer)
-
             for part in breakupIds(parents):
                 if part not in nodes:
                     self.error(row, 2, ERROR_INVALID_PARENTS)
                     break
                 node.parents.add(nodes[part])
+
+            for layer in list(node.layers):
+                node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
                     self.error(row, 2, ERROR_INVALID_LAYERS)
