@@ -38,6 +38,11 @@
   </class>
 
   <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".skill.SkillInit"
+      name="schooltool.cando.skill" />
+
+  <adapter
       factory=".skill.SkillAppStartup"
       name="schooltool.cando.skill" />
 
