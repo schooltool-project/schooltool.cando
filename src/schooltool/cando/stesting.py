@@ -29,3 +29,30 @@ filename = os.path.join(dir, 'stesting.zcml')
 skill_selenium_layer = SeleniumLayer(filename,
                                       __name__,
                                       'skill_selenium_layer')
+
+def registerSeleniumSetup():
+    try:
+        import selenium
+    except ImportError:
+        return
+    from schooltool.testing import registry
+    import schooltool.testing.selenium
+
+    def importGlobalSkills(browser, filename):
+        browser.query.link('School').click()
+        browser.query.link('Import Skill Data').click()
+        if filename:
+            import pkg_resources
+            elem = browser.query.name('xlsfile')
+            browser.query.name('xlsfile').type(filename)
+        page = browser.query.tag('html')
+        browser.query.button('Submit').click()
+        browser.wait(lambda: page.expired)
+
+    registry.register('SeleniumHelpers',
+        lambda: schooltool.testing.selenium.registerBrowserUI(
+            'import_global_skills', importGlobalSkills))
+
+registerSeleniumSetup()
+del registerSeleniumSetup
+

@@ -23,7 +23,7 @@ from zope.component import adapter
 from zope.container.btree import BTreeContainer
 from zope.container.interfaces import INameChooser
 
-from schooltool.app.app import StartUpBase
+from schooltool.app.app import InitBase, StartUpBase
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando import interfaces
 from schooltool.relationship import URIObject
@@ -121,6 +121,12 @@ class SkillSet(Requirement):
         name = chooser.chooseName(skill.__name__, skill_copy)
         self[name] = skill_copy
         return skill_copy
+
+
+class SkillInit(InitBase):
+
+    def __call__(self):
+        self.app['schooltool.cando.skillset'] = SkillSetContainer()
 
 
 class SkillAppStartup(StartUpBase):
