@@ -1,0 +1,74 @@
+Tests for the global skills xls import
+======================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll define a helper function for printing the form fields of skillsets and
+skills.
+
+    >>> def printFormFields():
+    ...     fields = []
+    ...     for row in manager.query_all.xpath('//table[@class="form-fields"]//tr'):
+    ...         fields.append(row.query.css('label span').text)
+    ...         elems = row.query_all.css('.selected-option').text
+    ...         if elems:
+    ...             fields.append(elems[0])
+    ...         else:
+    ...             fields.append(row.query.css('.widget span').text)
+    ...     while fields:
+    ...         print '%-20s%s' % (fields.pop(0) + ':', fields.pop(0))
+
+Let's import a file containing the SkillSets and Skills sheets:
+
+    >>> import os
+    >>> dirname = os.path.abspath(os.path.dirname(__file__))
+    >>> filename = os.path.join(dirname, 'sample_global_data.xls')
+    >>> manager.ui.import_global_skills(filename)
+
+There should be no errors:
+
+    >>> print manager.query_all.css('.status div').text
+
+Let's check the data.  Ther is one skillset called Carpentry.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/carpentry
+
+    >>> manager.query.link('Carpentry').click()
+    >>> printFormFields()
+    Short label:        Carp label
+    External ID:        ext_carp
+
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/carpentry/pounding
+    http://localhost/skills/carpentry/hammering
+    http://localhost/skills/carpentry/whacking
+
+    >>> manager.query.link('Pounding').click()
+    >>> printFormFields()
+    Full description:
+    Short label:
+    Required:           Yes
+    External ID:        ext_123
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Hammering').click()
+    >>> printFormFields()
+    Full description:   This is hammering.
+    Short label:        Label
+    Required:           No
+    External ID:
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Whacking').click()
+    >>> printFormFields()
+    Full description:   Whacking desc.
+    Short label:
+    Required:           No
+    External ID:
+

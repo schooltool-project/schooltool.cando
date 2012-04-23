@@ -39,7 +39,7 @@
 
     <flourish:viewlet
         name="import-skills.html"
-        title="Import Skill XLS"
+        title="Import Skill Data"
         class="schooltool.skin.flourish.page.LinkViewlet"
         manager="schooltool.app.browser.app.SchoolActionsLinks"
         permission="schooltool.edit"
@@ -47,7 +47,7 @@
 
     <flourish:viewlet
         name="import-skills.html"
-        title="Import Skill XLS"
+        title="Import Skill Data"
         class="schooltool.skin.flourish.page.LinkViewlet"
         manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
         permission="schooltool.edit"
