@@ -25,7 +25,8 @@ import doctest
 from zope.interface.verify import verifyObject
 from zope.app.testing import setup
 from zope.component import provideHandler
-from zope.interface import implements
+from zope.interface import implements, classImplements
+from zope.annotation.interfaces import IAttributeAnnotatable
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.relationship.tests import setUpRelationships
@@ -40,6 +41,7 @@ from schooltool.cando.model import (
     nodeLinkDoesntViolateModel,
     nodeLayerDoesntViolateModel,
     removingLayerDoesntViolateModel,
+    NodeSkillSets,
     )
 from schooltool.cando.skill import (
     Skill, SkillSet,
@@ -324,11 +326,38 @@ def doctest_Node_findPaths():
     """
 
 
+def doctest_Node_skillsets():
+    r"""Tests for node.skillsets.
+
+        >>> layers, nodes = buildTestModel_crafts()
+
+    Nodes can have assigned skillsets.
+
+        >>> sc1 = SkillSet('Whacking with a hammer')
+        >>> sc2 = SkillSet('Whacking with a shoe')
+        >>> sc3 = SkillSet('Work place ethics')
+
+        >>> nodes['whacking'].skillsets.add(sc1)
+        >>> nodes['whacking'].skillsets.add(sc2)
+        >>> nodes['whacking'].skillsets.add(sc3)
+
+        >>> print sorted(nodes['whacking'].skillsets, key=lambda s: s.title)
+        [SkillSet('Whacking with a hammer'),
+         SkillSet('Whacking with a shoe'),
+         SkillSet('Work place ethics')]
+
+        >>> print list(NodeSkillSets.query(skillset=sc1))
+        [<Node 'Whacking' <Layer 'Topic'>>]
+
+    """
+
+
 def setUpModelConstraints(test=None):
     provideHandler(preventLayerCycles)
     provideHandler(nodeLinkDoesntViolateModel)
     provideHandler(nodeLayerDoesntViolateModel)
     provideHandler(removingLayerDoesntViolateModel)
+    classImplements(SkillSet, IAttributeAnnotatable)
 
 
 def setUp(test):
