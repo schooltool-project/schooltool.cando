@@ -29,8 +29,8 @@ from zope.interface import implements
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.relationship.tests import setUpRelationships
-from schooltool.testing.catalog import setUpIntIds, tearDownIntIds
-from schooltool.testing.catalog import setUpCatalogs, tearDownCatalogs
+#from schooltool.testing.catalog import setUpIntIds, tearDownIntIds
+#from schooltool.testing.catalog import setUpCatalogs, tearDownCatalogs
 from schooltool.cando.interfaces import (
     ISkill,
     )
@@ -124,13 +124,13 @@ def setUp(test):
     setup.setUpTraversal()
     setup.setUpAnnotations()
     # XXX: no int id or catalog usage yet
-    setUpIntIds(test)
-    setUpCatalogs(test)
+    #setUpIntIds(test)
+    #setUpCatalogs(test)
     setUpRelationships()
 
 def tearDown(test):
-    tearDownCatalogs(test)
-    tearDownIntIds(test)
+    #tearDownCatalogs(test)
+    #tearDownIntIds(test)
     setup.placefulTearDown()
 
 

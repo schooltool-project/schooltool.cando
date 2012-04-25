@@ -357,7 +357,6 @@ def setUpModelConstraints(test=None):
     provideHandler(nodeLinkDoesntViolateModel)
     provideHandler(nodeLayerDoesntViolateModel)
     provideHandler(removingLayerDoesntViolateModel)
-    classImplements(SkillSet, IAttributeAnnotatable)
 
 
 def setUp(test):
