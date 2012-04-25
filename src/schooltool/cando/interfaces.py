@@ -53,7 +53,7 @@ class ISkillSetContainer(IContainer):
     pass
 
 
-class ISkillSet(IRequirement):
+class ISkillSet(IRequirement, IAttributeAnnotatable):
 
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)

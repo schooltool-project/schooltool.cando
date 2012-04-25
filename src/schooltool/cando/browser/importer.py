@@ -22,6 +22,7 @@ Skills importer.
 
 from zope.traversing.browser.absoluteurl import absoluteURL
 
+from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando.interfaces import ILayerContainer, INodeContainer
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, Node
@@ -189,6 +190,7 @@ class NodesImporter(ImporterBase):
         sh = self.sheet
         nodes = INodeContainer(self.context)
         layers = ILayerContainer(self.context)
+        skillsets = ISkillSetContainer(ISchoolToolApplication(None))
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -212,6 +214,7 @@ class NodesImporter(ImporterBase):
             name = self.getRequiredTextFromCell(sh, row, 0)
             parents = self.getTextFromCell(sh, row, 2)
             node_layers = self.getTextFromCell(sh, row, 3)
+            node_skillsets = self.getTextFromCell(sh, row, 4)
 
             node = nodes[name]
 
@@ -227,9 +230,17 @@ class NodesImporter(ImporterBase):
                 node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
-                    self.error(row, 2, ERROR_INVALID_LAYERS)
+                    self.error(row, 3, ERROR_INVALID_LAYERS)
                     break
                 node.layers.add(layers[part])
+
+            for skillset in list(node.skillsets):
+                node.skillsets.remove(skillset)
+            for part in breakupIds(node_skillsets):
+                if part not in skillsets:
+                    self.error(row, 4, ERROR_INVALID_SKILLSET)
+                    break
+                node.skillsets.add(skillsets[part])
 
 
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
