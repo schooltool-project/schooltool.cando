@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           xmlns:report="http://namespaces.schooltool.org/report"
+           i18n_domain="schooltool.cando">
+
+  <!-- Report links, request views and output views -->
+
+  <report:reportLink
+       name="yearly_skills_export"
+       for="schooltool.schoolyear.interfaces.ISchoolYear"
+       layer="schooltool.skin.flourish.IFlourishLayer"
+       permission="schooltool.edit"
+       group="School Year"
+       description="Export skills data for the school year."
+       title="Skill Data"
+       file_type="xls"
+       link="request_yearly_skills_export.html"
+       />
+
+  <flourish:page
+       name="request_yearly_skills_export.html"
+       for="schooltool.schoolyear.interfaces.ISchoolYear"
+       class=".request_reports.RequestYearlySkillsExportView"
+       permission="schooltool.edit"
+       />
+
+  <flourish:page
+       name="export_yearly_skills.xls"
+       for="schooltool.schoolyear.interfaces.ISchoolYear"
+       class=".xls_views.ExportYearlySkillsView"
+       permission="schooltool.edit"
+       />
+
+  <report:reportLink
+       name="global_skills_export"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       layer="schooltool.skin.flourish.IFlourishLayer"
+       permission="schooltool.edit"
+       group="School"
+       description="Export global skills data for the school."
+       title="Skill Data"
+       file_type="xls"
+       link="request_global_skills_export.html"
+       />
+
+  <flourish:page
+       name="request_global_skills_export.html"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       class=".request_reports.RequestGlobalSkillsExportView"
+       permission="schooltool.edit"
+       />
+
+  <flourish:page
+       name="export_global_skills.xls"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       class=".xls_views.ExportGlobalSkillsView"
+       permission="schooltool.edit"
+       />
+
+</configure>

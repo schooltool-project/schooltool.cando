@@ -400,4 +400,6 @@
       permission="schooltool.view"
       />
 
+  <include file="report.zcml" />
+
 </configure>
