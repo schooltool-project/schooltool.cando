@@ -198,14 +198,14 @@ class NodesImporter(ImporterBase):
 
             num_errors = len(self.errors)
             name = self.getRequiredTextFromCell(sh, row, 0)
-            title = self.getRequiredTextFromCell(sh, row, 1)
+            description = self.getRequiredTextFromCell(sh, row, 1)
             if num_errors < len(self.errors):
                 continue
 
             if name in nodes:
-                nodes[name].title = title
+                nodes[name].description = description
             else:
-                nodes[name] = Node(title)
+                nodes[name] = Node(description)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
