@@ -114,6 +114,10 @@ class SkillSetContainerLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
+class SkillSetContainerActionLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
 class SkillSetAddView(flourish.form.AddForm):
 
     label = None
