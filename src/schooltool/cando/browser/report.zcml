@@ -7,6 +7,16 @@
 
   <!-- Report links, request views and output views -->
 
+  <flourish:viewlet
+      name="skills-reports-links"
+      after="skillset_container_actions"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.report.browser.report.ReportsLinks"
+      title="Reports"
+      view=".skill.SkillSetContainerView"
+      permission="schooltool.edit"
+      />
+
   <report:reportLink
        name="yearly_skills_export"
        for="schooltool.schoolyear.interfaces.ISchoolYear"
@@ -35,7 +45,7 @@
 
   <report:reportLink
        name="global_skills_export"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
+       for="schooltool.cando.interfaces.ISkillSetContainer"
        layer="schooltool.skin.flourish.IFlourishLayer"
        permission="schooltool.edit"
        group="School"
@@ -47,14 +57,14 @@
 
   <flourish:page
        name="request_global_skills_export.html"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
+       for="schooltool.cando.interfaces.ISkillSetContainer"
        class=".request_reports.RequestGlobalSkillsExportView"
        permission="schooltool.edit"
        />
 
   <flourish:page
        name="export_global_skills.xls"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
+       for="schooltool.cando.interfaces.ISkillSetContainer"
        class=".xls_views.ExportGlobalSkillsView"
        permission="schooltool.edit"
        />

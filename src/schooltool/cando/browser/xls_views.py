@@ -92,8 +92,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
         for index, header in enumerate(headers):
             self.write_header(ws, 0, index, header)
 
-        skillsets = ISkillSetContainer(self.context)
-        for index, skillset in enumerate(skillsets.values()):
+        for index, skillset in enumerate(self.context.values()):
             self.write(ws, index + 1, 0, skillset.__name__)
             self.write(ws, index + 1, 1, skillset.title)
             self.write(ws, index + 1, 2, skillset.external_id)
@@ -108,8 +107,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
             self.write_header(ws, 0, index, header)
 
         row = 1
-        skillsets = ISkillSetContainer(self.context)
-        for skillset in skillsets.values():
+        for skillset in self.context.values():
             for skill in skillset.values():
                 self.write(ws, row, 0, skillset.__name__)
                 self.write(ws, row, 1, skill.__name__)
