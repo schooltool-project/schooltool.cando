@@ -1,4 +1,4 @@
-<tal:block i18n:domain="schooltool">
+<tal:block i18n:domain="schooltool.cando">
   <h3>
     <tal:block replace="context/skillset/title" />
     <a class="modify" href="" title="Edit this skill set"
