@@ -51,7 +51,7 @@ class SkillSetsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = ISkillSetContainer(self.context)
+        skillsets = self.context
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -80,7 +80,7 @@ class SkillsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = ISkillSetContainer(self.context)
+        skillsets = self.context
         skillset = None
 
         for row in range(1, sh.nrows):

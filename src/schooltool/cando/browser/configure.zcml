@@ -41,7 +41,7 @@
         name="import-skills.html"
         title="Import Skill Data"
         class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        manager="schooltool.cando.browser.skill.SkillSetContainerActionLinks"
         permission="schooltool.edit"
         />
 
@@ -56,7 +56,7 @@
     <flourish:page
        name="import-skills.html"
        subtitle="Import Skill Data"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
+       for="schooltool.cando.interfaces.ISkillSetContainer"
        content_template="templates/f_import.pt"
        class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
        permission="schooltool.edit" />
@@ -145,6 +145,16 @@
       class=".skill.SkillSetContainerLinks"
       for="schooltool.cando.interfaces.ISkillSetContainer"
       title="Add"
+      permission="schooltool.edit"
+      view=".skill.SkillSetContainerView"
+      />
+
+  <flourish:viewlet
+      name="skillset_container_actions"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".skill.SkillSetContainerActionLinks"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      title="Actions"
       permission="schooltool.edit"
       view=".skill.SkillSetContainerView"
       />
