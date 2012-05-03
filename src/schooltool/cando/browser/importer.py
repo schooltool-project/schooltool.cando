@@ -20,6 +20,7 @@
 Skills importer.
 """
 
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 from schooltool.app.interfaces import ISchoolToolApplication
@@ -50,7 +51,7 @@ class SkillSetsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = ISkillSetContainer(self.context)
+        skillsets = self.context
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -79,7 +80,7 @@ class SkillsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = ISkillSetContainer(self.context)
+        skillsets = self.context
         skillset = None
 
         for row in range(1, sh.nrows):
@@ -119,27 +120,34 @@ class SkillsImporter(ImporterBase):
             skill.required = bool(required)
             skill.retired = bool(retired)
 
+        skillset = None
+
         for row in range(1, sh.nrows):
-            if sh.cell_value(rowx=row, colx=0) == '':
+            if (sh.cell_value(rowx=row, colx=0) == '' and
+                sh.cell_value(rowx=row, colx=1) == ''):
                 break
 
-            skillset_id = self.getRequiredTextFromCell(sh, row, 0)
+            skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
             equivalent = self.getTextFromCell(sh, row, 3)
 
-            if skillset_id not in skillsets:
-                continue
-            skillset = skillsets[skillset_id]
-            if name not in skillset:
+            if skillset_id:
+                if skillset_id not in skillsets:
+                    skillset = None
+                else:
+                    skillset = skillsets[skillset_id]
+            if skillset is None or name not in skillset:
                 continue
             skill = skillset[name]
-            for eq in list(skill.equivalent):
-                skill.equivalent.remove(eq)
+
+            equiv = removeSecurityProxy(skill.equivalent)
+            for eq in list(equiv):
+                equiv.remove(eq)
             for part in breakupIds(equivalent):
                 if part not in skillset:
                     self.error(row, 3, ERROR_INVALID_EQUIVALENT)
                     break
-                skill.equivalent.add(skillset[part])
+                equiv.add(removeSecurityProxy(skillset[part]))
 
 
 class LayersImporter(ImporterBase):
@@ -198,14 +206,14 @@ class NodesImporter(ImporterBase):
 
             num_errors = len(self.errors)
             name = self.getRequiredTextFromCell(sh, row, 0)
-            title = self.getRequiredTextFromCell(sh, row, 1)
+            description = self.getRequiredTextFromCell(sh, row, 1)
             if num_errors < len(self.errors):
                 continue
 
             if name in nodes:
-                nodes[name].title = title
+                nodes[name].description = description
             else:
-                nodes[name] = Node(title)
+                nodes[name] = Node(description)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':

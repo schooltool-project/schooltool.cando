@@ -40,6 +40,7 @@ def registerSeleniumSetup():
 
     def importGlobalSkills(browser, filename):
         browser.query.link('School').click()
+        browser.query.link('Skills').click()
         browser.query.link('Import Skill Data').click()
         if filename:
             import pkg_resources

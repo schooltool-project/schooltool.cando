@@ -66,7 +66,7 @@ setup(
                       'setuptools',
                       'zope.i18n',
                       'zope.i18nmessageid'],
-    extras_require={'test': []},
+    extras_require={'test': ['schooltool.devtools>=0.6']},
     include_package_data=True,
     zip_safe=False,
     entry_points="""

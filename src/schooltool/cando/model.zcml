@@ -3,11 +3,6 @@
 
   <!-- layers -->
 
-  <interface
-      interface=".interfaces.ILayerContainerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
   <class class=".model.LayerContainerContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -16,11 +11,6 @@
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
 
-  <interface
-      interface=".interfaces.ILayerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
   <class class=".model.LayerContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -28,11 +18,6 @@
     <require permission="schooltool.edit"
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
-
-  <interface
-      interface=".interfaces.ILayer"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <class class=".model.Layer">
     <require permission="schooltool.view"
@@ -59,11 +44,6 @@
 
   <!-- nodes -->
 
-  <interface
-      interface=".interfaces.INodeContainerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
   <class class=".model.NodeContainerContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -72,11 +52,6 @@
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
 
-  <interface
-      interface=".interfaces.INodeContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
   <class class=".model.NodeContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -84,11 +59,6 @@
     <require permission="schooltool.edit"
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
-
-  <interface
-      interface=".interfaces.INode"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <class class=".model.Node">
     <require permission="schooltool.view"
