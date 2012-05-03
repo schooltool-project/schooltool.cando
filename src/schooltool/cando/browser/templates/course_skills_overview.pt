@@ -1,4 +1,4 @@
-<div class="manage-view" i18n:domain="schooltool"
+<div class="manage-view" i18n:domain="schooltool.cando"
      tal:define="skills view/skills">
   <h3>
     <a title="Assign Course Skills"
