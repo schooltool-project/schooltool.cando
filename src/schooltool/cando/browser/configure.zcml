@@ -410,6 +410,129 @@
       permission="schooltool.view"
       />
 
+  <!-- Layers and nodes -->
+
+  <zope:adapter
+      factory=".model.LayerContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".model.LayerContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.schoolyear.interfaces.ISchoolYear"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="layers"
+      adapter="schooltool.cando.interfaces.ILayerContainer"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".model.LayersTable"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="manage-layers-overview"
+      after="manage-skills-overview"
+      view="schooltool.app.browser.app.ManageSchool"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".model.ManageLayersOverview"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".model.LayersTertiaryNavigationManager"
+      view=".model.LayersView"
+      permission="zope.Public"
+      />
+
+  <flourish:page
+      name="layers"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      class=".model.LayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="layers-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".model.LayersAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".model.LayersView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Layer"
+      view=".model.LayersView"
+      class=".model.LayersSchoolyearLink"
+      manager=".model.LayersAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      class="schooltool.cando.browser.model.FlourishLayerAddView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      subtitle="Add Layer"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".model.LayerView"
+      subtitle="View Layer"
+      content_template="templates/layer.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".model.LayerEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_parents.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".model.EditParentLayersView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentLayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentLayersView"
+      permission="schooltool.view"
+      />
+
+  <!-- Reports -->
+
   <include file="report.zcml" />
 
 </configure>

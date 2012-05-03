@@ -40,7 +40,7 @@ from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.skin import flourish
 from schooltool import table
 
-from schooltool.common import SchoolToolMessage as _
+from schooltool.cando import CanDoMessage as _
 
 
 class CourseSkillsOverview(flourish.page.Content):

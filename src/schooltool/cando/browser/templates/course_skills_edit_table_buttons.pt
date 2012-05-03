@@ -1,4 +1,4 @@
-<tal:block i18n:domain="schooltool"
+<tal:block i18n:domain="schooltool.cando"
            define="submit_id string:${view/manager/html_id}-submit;
                    cancel_id string:${view/manager/html_id}-cancel">
   <div class="buttons">

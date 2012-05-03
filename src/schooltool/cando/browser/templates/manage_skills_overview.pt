@@ -1,4 +1,4 @@
-<div class="manage-view" i18n:domain="schooltool">
+<div class="manage-view" i18n:domain="schooltool.cando">
   <h3>
     <a tal:attributes="href view/skillsets/@@absolute_url"
        title="Manage skills" i18n:attributes="title"
