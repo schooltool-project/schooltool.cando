@@ -410,7 +410,7 @@
       permission="schooltool.view"
       />
 
-  <!-- Layers and nodes -->
+  <!-- Layers -->
 
   <zope:adapter
       factory=".model.LayerContainerAbsoluteURLAdapter"
@@ -531,7 +531,141 @@
       permission="schooltool.view"
       />
 
-  <!-- Reports -->
+  <!-- Nodes -->
+
+  <zope:adapter
+      factory=".model.NodeContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".model.NodeContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.schoolyear.interfaces.ISchoolYear"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="nodes"
+      adapter="schooltool.cando.interfaces.INodeContainer"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".model.NodesTable"
+      for="schooltool.cando.interfaces.INodeContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <zope:adapter
+      for="schooltool.cando.interfaces.INodeContainer
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".model.NodesFilterWidget" />
+
+<!--
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".model.NodesFilterWidget"
+      manager=".model.NodesTable"
+      permission="schooltool.view"
+      />
+-->
+
+  <flourish:viewlet
+      name="manage-nodes-overview"
+      after="manage-layers-overview"
+      view="schooltool.app.browser.app.ManageSchool"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".model.ManageNodesOverview"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".model.NodesTertiaryNavigationManager"
+      view=".model.NodesView"
+      permission="zope.Public"
+      />
+
+  <flourish:page
+      name="nodes"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      class=".model.NodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="nodes-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".model.NodesAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".model.NodesView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Node"
+      view=".model.NodesView"
+      class=".model.NodesSchoolyearLink"
+      manager=".model.NodesAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      class="schooltool.cando.browser.model.FlourishNodeAddView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      subtitle="Add Node"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.NodeView"
+      subtitle="View Node"
+      content_template="templates/node.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.NodeEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_parents.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditParentNodesView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentNodesTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentNodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentNodesTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentNodesView"
+      permission="schooltool.view"
+      />
 
   <include file="report.zcml" />
 
