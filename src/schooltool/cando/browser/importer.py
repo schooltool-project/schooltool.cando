@@ -177,8 +177,10 @@ class LayersImporter(ImporterBase):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
 
-            name = self.getRequiredTextFromCell(sh, row, 0)
+            name = self.getTextFromCell(sh, row, 0)
             parents = self.getTextFromCell(sh, row, 2)
+            if name not in layers:
+                continue
 
             layer = layers[name]
             for parent in list(layer.parents):
@@ -206,31 +208,35 @@ class NodesImporter(ImporterBase):
 
             num_errors = len(self.errors)
             name = self.getRequiredTextFromCell(sh, row, 0)
-            description = self.getRequiredTextFromCell(sh, row, 1)
+            title = self.getRequiredTextFromCell(sh, row, 1)
+            description = self.getTextFromCell(sh, row, 2)
             if num_errors < len(self.errors):
                 continue
 
             if name in nodes:
+                nodes[name].title = title
                 nodes[name].description = description
             else:
-                nodes[name] = Node(description)
+                nodes[name] = Node(title, description)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
 
-            name = self.getRequiredTextFromCell(sh, row, 0)
-            parents = self.getTextFromCell(sh, row, 2)
-            node_layers = self.getTextFromCell(sh, row, 3)
-            node_skillsets = self.getTextFromCell(sh, row, 4)
+            name = self.getTextFromCell(sh, row, 0)
+            parents = self.getTextFromCell(sh, row, 3)
+            node_layers = self.getTextFromCell(sh, row, 4)
+            node_skillsets = self.getTextFromCell(sh, row, 5)
+            if name not in nodes:
+                continue
 
             node = nodes[name]
 
             for parent in list(node.parents):
-                layer.parents.remove(parent)
+                node.parents.remove(parent)
             for part in breakupIds(parents):
                 if part not in nodes:
-                    self.error(row, 2, ERROR_INVALID_PARENTS)
+                    self.error(row, 3, ERROR_INVALID_PARENTS)
                     break
                 node.parents.add(nodes[part])
 
@@ -238,7 +244,7 @@ class NodesImporter(ImporterBase):
                 node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
-                    self.error(row, 3, ERROR_INVALID_LAYERS)
+                    self.error(row, 4, ERROR_INVALID_LAYERS)
                     break
                 node.layers.add(layers[part])
 
@@ -246,7 +252,7 @@ class NodesImporter(ImporterBase):
                 node.skillsets.remove(skillset)
             for part in breakupIds(node_skillsets):
                 if part not in skillsets:
-                    self.error(row, 4, ERROR_INVALID_SKILLSET)
+                    self.error(row, 5, ERROR_INVALID_SKILLSET)
                     break
                 node.skillsets.add(skillsets[part])
 

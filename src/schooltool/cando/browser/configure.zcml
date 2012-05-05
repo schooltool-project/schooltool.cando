@@ -557,21 +557,6 @@
       permission="schooltool.view"
       />
 
-  <zope:adapter
-      for="schooltool.cando.interfaces.INodeContainer
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory=".model.NodesFilterWidget" />
-
-<!--
-  <flourish:viewlet
-      name="filter"
-      before="batch table"
-      class=".model.NodesFilterWidget"
-      manager=".model.NodesTable"
-      permission="schooltool.view"
-      />
--->
-
   <flourish:viewlet
       name="manage-nodes-overview"
       after="manage-layers-overview"

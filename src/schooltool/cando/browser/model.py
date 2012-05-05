@@ -50,7 +50,6 @@ from schooltool.cando.model import Node, NodeLink
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.schoolyear.interfaces import ISchoolYear
-from schooltool.table.table import url_cell_formatter, FilterWidget
 
 from schooltool.cando import CanDoMessage as _
 
@@ -490,7 +489,7 @@ class FlourishNodeAddView(flourish.form.AddForm):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
     legend = _('Node Information')
-    fields = z3c.form.field.Fields(INode).select('description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description')
 
     def updateActions(self):
         super(FlourishNodeAddView, self).updateActions()
@@ -515,7 +514,9 @@ class FlourishNodeAddView(flourish.form.AddForm):
         self.request.response.redirect(url)
 
     def create(self, data):
-        node = Node(data['description'])
+        if data['description'] is None:
+            data['description'] = u''
+        node = Node(data['title'])
         z3c.form.form.applyChanges(self, node, data)
         return node
 
@@ -544,7 +545,7 @@ class NodeView(flourish.form.DisplayForm):
     legend = _('Node')
 
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('description')
+    fields = fields.select('title', 'description')
 
     @property
     def can_edit(self):
@@ -571,9 +572,14 @@ class NodeView(flourish.form.DisplayForm):
 
 class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('description')
+    fields = fields.select('title', 'description')
 
     legend = _('Node')
+
+    def applyChanges(self, data):
+        if data['description'] is None:
+            data['description'] = u''
+        super(NodeEditView, self).applyChanges(data)
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
     def handleApply(self, action):
@@ -604,31 +610,28 @@ class NodesTable(table.ajax.Table):
             return sorted(NodeLink.query(parent=node),
                           key=lambda n: n.__name__)
 
+        default = table.ajax.Table.columns(self)
         description = zc.table.column.GetterColumn(
             name='description',
             title=_(u"Description"),
-            cell_formatter=url_cell_formatter,
             getter=lambda i, f: i.description
             )
         parents = zc.table.column.GetterColumn(
             name='parents',
             title=_(u'Parents'),
-            getter=lambda i, f: u', '.join([n.description for n in get_parents(i)])
+            getter=lambda i, f: u', '.join([n.title for n in get_parents(i)])
             )
         children = zc.table.column.GetterColumn(
             name='children',
             title=_(u'Children'),
-            getter=lambda i, f: u', '.join([n.description for n in get_children(i)])
+            getter=lambda i, f: u', '.join([n.title for n in get_children(i)])
             )
         layers = zc.table.column.GetterColumn(
             name='layers',
             title=_(u'Layers'),
             getter=lambda i, f: u', '.join([l.title for l in i.layers])
             )
-        return [description, parents, children, layers]
-
-    def sortOn(self):
-        return (("description", False),)
+        return default + [description, parents, children, layers]
 
     def updateFormatter(self):
         if self._table_formatter is None:
@@ -636,20 +639,6 @@ class NodesTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
-
-
-class NodesFilterWidget(FilterWidget):
-
-    def filter(self, list):
-        if 'SEARCH' in self.request and 'CLEAR_SEARCH' not in self.request:
-            searchstr = self.request['SEARCH'].lower()
-            results = [item for item in list
-                       if searchstr in item.description.lower()]
-        else:
-            self.request.form['SEARCH'] = ''
-            results = list
-
-        return results
 
 
 class NodeContainerSourceMixin(object):

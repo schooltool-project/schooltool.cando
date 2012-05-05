@@ -1,6 +1,6 @@
 <tal:block i18n:domain="schooltool.cando">
   <h3>
-    <tal:block replace="context/description" />
+    <tal:block replace="context/title" />
     <a class="modify" href="" title="Edit this Node"
        tal:attributes="href string:${context/@@absolute_url}/edit.html"
        i18n:attributes="title"
@@ -85,7 +85,7 @@
   </h3>
   <tal:block define="parents view/parents">
     <p tal:repeat="parent parents"
-       tal:content="structure parent/description" />
+       tal:content="structure parent/title" />
     <p tal:condition="not: parents" i18:translate="">
       There are none.
     </p>
@@ -96,7 +96,7 @@
       Child nodes
     </h3>
     <p tal:repeat="child children"
-       tal:content="structure child/description" />
+       tal:content="structure child/title" />
   </tal:block>
 
   <tal:block define="layers context/layers" condition="layers">
