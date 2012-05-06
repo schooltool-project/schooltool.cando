@@ -631,7 +631,12 @@ class NodesTable(table.ajax.Table):
             title=_(u'Layers'),
             getter=lambda i, f: u', '.join([l.title for l in i.layers])
             )
-        return default + [description, parents, children, layers]
+        skillsets = zc.table.column.GetterColumn(
+            name='skillsets',
+            title=_(u'SkillSets'),
+            getter=lambda i, f: u', '.join([s.title for s in i.skillsets])
+            )
+        return default + [description, parents, children, layers, skillsets]
 
     def updateFormatter(self):
         if self._table_formatter is None:

@@ -107,6 +107,14 @@
        tal:content="structure layer/title" />
   </tal:block>
 
+  <tal:block define="skillsets context/skillsets" condition="skillsets">
+    <h3 i18n:translate="">
+      Layers
+    </h3>
+    <p tal:repeat="skillset skillsets"
+       tal:content="structure skillset/title" />
+  </tal:block>
+
   <h3>
     <a tal:attributes="href view/done_link"
        i18n:translate="">Done</a>
