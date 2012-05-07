@@ -190,12 +190,14 @@ class NodeContainer(BTreeContainer):
 class Node(Persistent, Contained):
     implements(interfaces.INodeContained)
 
+    title = u''
     description = u''
     layers = RelationshipProperty(URINodeLayer, URINode, URILayer)
     parents = RelationshipProperty(URINodeLink, URINode, URIParentNode)
     skillsets = RelationshipProperty(URINodeSkillSets, URINode, URISkillSet)
 
-    def __init__(self, description=u''):
+    def __init__(self, title=u'', description=u''):
+        self.title = title
         self.description = description
 
     def findPaths(self):
@@ -216,7 +218,7 @@ class Node(Persistent, Contained):
         return paths
 
     def __repr__(self):
-        return '<%s %r %s>' % (self.__class__.__name__, self.description,
+        return '<%s %r %s>' % (self.__class__.__name__, self.title,
                                ', '.join([str(l) for l in self.layers]))
 
 

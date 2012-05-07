@@ -90,8 +90,13 @@ class INodeContainer(IContainer):
 
 class INode(Interface):
 
+    title = zope.schema.TextLine(
+        title=_("Title"),
+        required=True)
     description = zope.schema.TextLine(
-        title=_("Description"))
+        title=_("Description"),
+        required=False,
+        default=u'')
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")

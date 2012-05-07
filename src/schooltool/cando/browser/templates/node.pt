@@ -1,7 +1,7 @@
 <tal:block i18n:domain="schooltool.cando">
   <h3>
     <tal:block replace="context/title" />
-    <a class="modify" href="" title="Edit this Layer"
+    <a class="modify" href="" title="Edit this Node"
        tal:attributes="href string:${context/@@absolute_url}/edit.html"
        i18n:attributes="title"
        tal:condition="context/schooltool:can_edit">
@@ -73,7 +73,7 @@
   </metal:block>
 
   <h3>
-    <tal:block i18n:translate="">Parent layers</tal:block>
+    <tal:block i18n:translate="">Parent nodes</tal:block>
     <a class="modify" href="" title="Edit parents"
        tal:attributes="href string:${context/@@absolute_url}/edit_parents.html"
        i18n:attributes="title"
@@ -85,7 +85,7 @@
   </h3>
   <tal:block define="parents view/parents">
     <p tal:repeat="parent parents"
-       tal:content="structure parent/schooltool:content/title" />
+       tal:content="structure parent/title" />
     <p tal:condition="not: parents" i18:translate="">
       There are none.
     </p>
@@ -93,10 +93,26 @@
 
   <tal:block define="children view/children" condition="children">
     <h3 i18n:translate="">
-      Child layers
+      Child nodes
     </h3>
     <p tal:repeat="child children"
-       tal:content="structure child/schooltool:content/title" />
+       tal:content="structure child/title" />
+  </tal:block>
+
+  <tal:block define="layers context/layers" condition="layers">
+    <h3 i18n:translate="">
+      Layers
+    </h3>
+    <p tal:repeat="layer layers"
+       tal:content="structure layer/title" />
+  </tal:block>
+
+  <tal:block define="skillsets context/skillsets" condition="skillsets">
+    <h3 i18n:translate="">
+      Layers
+    </h3>
+    <p tal:repeat="skillset skillsets"
+       tal:content="structure skillset/title" />
   </tal:block>
 
   <h3>
