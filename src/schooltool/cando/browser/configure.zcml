@@ -35,6 +35,36 @@
       view=".skill.SkillSetContainerView"
       />
 
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      />
+
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      />
+
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.INodeContainer"
+      />
+
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".model.LayersView"
+      />
+
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".model.NodesView"
+      />
+
   <configure package="schooltool.export">
 
     <flourish:viewlet
@@ -55,6 +85,7 @@
 
     <flourish:page
        name="import-skills.html"
+       title="Skills"
        subtitle="Import Skill Data"
        for="schooltool.cando.interfaces.ISkillSetContainer"
        content_template="templates/f_import.pt"

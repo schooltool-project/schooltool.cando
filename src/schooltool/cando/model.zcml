@@ -33,6 +33,11 @@
 
   <adapter
       for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.LayerAppInit"
+      name="schooltool.cando.layer" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
       factory=".model.LayerStartUp"
       name="schooltool.cando.layer" />
 
@@ -71,6 +76,11 @@
       for=".interfaces.INodeContainer"
       factory="schooltool.app.app.SimpleNameChooser"
       provides="zope.container.interfaces.INameChooser" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.NodeAppInit"
+      name="schooltool.cando.node" />
 
   <adapter
       for="schooltool.app.interfaces.ISchoolToolApplication"

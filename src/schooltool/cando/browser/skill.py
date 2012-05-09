@@ -42,6 +42,7 @@ from schooltool.cando.interfaces import ISkillSet, ISkill
 from schooltool.cando.skill import SkillSet, Skill
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando import CanDoMessage as _
 
@@ -108,6 +109,11 @@ class ManageSkillsOverview(flourish.page.Content):
     @property
     def total_skillsets(self):
         return len(self.skillsets)
+
+    @property
+    def enabled(self):
+        schoolyears = ISchoolYearContainer(self.context)
+        return schoolyears.getActiveSchoolYear() is not None
 
 
 class SkillSetContainerLinks(flourish.page.RefineLinksViewlet):
