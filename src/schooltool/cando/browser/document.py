@@ -186,6 +186,11 @@ class DocumentView(flourish.page.Page, DocumentMixin):
                      mapping={'layer': layer.title,
                               'schoolyear': schoolyear.title})
 
+    @property
+    def done_link(self):
+        app = ISchoolToolApplication(None)
+        return '%s/manage' % absoluteURL(app, self.request)
+
 
 class DocumentTertiaryNavigationManager(flourish.page.TertiaryNavigationManager):
 
@@ -245,6 +250,16 @@ class DocumentNodeView(flourish.page.Page, DocumentNodeMixin):
             return _('${layer} list for ${node}',
                      mapping={'layer': layer.title,
                               'node': self.context.title})
+
+    @property
+    def done_link(self):
+        parents = list(self.context.parents)
+        if parents:
+            parent = parents[0]
+            return '%s/document.html' % absoluteURL(parent, self.request)
+        else:
+            app = ISchoolToolApplication(None)
+            return '%s/document.html' % absoluteURL(app, self.request)
 
 
 class DocumentNodeAddLinks(flourish.page.RefineLinksViewlet):

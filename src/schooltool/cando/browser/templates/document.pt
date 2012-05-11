@@ -1,62 +1,68 @@
-<table class="data" i18n:domain="schooltool"
-       tal:condition="view/add_layer|nothing">
-  <thead>
-    <tr>
-      <th>
-        <span i18n:translate="">Title</span>
-      </th>
-      <th>
-        <span i18n:translate="">Description</span>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr tal:repeat="item view/items">
-      <td>
-        <a tal:attributes="href item/url"
-           tal:content="item/title" />
-      </td>
-      <td>
-        <span tal:content="item/description" />
-      </td>
-    </tr>
-  </tbody>
-</table>
+<tal:block i18n:domain="schooltool.cando">
+  <table class="data" i18n:domain="schooltool"
+         tal:condition="view/add_layer|nothing">
+    <thead>
+      <tr>
+        <th>
+          <span i18n:translate="">Title</span>
+        </th>
+        <th>
+          <span i18n:translate="">Description</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="item view/items">
+        <td>
+          <a tal:attributes="href item/url"
+             tal:content="item/title" />
+        </td>
+        <td>
+          <span tal:content="item/description" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-<table class="data" i18n:domain="schooltool"
-       tal:condition="not: view/add_layer|nothing">
-  <thead>
-    <tr>
-      <th>
-        <span i18n:translate="">Label</span>
-      </th>
-      <th>
-        <span i18n:translate="">Title</span>
-      </th>
-      <th>
-        <span i18n:translate="">Description</span>
-      </th>
-      <th>
-        <span i18n:translate="">External ID</span>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr tal:repeat="item view/items">
-      <td>
-        <span tal:content="item/obj/label" />
-      </td>
-      <td>
-        <a tal:attributes="href item/url"
-           tal:content="item/obj/title" />
-      </td>
-      <td>
-        <span tal:content="item/obj/description" />
-      </td>
-      <td>
-        <span tal:content="item/obj/external_id" />
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <table class="data" i18n:domain="schooltool"
+         tal:condition="not: view/add_layer|nothing">
+    <thead>
+      <tr>
+        <th>
+          <span i18n:translate="">Label</span>
+        </th>
+        <th>
+          <span i18n:translate="">Title</span>
+        </th>
+        <th>
+          <span i18n:translate="">Description</span>
+        </th>
+        <th>
+          <span i18n:translate="">External ID</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="item view/items">
+        <td>
+          <span tal:content="item/obj/label" />
+        </td>
+        <td>
+          <a tal:attributes="href item/url"
+             tal:content="item/obj/title" />
+        </td>
+        <td>
+          <span tal:content="item/obj/description" />
+        </td>
+        <td>
+          <span tal:content="item/obj/external_id" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
+  <h3>
+    <a tal:attributes="href view/done_link"
+       i18n:translate="">Done</a>
+  </h3>
+</tal:block>
