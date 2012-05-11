@@ -1,7 +1,7 @@
 <div class="manage-view" i18n:domain="schooltool.cando"
      tal:condition="view/has_schoolyear">
   <h3>
-    <a tal:attributes="href string:${context/@@absolute_url}/nodes"
+    <a tal:attributes="href string:${context/@@absolute_url}/nodes?schoolyear_id=${view/schoolyear/__name__}"
        title="Manage nodes" i18n:attributes="title"
        i18n:translate="">
       Nodes

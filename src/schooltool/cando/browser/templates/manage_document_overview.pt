@@ -1,10 +1,10 @@
 <div class="manage-view" i18n:domain="schooltool.cando"
      tal:condition="view/has_schoolyear">
   <h3>
-    <a tal:attributes="href string:${context/@@absolute_url}/layers?schoolyear_id=${view/schoolyear/__name__}"
-       title="Manage layers" i18n:attributes="title"
+    <a tal:attributes="href string:${context/@@absolute_url}/document.html?schoolyear_id=${view/schoolyear/__name__}"
+       title="Manage Skills Document" i18n:attributes="title"
        i18n:translate="">
-      Layers
+      Skills Document
     </a>
   </h3>
   <p i18n:translate="">
