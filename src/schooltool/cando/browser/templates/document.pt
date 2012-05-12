@@ -1,13 +1,37 @@
 <tal:block i18n:domain="schooltool.cando">
-  <table class="data" i18n:domain="schooltool"
-         tal:condition="view/add_layer|nothing">
+  <div class="body">
+    <h3>
+      <tal:block content="context/title" />
+    </h3>
+    <div class="viewspace">
+      <div>
+        <table class="form-fields">
+          <tr class="row" tal:repeat="row view/rows">
+            <td class="label">
+              <span tal:content="row/label" />
+            </td>
+            <td class="field">
+              <div class="widget">
+                <span tal:content="row/value" />
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <h3>
+      <tal:block content="view/legend" />
+    </h3>
+  </div>
+</tal:block>
+
+<tal:block condition="view/add_layer|nothing"
+           i18n:domain="schooltool.cando">
+  <table class="data" i18n:domain="schooltool">
     <thead>
       <tr>
         <th>
           <span i18n:translate="">Title</span>
-        </th>
-        <th>
-          <span i18n:translate="">Description</span>
         </th>
       </tr>
     </thead>
@@ -15,17 +39,16 @@
       <tr tal:repeat="item view/items">
         <td>
           <a tal:attributes="href item/url"
-             tal:content="item/title" />
-        </td>
-        <td>
-          <span tal:content="item/description" />
+             tal:content="item/obj/title" />
         </td>
       </tr>
     </tbody>
   </table>
+</tal:block>
 
-  <table class="data" i18n:domain="schooltool"
-         tal:condition="not: view/add_layer|nothing">
+<tal:block condition="not: view/add_layer|nothing"
+           i18n:domain="schooltool.cando">
+  <table class="data" i18n:domain="schooltool">
     <thead>
       <tr>
         <th>
@@ -33,12 +56,6 @@
         </th>
         <th>
           <span i18n:translate="">Title</span>
-        </th>
-        <th>
-          <span i18n:translate="">Description</span>
-        </th>
-        <th>
-          <span i18n:translate="">External ID</span>
         </th>
       </tr>
     </thead>
@@ -51,16 +68,12 @@
           <a tal:attributes="href item/url"
              tal:content="item/obj/title" />
         </td>
-        <td>
-          <span tal:content="item/obj/description" />
-        </td>
-        <td>
-          <span tal:content="item/obj/external_id" />
-        </td>
       </tr>
     </tbody>
   </table>
+</tal:block>
 
+<tal:block i18n:domain="schooltool.cando">
   <h3>
     <a tal:attributes="href view/done_link"
        i18n:translate="">Done</a>

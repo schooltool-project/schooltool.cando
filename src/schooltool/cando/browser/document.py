@@ -113,8 +113,7 @@ class DocumentMixin(object):
     def node_item(self, node):
         return {
             'url': '%s/document.html' % absoluteURL(node, self.request),
-            'title': node.title,
-            'description': node.description,
+            'obj': node,
             }
 
     def skill_item(self, skill):
@@ -187,6 +186,18 @@ class DocumentView(flourish.page.Page, DocumentMixin):
                               'schoolyear': schoolyear.title})
 
     @property
+    def legend(self):
+        layer = self.add_layer
+        if layer is None:
+            return ''
+        return _('${layer} list',
+                 mapping={'layer': layer.title})
+
+    @property
+    def rows(self):
+        return []
+
+    @property
     def done_link(self):
         app = ISchoolToolApplication(None)
         return '%s/manage' % absoluteURL(app, self.request)
@@ -242,14 +253,25 @@ class DocumentNodeView(flourish.page.Page, DocumentNodeMixin):
 
     @property
     def title(self):
+        return self.context.title
+
+    @property
+    def legend(self):
         layer = self.add_layer
         if layer is None:
-            return _('Skills for ${node}',
-                     mapping={'node': self.context.title})
-        else:
-            return _('${layer} list for ${node}',
-                     mapping={'layer': layer.title,
-                              'node': self.context.title})
+            return _('Skill list')
+        return _('${layer} list',
+                 mapping={'layer': layer.title})
+
+    @property
+    def rows(self):
+        rows = []
+        for attr in ['title', 'description']:
+            rows.append({
+                'label': INode[attr].title,
+                'value': getattr(self.context, attr),
+                })
+        return rows
 
     @property
     def done_link(self):
