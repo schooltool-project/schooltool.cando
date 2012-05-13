@@ -318,16 +318,17 @@ class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
         super(SkillEditView, self).handleApply.func(self, action)
         if (self.status == self.successMessage or
             self.status == self.noChangesMessage):
-            url = absoluteURL(self.context, self.request)
-            self.request.response.redirect(url)
+            self.request.response.redirect(self.nextURL())
 
     @z3c.form.button.buttonAndHandler(_("Cancel"))
     def handle_cancel_action(self, action):
-        url = absoluteURL(self.context, self.request)
-        self.request.response.redirect(url)
+        self.request.response.redirect(self.nextURL())
 
     def updateActions(self):
         super(SkillEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
 

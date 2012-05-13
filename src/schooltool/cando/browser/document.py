@@ -127,10 +127,10 @@ class DocumentMixin(object):
             }
 
     def skill_item(self, skill):
-        node_url = absoluteURL(self.node_context, self.request)
+        next_url = absoluteURL(self.node_context, self.request)
         skill_url = absoluteURL(skill, self.request)
         return {
-            'url': '%s/document_skill.html?node_url=%s' % (skill_url, node_url),
+            'url': '%s/document_skill.html?next_url=%s' % (skill_url, next_url),
             'obj': skill,
             }
 
@@ -468,16 +468,26 @@ class DocumentNodeSkillView(SkillView):
 
     @property
     def edit_url(self):
-        node_url = self.request.get('node_url', '')
-        if node_url:
-            node_url = '?node_url=' + node_url
+        next_url = self.request.get('next_url', '')
+        if next_url:
+            next_url = '?next_url=' + next_url
         url = absoluteURL(self.context, self.request)
-        return '%s/edit_document_skill.html%s' % (url, node_url)
+        return '%s/edit_document_skill.html%s' % (url, next_url)
 
     @property
     def done_url(self):
-        node_url = self.request.get('node_url')
-        if node_url:
-            return node_url + '/document.html'
+        next_url = self.request.get('next_url')
+        if next_url:
+            return next_url + '/document.html'
         return absoluteURL(self.context.__parent__, self.request)
+
+
+class DocumentNodeSkillEditView(SkillEditView):
+
+    def nextURL(self):
+        next_url = self.request.get('next_url', '')
+        if next_url:
+            next_url = '?next_url=' + next_url
+        url = absoluteURL(self.context, self.request)
+        return '%s/document_skill.html%s' % (url, next_url)
 
