@@ -99,4 +99,13 @@
       permission="schooltool.edit"
       />
 
+  <flourish:page
+      name="document_skill.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".document.DocumentNodeSkillView"
+      subtitle="View Skill"
+      content_template="templates/skill.pt"
+      permission="schooltool.view"
+      />
+
 </configure>

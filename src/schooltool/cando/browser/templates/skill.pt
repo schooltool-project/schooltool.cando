@@ -2,7 +2,7 @@
   <h3>
     <tal:block replace="context/title" />
     <a class="modify" href="" title="Edit this skill"
-       tal:attributes="href string:${context/@@absolute_url}/edit.html"
+       tal:attributes="href view/edit_url"
        i18n:attributes="title"
        tal:condition="view/can_edit">
       <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
@@ -73,7 +73,7 @@
   </metal:block>
 
   <h3>
-    <a tal:attributes="href context/__parent__/@@absolute_url"
+    <a tal:attributes="href view/done_url"
        i18n:translate="">Done</a>
   </h3>
 

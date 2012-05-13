@@ -102,8 +102,8 @@ class ManageSkillsOverview(flourish.page.Content):
     @property
     def skillsets(self):
         app = ISchoolToolApplication(None)
-        contacts = ISkillSetContainer(app)
-        return contacts
+        skillsets = ISkillSetContainer(app)
+        return skillsets
 
     @property
     def total_skillsets(self):
@@ -296,6 +296,14 @@ class SkillView(flourish.form.DisplayForm):
     @property
     def can_edit(self):
         return flourish.canEdit(self.context)
+
+    @property
+    def edit_url(self):
+        return absoluteURL(self.context, self.request) + '/edit.html'
+
+    @property
+    def done_url(self):
+        return absoluteURL(self.context.__parent__, self.request)
 
 
 class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):

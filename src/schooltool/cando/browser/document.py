@@ -48,7 +48,8 @@ from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.schoolyear.interfaces import ISchoolYear
 
-from schooltool.cando.browser.skill import SkillAddView
+from schooltool.cando.browser.skill import SkillAddView, SkillView
+from schooltool.cando.browser.skill import SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import ISkillSetContainer
@@ -126,8 +127,10 @@ class DocumentMixin(object):
             }
 
     def skill_item(self, skill):
+        node_url = absoluteURL(self.node_context, self.request)
+        skill_url = absoluteURL(skill, self.request)
         return {
-            'url': '%s' % absoluteURL(skill, self.request),
+            'url': '%s/document_skill.html?node_url=%s' % (skill_url, node_url),
             'obj': skill,
             }
 
@@ -459,4 +462,22 @@ class DocumentNodeAddSkillView(SkillAddView):
         if self.add_next:
             return url + '/add_document_skill.html'
         return url + '/document.html'
+
+
+class DocumentNodeSkillView(SkillView):
+
+    @property
+    def edit_url(self):
+        node_url = self.request.get('node_url', '')
+        if node_url:
+            node_url = '?node_url=' + node_url
+        url = absoluteURL(self.context, self.request)
+        return '%s/edit_document_skill.html%s' % (url, node_url)
+
+    @property
+    def done_url(self):
+        node_url = self.request.get('node_url')
+        if node_url:
+            return node_url + '/document.html'
+        return absoluteURL(self.context.__parent__, self.request)
 
