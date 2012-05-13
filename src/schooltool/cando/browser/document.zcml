@@ -66,4 +66,13 @@
       permission="schooltool.edit"
       />
 
+  <flourish:page
+      name="edit_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
 </configure>

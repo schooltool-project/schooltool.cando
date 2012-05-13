@@ -1,7 +1,15 @@
-<tal:block i18n:domain="schooltool.cando">
+<tal:block i18n:domain="schooltool.cando"
+           condition="python: len(view.rows)">
   <div class="body">
     <h3>
       <tal:block content="context/title" />
+      <a class="modify" title="Edit information"
+         tal:attributes="href string:${context/@@absolute_url}/edit_document_node.html"
+         i18n:attributes="title">
+        <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+             alt="Edit"
+             i18n:attributes="alt" />
+      </a>
     </h3>
     <div class="viewspace">
       <div>
@@ -19,10 +27,13 @@
         </table>
       </div>
     </div>
-    <h3>
-      <tal:block content="view/legend" />
-    </h3>
   </div>
+</tal:block>
+
+<tal:block i18n:domain="schooltool.cando">
+  <h3>
+    <tal:block content="view/legend" />
+  </h3>
 </tal:block>
 
 <tal:block condition="view/add_layer|nothing"

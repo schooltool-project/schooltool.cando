@@ -176,14 +176,8 @@ class DocumentView(flourish.page.Page, DocumentMixin):
     @property
     def title(self):
         schoolyear = self.schoolyear
-        layer = self.add_layer
-        if layer is None:
-            return _('Skills Document for ${schoolyear}',
-                     mapping={'schoolyear': schoolyear.title})
-        else:
-            return _('${layer} list for ${schoolyear}',
-                     mapping={'layer': layer.title,
-                              'schoolyear': schoolyear.title})
+        return _('Skills Document for ${schoolyear}',
+                 mapping={'schoolyear': schoolyear.title})
 
     @property
     def legend(self):
@@ -302,4 +296,35 @@ class DocumentNodeAddNodeLink(flourish.page.LinkViewlet, DocumentNodeMixin):
         if self.add_layer is None:
             return 'add_document_skill.html'
         return 'add_document_node.html'
+
+
+class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm):
+    fields = z3c.form.field.Fields(INode)
+    fields = fields.select('title', 'description')
+
+    legend = _('Change information')
+
+    def applyChanges(self, data):
+        if data['description'] is None:
+            data['description'] = u''
+        super(DocumentNodeEditView, self).applyChanges(data)
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
+    def handleApply(self, action):
+        super(DocumentNodeEditView, self).handleApply.func(self, action)
+        if (self.status == self.successMessage or
+            self.status == self.noChangesMessage):
+            self.request.response.redirect(self.nextURL())
+
+    @z3c.form.button.buttonAndHandler(_("Cancel"))
+    def handle_cancel_action(self, action):
+        self.request.response.redirect(self.nextURL())
+
+    def updateActions(self):
+        super(DocumentNodeEditView, self).updateActions()
+        self.actions['apply'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request) + '/document.html'
 
