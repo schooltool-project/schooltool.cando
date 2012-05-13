@@ -67,6 +67,22 @@
       />
 
   <flourish:page
+      name="add_document_node.html"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      class=".document.DocumentAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
       name="edit_document_node.html"
       for="schooltool.cando.interfaces.INode"
       class=".document.DocumentNodeEditView"

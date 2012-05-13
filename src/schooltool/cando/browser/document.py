@@ -28,6 +28,7 @@ from zope.interface import implements
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
@@ -57,6 +58,10 @@ from schooltool.cando import CanDoMessage as _
 class DocumentMixin(object):
 
     list_class = ''
+
+    @property
+    def node_context(self):
+        return None
 
     @property
     def schoolyear(self):
@@ -134,6 +139,10 @@ class DocumentMixin(object):
 
 
 class DocumentNodeMixin(DocumentMixin):
+
+    @property
+    def node_context(self):
+        return self.context
 
     @property
     def schoolyear(self):
@@ -296,6 +305,83 @@ class DocumentNodeAddNodeLink(flourish.page.LinkViewlet, DocumentNodeMixin):
         if self.add_layer is None:
             return 'add_document_skill.html'
         return 'add_document_node.html'
+
+
+class DocumentAddNodeBase(flourish.form.AddForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
+    label = None
+    fields = z3c.form.field.Fields(INode).select('title', 'description')
+
+    @property
+    def subtitle(self):
+        layer = self.add_layer
+        if layer is None:
+            return ''
+        return _('Add ${layer}',
+                 mapping={'layer': layer.title})
+
+    @property
+    def legend(self):
+        layer = self.add_layer
+        if layer is None:
+            return ''
+        return _('${layer} Information',
+                 mapping={'layer': layer.title})
+
+    def updateActions(self):
+        super(DocumentAddNodeBase, self).updateActions()
+        self.actions['add'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
+    def handleAdd(self, action):
+        super(DocumentAddNodeBase, self).handleAdd.func(self, action)
+
+    @z3c.form.button.buttonAndHandler(_('Cancel'))
+    def handle_cancel_action(self, action):
+        self.request.response.redirect(self.nextURL())
+
+    def create(self, data):
+        if data['description'] is None:
+            data['description'] = u''
+        node = Node(data['title'])
+        z3c.form.form.applyChanges(self, node, data)
+        context = self.node_context
+        if context is not None:
+            node.parents.add(removeSecurityProxy(context))
+        layer = self.add_layer
+        if layer is not None:
+            node.layers.add(removeSecurityProxy(layer))
+        return node
+
+    def add(self, node):
+        nodes = INodeContainer(self.schoolyear)
+        chooser = INameChooser(nodes)
+        name = chooser.chooseName(u'', node)
+        nodes[name] = node
+        return node
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request) + '/document.html'
+
+
+class DocumentAddNodeView(DocumentAddNodeBase, DocumentMixin):
+    """Add Node from DocumentView"""
+
+    @property
+    def title(self):
+        schoolyear = self.schoolyear
+        return _('Skills Document for ${schoolyear}',
+                 mapping={'schoolyear': schoolyear.title})
+
+
+class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
+    """Add Node from DocumentNodeView"""
+
+    @property
+    def title(self):
+        return self.context.title
 
 
 class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm):
