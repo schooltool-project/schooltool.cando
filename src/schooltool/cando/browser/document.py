@@ -44,13 +44,17 @@ from schooltool.app.browser.app import RelationshipRemoveTableMixin
 from schooltool.app.browser.app import EditRelationships
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.browser.app import ContentTitle
-from schooltool.cando.interfaces import ILayerContainer, ILayer
-from schooltool.cando.interfaces import INodeContainer, INode
-from schooltool.cando.model import Layer, LayerLink
-from schooltool.cando.model import Node, NodeLink
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.schoolyear.interfaces import ISchoolYear
+
+from schooltool.cando.browser.skill import SkillAddView
+from schooltool.cando.interfaces import ILayerContainer, ILayer
+from schooltool.cando.interfaces import INodeContainer, INode
+from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.model import Layer, LayerLink
+from schooltool.cando.model import Node, NodeLink
+from schooltool.cando.skill import SkillSet, Skill
 
 from schooltool.cando import CanDoMessage as _
 
@@ -413,4 +417,46 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm):
 
     def nextURL(self):
         return absoluteURL(self.context, self.request) + '/document.html'
+
+
+class DocumentNodeAddSkillView(SkillAddView):
+
+    def create(self, data):
+        skill = Skill(data['title'])
+        z3c.form.form.applyChanges(self, skill, data)
+        self._skill = skill
+        return skill
+
+    def add(self, skill):
+        skillsets = list(self.context.skillsets)
+        if skillsets:
+            skillset = skillsets[0]
+        else:
+            skillset = SkillSet(self.context.title)
+            skillsets = ISkillSetContainer(ISchoolToolApplication(None))
+            chooser = INameChooser(skillsets)
+            name = unicode(skillset.title).encode('punycode')
+            name = name[:8]+str(len(skillsets)+1)
+            name = chooser.chooseName(name, skillset)
+            skillsets[name] = skillset
+            removeSecurityProxy(self.context.skillsets).add(
+                removeSecurityProxy(skillset))
+
+        if not skill.label:
+            skill.label = u'%02d' % (len(skillset) + 1)
+        chooser = INameChooser(skillset)
+        if skill.external_id:
+            name = skill.external_id
+        else:
+            name = unicode(skill.title).encode('punycode')
+            name = name[:8]+str(len(skillsets)+1)
+        name = chooser.chooseName(name, skill)
+        skillset[name] = skill
+        return skill
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        if self.add_next:
+            return url + '/add_document_skill.html'
+        return url + '/document.html'
 

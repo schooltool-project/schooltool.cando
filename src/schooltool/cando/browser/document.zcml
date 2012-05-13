@@ -91,4 +91,12 @@
       permission="schooltool.edit"
       />
 
+  <flourish:page
+      name="add_document_skill.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddSkillView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
 </configure>
