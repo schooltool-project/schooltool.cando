@@ -31,7 +31,7 @@ from zope.lifecycleevent import ObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from zope.security.proxy import removeSecurityProxy
 
-from schooltool.app.app import StartUpBase
+from schooltool.app.app import InitBase, StartUpBase
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando import interfaces
 from schooltool.cando.skill import URISkillSet
@@ -161,6 +161,12 @@ def getLayerContainerForApp(app):
     return interfaces.ILayerContainer(sy)
 
 
+class LayerAppInit(InitBase):
+
+    def __call__(self):
+        self.app['schooltool.cando.layer'] = LayerContainerContainer()
+
+
 class LayerStartUp(StartUpBase):
 
     def __call__(self):
@@ -252,6 +258,12 @@ def getNodeContainerForApp(app):
     if sy is None:
         return None
     return interfaces.INodeContainer(sy)
+
+
+class NodeAppInit(InitBase):
+
+    def __call__(self):
+        self.app['schooltool.cando.node'] = NodeContainerContainer()
 
 
 class NodeStartUp(StartUpBase):
