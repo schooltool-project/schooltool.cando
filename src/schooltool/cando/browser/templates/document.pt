@@ -1,0 +1,92 @@
+<tal:block i18n:domain="schooltool.cando"
+           condition="python: len(view.rows)">
+  <div class="body">
+    <h3>
+      <tal:block content="context/title" />
+      <a class="modify" title="Edit information"
+         tal:attributes="href string:${context/@@absolute_url}/edit_document_node.html"
+         i18n:attributes="title">
+        <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+             alt="Edit"
+             i18n:attributes="alt" />
+      </a>
+    </h3>
+    <div class="viewspace">
+      <div>
+        <table class="form-fields">
+          <tr class="row" tal:repeat="row view/rows">
+            <td class="label">
+              <span tal:content="row/label" />
+            </td>
+            <td class="field">
+              <div class="widget">
+                <span tal:content="row/value" />
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</tal:block>
+
+<tal:block i18n:domain="schooltool.cando">
+  <h3>
+    <tal:block content="view/legend" />
+  </h3>
+</tal:block>
+
+<tal:block condition="view/add_layer|nothing"
+           i18n:domain="schooltool.cando">
+  <table class="data" i18n:domain="schooltool">
+    <thead>
+      <tr>
+        <th>
+          <span i18n:translate="">Title</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="item view/items">
+        <td>
+          <a tal:attributes="href item/url"
+             tal:content="item/obj/title" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</tal:block>
+
+<tal:block condition="not: view/add_layer|nothing"
+           i18n:domain="schooltool.cando">
+  <table class="data" i18n:domain="schooltool">
+    <thead>
+      <tr>
+        <th>
+          <span i18n:translate="">Label</span>
+        </th>
+        <th>
+          <span i18n:translate="">Title</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="item view/items">
+        <td>
+          <span tal:content="item/obj/label" />
+        </td>
+        <td>
+          <a tal:attributes="href item/url"
+             tal:content="item/obj/title" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</tal:block>
+
+<tal:block i18n:domain="schooltool.cando">
+  <h3>
+    <a tal:attributes="href view/done_link"
+       i18n:translate="">Done</a>
+  </h3>
+</tal:block>

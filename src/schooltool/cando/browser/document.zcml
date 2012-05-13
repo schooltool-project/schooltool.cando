@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           xmlns:report="http://namespaces.schooltool.org/report"
+           i18n_domain="schooltool.cando">
+
+  <!-- Skills Document -->
+
+  <flourish:viewlet
+      name="manage-document-overview"
+      after="manage-nodes-overview"
+      view="schooltool.app.browser.app.ManageSchool"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".document.ManageDocumentOverview"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      class=".document.DocumentView"
+      content_template="templates/document.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeView"
+      content_template="templates/document.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="document-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentView"
+      />
+
+  <flourish:viewlet
+      name="add_document_node.html"
+      view=".document.DocumentView"
+      class=".document.DocumentAddNodeLink"
+      manager=".document.DocumentAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="document-node-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentNodeAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentNodeView"
+      />
+
+  <flourish:viewlet
+      name="add_document_node.html"
+      view=".document.DocumentNodeView"
+      class=".document.DocumentNodeAddNodeLink"
+      manager=".document.DocumentNodeAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_node.html"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      class=".document.DocumentAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_skill.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddSkillView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="document_skill.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".document.DocumentNodeSkillView"
+      subtitle="View Skill"
+      content_template="templates/skill.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_skill.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".document.DocumentNodeSkillEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+</configure>

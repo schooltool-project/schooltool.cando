@@ -683,6 +683,7 @@
       permission="schooltool.view"
       />
 
+  <include file="document.zcml" />
   <include file="report.zcml" />
 
 </configure>
