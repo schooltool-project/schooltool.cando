@@ -40,9 +40,6 @@ from schooltool.relationship import RelationshipSchema, RelationshipProperty
 from schooltool.relationship.interfaces import InvalidRelationship
 from schooltool.relationship.interfaces import IBeforeRelationshipEvent
 from schooltool.relationship.interfaces import IBeforeRemovingRelationshipEvent
-from schooltool.schoolyear.interfaces import ISchoolYear
-from schooltool.schoolyear.interfaces import ISchoolYearContainer
-from schooltool.schoolyear.subscriber import ObjectEventAdapterSubscriber
 
 
 URILayer = URIObject(
@@ -106,11 +103,6 @@ NodeSkillSets = RelationshipSchema(
 # XXX: order in extra_info if neccessary
 
 
-class LayerContainerContainer(BTreeContainer):
-    """Container of layer containers."""
-    implements(interfaces.ILayerContainerContainer)
-
-
 class LayerContainer(BTreeContainer):
     """Container of layers."""
     implements(interfaces.ILayerContainer)
@@ -129,63 +121,23 @@ class Layer(Persistent, Contained):
         return '<%s %r>' % (self.__class__.__name__, self.title)
 
 
-@adapter(ISchoolYear)
-@implementer(interfaces.ILayerContainer)
-def getLayerContainer(sy):
-    addIntIdSubscriber(sy, ObjectAddedEvent(sy))
-    int_ids = getUtility(IIntIds)
-    sy_id = str(int_ids.getId(sy))
-    app = ISchoolToolApplication(None)
-    gc = app['schooltool.cando.layer'].get(sy_id, None)
-    if gc is None:
-        gc = app['schooltool.cando.layer'][sy_id] = LayerContainer()
-    return gc
-
-
-@adapter(interfaces.ILayerContainer)
-@implementer(ISchoolYear)
-def getSchoolYearForLayerContainer(layer_container):
-    container_id = int(layer_container.__name__)
-    int_ids = getUtility(IIntIds)
-    container = int_ids.getObject(container_id)
-    return container
-
-
 @adapter(ISchoolToolApplication)
 @implementer(interfaces.ILayerContainer)
-def getLayerContainerForApp(app):
-    syc = ISchoolYearContainer(app)
-    sy = syc.getActiveSchoolYear()
-    if sy is None:
-        return None
-    return interfaces.ILayerContainer(sy)
+def getLayerContainer(app):
+    return app['schooltool.cando.layer']
 
 
 class LayerAppInit(InitBase):
 
     def __call__(self):
-        self.app['schooltool.cando.layer'] = LayerContainerContainer()
+        self.app['schooltool.cando.layer'] = LayerContainer()
 
 
 class LayerStartUp(StartUpBase):
 
     def __call__(self):
         if 'schooltool.cando.layer' not in self.app:
-            self.app['schooltool.cando.layer'] = LayerContainerContainer()
-
-
-class RemoveLayersWhenSchoolYearIsDeleted(ObjectEventAdapterSubscriber):
-    adapts(IObjectRemovedEvent, ISchoolYear)
-
-    def __call__(self):
-        layer_container = interfaces.ILayerContainer(self.object)
-        for layer_id, layer in list(layer_container.items()):
-            del layer_container[layer_id]
-
-
-class NodeContainerContainer(BTreeContainer):
-    """Container of node containers."""
-    implements(interfaces.INodeContainerContainer)
+            self.app['schooltool.cando.layer'] = LayerContainer()
 
 
 class NodeContainer(BTreeContainer):
@@ -228,58 +180,23 @@ class Node(Persistent, Contained):
                                ', '.join([str(l) for l in self.layers]))
 
 
-@adapter(ISchoolYear)
-@implementer(interfaces.INodeContainer)
-def getNodeContainer(sy):
-    addIntIdSubscriber(sy, ObjectAddedEvent(sy))
-    int_ids = getUtility(IIntIds)
-    sy_id = str(int_ids.getId(sy))
-    app = ISchoolToolApplication(None)
-    gc = app['schooltool.cando.node'].get(sy_id, None)
-    if gc is None:
-        gc = app['schooltool.cando.node'][sy_id] = NodeContainer()
-    return gc
-
-
-@adapter(interfaces.INodeContainer)
-@implementer(ISchoolYear)
-def getSchoolYearForNodeContainer(node_container):
-    container_id = int(node_container.__name__)
-    int_ids = getUtility(IIntIds)
-    container = int_ids.getObject(container_id)
-    return container
-
-
 @adapter(ISchoolToolApplication)
 @implementer(interfaces.INodeContainer)
-def getNodeContainerForApp(app):
-    syc = ISchoolYearContainer(app)
-    sy = syc.getActiveSchoolYear()
-    if sy is None:
-        return None
-    return interfaces.INodeContainer(sy)
+def getNodeContainer(app):
+    return app['schooltool.cando.node']
 
 
 class NodeAppInit(InitBase):
 
     def __call__(self):
-        self.app['schooltool.cando.node'] = NodeContainerContainer()
+        self.app['schooltool.cando.node'] = NodeContainer()
 
 
 class NodeStartUp(StartUpBase):
 
     def __call__(self):
         if 'schooltool.cando.node' not in self.app:
-            self.app['schooltool.cando.node'] = NodeContainerContainer()
-
-
-class RemoveNodesWhenSchoolYearIsDeleted(ObjectEventAdapterSubscriber):
-    adapts(IObjectRemovedEvent, ISchoolYear)
-
-    def __call__(self):
-        node_container = interfaces.INodeContainer(self.object)
-        for node_id, node in list(node_container.items()):
-            del node_container[node_id]
+            self.app['schooltool.cando.node'] = NodeContainer()
 
 
 class CyclicRelationship(InvalidRelationship):

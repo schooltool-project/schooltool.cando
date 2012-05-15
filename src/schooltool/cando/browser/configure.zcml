@@ -453,7 +453,7 @@
       name="absolute_url"/>
 
   <zope:adapterTraverserPlugin
-      for="schooltool.schoolyear.interfaces.ISchoolYear"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       name="layers"
       adapter="schooltool.cando.interfaces.ILayerContainer"
@@ -476,17 +476,10 @@
       class=".model.ManageLayersOverview"
       />
 
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".model.LayersTertiaryNavigationManager"
-      view=".model.LayersView"
-      permission="zope.Public"
-      />
-
   <flourish:page
-      name="layers"
-      for="schooltool.app.interfaces.ISchoolToolApplication"
+      name="index.html"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      title="Layers Container"
       class=".model.LayersView"
       permission="schooltool.view"
       />
@@ -504,7 +497,7 @@
       name="add.html"
       title="Layer"
       view=".model.LayersView"
-      class=".model.LayersSchoolyearLink"
+      class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".model.LayersAddLinks"
       permission="schooltool.edit"
       />
@@ -515,6 +508,7 @@
       class="schooltool.cando.browser.model.FlourishLayerAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      title="Layers Container"
       subtitle="Add Layer"
       />
 
@@ -574,7 +568,7 @@
       name="absolute_url"/>
 
   <zope:adapterTraverserPlugin
-      for="schooltool.schoolyear.interfaces.ISchoolYear"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       name="nodes"
       adapter="schooltool.cando.interfaces.INodeContainer"
@@ -597,17 +591,10 @@
       class=".model.ManageNodesOverview"
       />
 
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".model.NodesTertiaryNavigationManager"
-      view=".model.NodesView"
-      permission="zope.Public"
-      />
-
   <flourish:page
-      name="nodes"
-      for="schooltool.app.interfaces.ISchoolToolApplication"
+      name="index.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      title="Nodes Container"
       class=".model.NodesView"
       permission="schooltool.view"
       />
@@ -625,7 +612,7 @@
       name="add.html"
       title="Node"
       view=".model.NodesView"
-      class=".model.NodesSchoolyearLink"
+      class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".model.NodesAddLinks"
       permission="schooltool.edit"
       />
@@ -636,6 +623,7 @@
       class="schooltool.cando.browser.model.FlourishNodeAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      title="Nodes Container"
       subtitle="Add Node"
       />
 
