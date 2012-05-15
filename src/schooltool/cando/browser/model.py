@@ -419,9 +419,6 @@ class NodesTable(table.ajax.Table):
         def get_parents(node):
             return sorted(NodeLink.query(child=node),
                           key=lambda n: n.__name__)
-        def get_children(node):
-            return sorted(NodeLink.query(parent=node),
-                          key=lambda n: n.__name__)
 
         default = table.ajax.Table.columns(self)
         description = zc.table.column.GetterColumn(
@@ -434,11 +431,6 @@ class NodesTable(table.ajax.Table):
             title=_(u'Parents'),
             getter=lambda i, f: u', '.join([n.title for n in get_parents(i)])
             )
-        children = zc.table.column.GetterColumn(
-            name='children',
-            title=_(u'Children'),
-            getter=lambda i, f: u', '.join([n.title for n in get_children(i)])
-            )
         layers = zc.table.column.GetterColumn(
             name='layers',
             title=_(u'Layers'),
@@ -449,7 +441,7 @@ class NodesTable(table.ajax.Table):
             title=_(u'SkillSets'),
             getter=lambda i, f: u', '.join([s.title for s in i.skillsets])
             )
-        return default + [description, parents, children, layers, skillsets]
+        return default + [description, parents, layers, skillsets]
 
     def updateFormatter(self):
         if self._table_formatter is None:
