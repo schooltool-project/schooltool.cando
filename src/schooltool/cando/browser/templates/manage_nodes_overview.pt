@@ -1,7 +1,7 @@
 <div class="manage-view" i18n:domain="schooltool.cando"
-     tal:condition="view/has_schoolyear">
+     tal:condition="view/enabled">
   <h3>
-    <a tal:attributes="href string:${context/@@absolute_url}/nodes?schoolyear_id=${view/schoolyear/__name__}"
+    <a tal:attributes="href string:${context/@@absolute_url}/nodes"
        title="Manage nodes" i18n:attributes="title"
        i18n:translate="">
       Nodes
@@ -10,7 +10,6 @@
   <p i18n:translate="">
     There are
     <metal:block tal:replace="python:len(view.nodes)" i18n:name="count"/>
-    nodes defined for
-    <metal:block tal:replace="view/schoolyear/title" i18n:name="schoolyear"/>.
+    nodes defined.
   </p>
 </div>

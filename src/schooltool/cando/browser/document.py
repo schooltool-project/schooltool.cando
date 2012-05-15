@@ -46,7 +46,6 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.browser.app import ContentTitle
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
-from schooltool.schoolyear.interfaces import ISchoolYear
 
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillEditView
@@ -69,31 +68,13 @@ class DocumentMixin(object):
         return None
 
     @property
-    def schoolyear(self):
-        app = ISchoolToolApplication(None)
-        schoolyears = ISchoolYearContainer(app)
-        result = schoolyears.getActiveSchoolYear()
-        if 'schoolyear_id' in self.request:
-            schoolyear_id = self.request['schoolyear_id']
-            result = schoolyears.get(schoolyear_id, result)
-        return result
-
-    @property
-    def has_schoolyear(self):
-        return self.schoolyear is not None
-
-    @property
     def layers(self):
-        layers = ILayerContainer(self.schoolyear, None)
-        if layers is None:
-            return []
+        layers = ILayerContainer(ISchoolToolApplication(None))
         return list(layers.values())
 
     @property
     def nodes(self):
-        nodes = INodeContainer(self.schoolyear, None)
-        if nodes is None:
-            return []
+        nodes = INodeContainer(ISchoolToolApplication(None))
         return list(nodes.values())
 
     @property
@@ -152,10 +133,6 @@ class DocumentNodeMixin(DocumentMixin):
         return self.context
 
     @property
-    def schoolyear(self):
-        return ISchoolYear(self.context.__parent__)
-
-    @property
     def add_layer(self):
         heirarchy = self.layer_heirarchy
         if heirarchy is None:
@@ -186,14 +163,17 @@ class ManageDocumentOverview(flourish.page.Content, DocumentMixin):
     body_template = ViewPageTemplateFile(
         'templates/manage_document_overview.pt')
 
+    @property
+    def enabled(self):
+        schoolyears = ISchoolYearContainer(self.context)
+        return schoolyears.getActiveSchoolYear() is not None
+
 
 class DocumentView(flourish.page.Page, DocumentMixin):
 
     @property
     def title(self):
-        schoolyear = self.schoolyear
-        return _('Skills Document for ${schoolyear}',
-                 mapping={'schoolyear': schoolyear.title})
+        return _('Skills Document')
 
     @property
     def legend(self):
@@ -211,37 +191,6 @@ class DocumentView(flourish.page.Page, DocumentMixin):
     def done_link(self):
         app = ISchoolToolApplication(None)
         return '%s/manage' % absoluteURL(app, self.request)
-
-
-class DocumentTertiaryNavigationManager(flourish.page.TertiaryNavigationManager):
-
-    template = InlineViewPageTemplate("""
-        <ul tal:attributes="class view/list_class">
-          <li tal:repeat="item view/items"
-              tal:attributes="class item/class"
-              tal:content="structure item/viewlet">
-          </li>
-        </ul>
-    """)
-
-    @property
-    def items(self):
-        result = []
-        schoolyears = ISchoolYearContainer(self.context)
-        active = schoolyears.getActiveSchoolYear()
-        if 'schoolyear_id' in self.request:
-            schoolyear_id = self.request['schoolyear_id']
-            active = schoolyears.get(schoolyear_id, active)
-        for schoolyear in schoolyears.values():
-            url = '%s/%s?schoolyear_id=%s' % (
-                absoluteURL(self.context, self.request),
-                'layers',
-                schoolyear.__name__)
-            result.append({
-                    'class': schoolyear.first == active.first and 'active' or None,
-                    'viewlet': u'<a href="%s">%s</a>' % (url, schoolyear.title),
-                    })
-        return result
 
 
 class DocumentAddLinks(flourish.page.RefineLinksViewlet):
@@ -363,7 +312,7 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         return node
 
     def add(self, node):
-        nodes = INodeContainer(self.schoolyear)
+        nodes = INodeContainer(ISchoolToolApplication(None))
         chooser = INameChooser(nodes)
         name = chooser.chooseName(u'', node)
         nodes[name] = node
@@ -378,9 +327,7 @@ class DocumentAddNodeView(DocumentAddNodeBase, DocumentMixin):
 
     @property
     def title(self):
-        schoolyear = self.schoolyear
-        return _('Skills Document for ${schoolyear}',
-                 mapping={'schoolyear': schoolyear.title})
+        return _('Skills Document')
 
 
 class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):

@@ -3,14 +3,6 @@
 
   <!-- layers -->
 
-  <class class=".model.LayerContainerContainer">
-    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
-    <require permission="schooltool.view"
-             attributes="keys values items __iter__ __len__" />
-    <require permission="schooltool.edit"
-             interface="zope.container.interfaces.IWriteContainer" />
-  </class>
-
   <class class=".model.LayerContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -40,22 +32,9 @@
       for="schooltool.app.interfaces.ISchoolToolApplication"
       factory=".model.LayerStartUp"
       name="schooltool.cando.layer" />
-
-  <adapter factory=".model.RemoveLayersWhenSchoolYearIsDeleted"
-           name="layers" />
   <adapter factory=".model.getLayerContainer" />
-  <adapter factory=".model.getLayerContainerForApp" />
-  <adapter factory=".model.getSchoolYearForLayerContainer" />
 
   <!-- nodes -->
-
-  <class class=".model.NodeContainerContainer">
-    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
-    <require permission="schooltool.view"
-             attributes="keys values items __iter__ __len__" />
-    <require permission="schooltool.edit"
-             interface="zope.container.interfaces.IWriteContainer" />
-  </class>
 
   <class class=".model.NodeContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
@@ -87,11 +66,7 @@
       factory=".model.NodeStartUp"
       name="schooltool.cando.node" />
 
-  <adapter factory=".model.RemoveNodesWhenSchoolYearIsDeleted"
-           name="nodes" />
   <adapter factory=".model.getNodeContainer" />
-  <adapter factory=".model.getNodeContainerForApp" />
-  <adapter factory=".model.getSchoolYearForNodeContainer" />
 
   <subscriber
       for="schooltool.relationship.interfaces.IBeforeRelationshipEvent"
