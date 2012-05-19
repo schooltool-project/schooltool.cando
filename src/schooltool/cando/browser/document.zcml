@@ -32,15 +32,6 @@
       />
 
   <flourish:viewlet
-      name="manage-document-overview"
-      after="manage-nodes-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".document.ManageDocumentOverview"
-      />
-
-  <flourish:viewlet
       name="documents"
       after="scoresystems"
       title="Skills Documents"

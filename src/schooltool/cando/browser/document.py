@@ -240,17 +240,6 @@ class DocumentNodeMixin(DocumentMixin):
         return result
 
 
-class ManageDocumentOverview(flourish.page.Content, DocumentMixin):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_document_overview.pt')
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
-
-
 class DocumentAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentView"""
 
