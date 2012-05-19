@@ -51,12 +51,94 @@ from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
+from schooltool.cando.interfaces import IDocumentContainer, IDocument
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
+from schooltool.cando.model import Document
 from schooltool.cando.skill import SkillSet, Skill
 
 from schooltool.cando import CanDoMessage as _
+
+
+
+class DocumentContainerAbsoluteURLAdapter(BrowserView):
+    adapts(IDocumentContainer, IBrowserRequest)
+    implements(IAbsoluteURL)
+
+    def __str__(self):
+        app = ISchoolToolApplication(None)
+        url = absoluteURL(app, self.request)
+        return url + '/documents'
+
+    __call__ = __str__
+
+
+class DocumentsView(flourish.page.Page):
+
+    content_template = InlineViewPageTemplate('''
+      <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+    ''')
+
+    @Lazy
+    def container(self):
+        return IDocumentContainer(ISchoolToolApplication(None))
+
+
+class DocumentsTable(table.ajax.Table):
+
+    def columns(self):
+        default = table.ajax.Table.columns(self)
+        return default
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+
+class DocumentsAddLinks(flourish.page.RefineLinksViewlet):
+    """Manager for Add links in DocumentsView"""
+
+
+class DocumentAddView(flourish.form.AddForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
+    label = None
+    legend = _('Document Information')
+    fields = z3c.form.field.Fields(IDocument).select('title', 'description')
+
+    def updateActions(self):
+        super(DocumentAddView, self).updateActions()
+        self.actions['add'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
+    def handleAdd(self, action):
+        super(DocumentAddView, self).handleAdd.func(self, action)
+
+    @z3c.form.button.buttonAndHandler(_('Cancel'))
+    def handle_cancel_action(self, action):
+        app = ISchoolToolApplication(None)
+        url = '%s/documents' % absoluteURL(app, self.request)
+        self.request.response.redirect(url)
+
+    def create(self, data):
+        document = Document(data['title'])
+        z3c.form.form.applyChanges(self, document, data)
+        return document
+
+    def add(self, document):
+        chooser = INameChooser(self.context)
+        name = chooser.chooseName(u'', document)
+        self.context[name] = document
+        self._document = document
+        return document
+
+    def nextURL(self):
+        return absoluteURL(self._document, self.request)
 
 
 class DocumentMixin(object):
@@ -169,30 +251,6 @@ class ManageDocumentOverview(flourish.page.Content, DocumentMixin):
         return schoolyears.getActiveSchoolYear() is not None
 
 
-class DocumentView(flourish.page.Page, DocumentMixin):
-
-    @property
-    def title(self):
-        return _('Skills Document')
-
-    @property
-    def legend(self):
-        layer = self.add_layer
-        if layer is None:
-            return ''
-        return _('${layer} list',
-                 mapping={'layer': layer.title})
-
-    @property
-    def rows(self):
-        return []
-
-    @property
-    def done_link(self):
-        app = ISchoolToolApplication(None)
-        return '%s/manage' % absoluteURL(app, self.request)
-
-
 class DocumentAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentView"""
 
@@ -205,6 +263,58 @@ class DocumentAddNodeLink(flourish.page.LinkViewlet, DocumentMixin):
         if layer is None:
             return None
         return layer.title
+
+
+class DocumentView(flourish.form.DisplayForm, DocumentMixin):
+
+    template = InheritTemplate(flourish.page.Page.template)
+    label = None
+    legend = _('SkillSets')
+
+    fields = z3c.form.field.Fields(IDocument).select('title', 'description')
+
+    @property
+    def can_edit(self):
+        return flourish.canEdit(self.context)
+
+    @property
+    def done_link(self):
+        app = ISchoolToolApplication(None)
+        return '%s/documents' % absoluteURL(app, self.request)
+
+    @property
+    def rows(self):
+        return []
+
+
+class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
+    fields = z3c.form.field.Fields(IDocument)
+    fields = fields.select('title', 'description')
+
+    legend = _('Document')
+
+    def applyChanges(self, data):
+        if data['description'] is None:
+            data['description'] = u''
+        super(DocumentEditView, self).applyChanges(data)
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
+    def handleApply(self, action):
+        super(DocumentEditView, self).handleApply.func(self, action)
+        if (self.status == self.successMessage or
+            self.status == self.noChangesMessage):
+            url = absoluteURL(self.context, self.request)
+            self.request.response.redirect(url)
+
+    @z3c.form.button.buttonAndHandler(_("Cancel"))
+    def handle_cancel_action(self, action):
+        url = absoluteURL(self.context, self.request)
+        self.request.response.redirect(url)
+
+    def updateActions(self):
+        super(DocumentEditView, self).updateActions()
+        self.actions['apply'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
 
 
 class DocumentNodeView(flourish.page.Page, DocumentNodeMixin):

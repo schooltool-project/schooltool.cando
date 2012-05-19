@@ -7,6 +7,30 @@
 
   <!-- Skills Document -->
 
+  <zope:adapter
+      factory=".document.DocumentContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".document.DocumentContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="documents"
+      adapter="schooltool.cando.interfaces.IDocumentContainer"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".document.DocumentsTable"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="manage-document-overview"
       after="manage-nodes-overview"
@@ -16,12 +40,66 @@
       class=".document.ManageDocumentOverview"
       />
 
+  <flourish:viewlet
+      name="documents"
+      after="scoresystems"
+      title="Skills Documents"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager="schooltool.app.browser.app.CustomizeSchoolLinks"
+      permission="schooltool.edit"
+      />
+
   <flourish:page
-      name="document.html"
-      for="schooltool.app.interfaces.ISchoolToolApplication"
+      name="index.html"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      title="Skills Documents"
+      class=".document.DocumentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="documents-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentsAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentsView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Document"
+      view=".document.DocumentsView"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".document.DocumentsAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      class=".document.DocumentAddView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      title="Skills Documents Container"
+      subtitle="Add Document"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.IDocument"
       class=".document.DocumentView"
       content_template="templates/document.pt"
       permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
       />
 
   <flourish:page
