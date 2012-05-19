@@ -103,6 +103,21 @@ NodeSkillSets = RelationshipSchema(
 # XXX: order in extra_info if neccessary
 
 
+URIDocument = URIObject(
+    'http://schooltool.org/ns/cando/model/document',
+    'Document',
+    'A document.')
+
+URIDocumentHierarchy = URIObject(
+    'http://schooltool.org/ns/cando/model/document_hierarchy',
+    'Document hierarchy',
+    'A model layer that is in the document hierarchy.')
+
+DocumentHierarchy = RelationshipSchema(URIDocumentHierarchy,
+                                       document=URIDocument,
+                                       layer=URILayer)
+
+
 class LayerContainer(BTreeContainer):
     """Container of layers."""
     implements(interfaces.ILayerContainer)
@@ -454,3 +469,62 @@ def removingLayerDoesntViolateModel(event):
             layer=layer, node=node,
             parent_nodes=parent_nodes_in_model,
             child_nodes=child_nodes_in_model)
+
+
+class DocumentContainer(BTreeContainer):
+    """Container of documents."""
+    implements(interfaces.IDocumentContainer)
+
+
+class Document(Node):
+    implements(interfaces.IDocumentContained)
+
+    hierarchy = RelationshipProperty(URIDocumentHierarchy, URIDocument,
+                                     URILayer)
+
+    def getOrderedHierarchy(self):
+        layers = list(self.hierarchy)
+        result = []
+        for index, layer in enumerate(layers):
+            for parent in layer.parents:
+                if parent in layers:
+                    break
+            else:
+                result.append(layer)
+                layers.pop(index)
+                break
+        if not result:
+            return result
+        while layers:
+            for index, layer in enumerate(layers):
+                if result[-1] in layer.parents:
+                    result.append(layer)
+                    layers.pop(index)
+                    break
+            else:
+                break
+        return result
+
+    def __repr__(self):
+        return '<%s %r %s>' % (self.__class__.__name__, self.title,
+            ', '.join([str(l) for l in self.getOrderedHierarchy()]))
+
+
+@adapter(ISchoolToolApplication)
+@implementer(interfaces.IDocumentContainer)
+def getDocumentContainer(app):
+    return app['schooltool.cando.document']
+
+
+class DocumentAppInit(InitBase):
+
+    def __call__(self):
+        self.app['schooltool.cando.document'] = DocumentContainer()
+
+
+class DocumentStartUp(StartUpBase):
+
+    def __call__(self):
+        if 'schooltool.cando.document' not in self.app:
+            self.app['schooltool.cando.document'] = DocumentContainer()
+

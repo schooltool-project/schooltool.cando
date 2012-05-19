@@ -73,4 +73,38 @@
       handler=".model.preventLayerCycles"
     />
 
+  <!-- documents -->
+
+  <class class=".model.DocumentContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <class class=".model.Document">
+    <require permission="schooltool.view"
+             interface=".interfaces.IDocument" />
+    <require permission="schooltool.edit"
+             set_schema=".interfaces.IDocument" />
+  </class>
+
+  <adapter
+      for=".interfaces.IDocumentContainer"
+      factory="schooltool.app.app.SimpleNameChooser"
+      provides="zope.container.interfaces.INameChooser" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.DocumentAppInit"
+      name="schooltool.cando.document" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.DocumentStartUp"
+      name="schooltool.cando.document" />
+
+  <adapter factory=".model.getDocumentContainer" />
+
 </configure>
