@@ -10,97 +10,17 @@
            i18n:attributes="alt" />
     </a>
   </h3>
-
-  <metal:block define-macro="subform-display">
-    <div class="viewspace" metal:define-slot="viewspace">
-      <div metal:define-slot="main">
-        <table class="form-fields" metal:define-macro="formtable">
-          <tr class="extraTopRow"
-              metal:define-slot="extra_top"
-              tal:replace="nothing">
-            <td class="label"> Extra top </td>
-            <td class="field"><input type="text" />
-            </td>
-          </tr>
-          <tbody metal:define-slot="formbody" tal:omit-tag="">
-            <tal:block omit-tag="" repeat="widget view/widgets/values">
-              <tr metal:define-macro="formrow" class="row"
-                  tal:condition="python:widget.mode != 'hidden'">
-                <td class="label" metal:define-macro="labelcell">
-                  <label tal:attributes="for widget/id">
-                    <span tal:content="widget/label"> label </span>
-                  </label>
-                </td>
-                <td class="field" metal:define-macro="widgetcell">
-                  <div class="widget" tal:content="structure widget/render">
-                    <input type="text" />
-                  </div>
-                </td>
-              </tr>
-            </tal:block>
-          </tbody>
-          <tr class="extraBottomRow"
-              metal:define-slot="extra_bottom"
-              tal:replace="nothing">
-            <td class="label"> Extra bottom </td>
-            <td class="label"><input type="text" />
-            </td>
-          </tr>
-        </table>
-        <tal:block repeat="widget view/widgets/values"
-                   ><input type="hidden" value=""
-                   tal:condition="python:widget.mode == 'hidden'"
-                   tal:replace="structure widget/render"
-                   /></tal:block>
-      </div>
-      <metal:block define-slot="above-buttons">
-      </metal:block>
-    </div>
-    <metal:block define-slot="bottom">
-    </metal:block>
-  </metal:block>
-</tal:block>
-
-<tal:block i18n:domain="schooltool.cando"
-           condition="python: len(view.rows)">
-  <div class="body">
-    <h3>
-      <tal:block content="context/title" />
-      <a class="modify" title="Edit information"
-         tal:attributes="href string:${context/@@absolute_url}/edit_document_node.html"
-         i18n:attributes="title">
-        <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
-             alt="Edit"
-             i18n:attributes="alt" />
-      </a>
-    </h3>
-    <div class="viewspace">
-      <div>
-        <table class="form-fields">
-          <tr class="row" tal:repeat="row view/rows">
-            <td class="label">
-              <span tal:content="row/label" />
-            </td>
-            <td class="field">
-              <div class="widget">
-                <span tal:content="row/value" />
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-</tal:block>
-
-<tal:block i18n:domain="schooltool.cando">
+  <table class="form-fields">
+    <tbody>
+      <tr tal:repeat="widget view/widgets/values">
+        <td tal:content="widget/label" class="label"/>
+        <td tal:content="structure widget/render" />
+      </tr>
+    </tbody>
+  </table>
   <h3>
     <tal:block content="view/legend" />
   </h3>
-</tal:block>
-
-<tal:block condition="view/add_layer|nothing"
-           i18n:domain="schooltool.cando">
   <table class="data" i18n:domain="schooltool">
     <thead>
       <tr>
@@ -118,36 +38,6 @@
       </tr>
     </tbody>
   </table>
-</tal:block>
-
-<tal:block condition="not: view/add_layer|nothing"
-           i18n:domain="schooltool.cando">
-  <table class="data" i18n:domain="schooltool">
-    <thead>
-      <tr>
-        <th>
-          <span i18n:translate="">Label</span>
-        </th>
-        <th>
-          <span i18n:translate="">Title</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr tal:repeat="item view/items">
-        <td>
-          <span tal:content="item/obj/label" />
-        </td>
-        <td>
-          <a tal:attributes="href item/url"
-             tal:content="item/obj/title" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</tal:block>
-
-<tal:block i18n:domain="schooltool.cando">
   <h3>
     <a tal:attributes="href view/done_link"
        i18n:translate="">Done</a>

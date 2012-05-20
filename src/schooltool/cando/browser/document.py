@@ -143,101 +143,72 @@ class DocumentAddView(flourish.form.AddForm):
 
 class DocumentMixin(object):
 
-    list_class = ''
+    def get_document(self):
+        return self.context
 
-    @property
-    def node_context(self):
-        return None
-
-    @property
-    def layers(self):
-        layers = ILayerContainer(ISchoolToolApplication(None))
-        return list(layers.values())
-
-    @property
-    def nodes(self):
-        nodes = INodeContainer(ISchoolToolApplication(None))
-        return list(nodes.values())
+    def get_children(self):
+        return sorted(NodeLink.query(parent=self.context),
+                      key=lambda l: l.__name__)
 
     @property
     def layer_heirarchy(self):
-        layers = self.layers
-        for layer in layers:
-            if not len(layer.parents):
-                result = [layer]
-                break
-        else:
-            return None
-        while True:
-            for layer in layers:
-                if result[-1] in layer.parents:
-                    result.append(layer)
-                    break
-            else:
-                return result
+        document = self.get_document()
+        if document is None:
+            return []
+        return document.getOrderedHierarchy()
 
     @property
-    def add_layer(self):
+    def layer_title(self):
         heirarchy = self.layer_heirarchy
-        if heirarchy is None:
-            return None
-        return heirarchy[0]
+        if not heirarchy:
+            return _('SkillSet')
+        return heirarchy[0].title
 
-    def node_item(self, node):
-        return {
-            'url': '%s/document.html' % absoluteURL(node, self.request),
-            'obj': node,
-            }
+    @property
+    def legend(self):
+        return _('${layer} list',
+                 mapping={'layer': self.layer_title})
 
-    def skill_item(self, skill):
-        next_url = absoluteURL(self.node_context, self.request)
-        skill_url = absoluteURL(skill, self.request)
+    @property
+    def query_string(self):
+        query_string_dict = {}
+        document = self.get_document()
+        if document is not None:
+            query_string_dict['document'] = document.__name__
+        heirarchy = self.layer_heirarchy
+        if heirarchy:
+            query_string_dict['layer'] = heirarchy[0].__name__
+
+        query_string = ''
+        for index, (k, v) in enumerate(query_string_dict.items()):
+            query_string += index and '&' or '?'
+            query_string += '%s=%s' % (k, v)
+        return query_string
+
+    def make_item(self, obj):
         return {
-            'url': '%s/document_skill.html?next_url=%s' % (skill_url, next_url),
-            'obj': skill,
+            'url': '%s/document.html' % absoluteURL(obj, self.request),
+            'obj': obj,
             }
 
     @property
     def items(self):
         result = []
-        add_layer = self.add_layer
-        if add_layer is not None:
-            for node in self.nodes:
-                if add_layer in node.layers:
-                    result.append(self.node_item(node))
+        if len(self.layer_heirarchy) < 3:
+            for skillset in self.context.skillsets:
+                result.append(self.make_item(skillset))
+        else:
+            for node in self.get_children():
+                result.append(self.make_item(node))
         return result
 
 
 class DocumentNodeMixin(DocumentMixin):
 
-    @property
-    def node_context(self):
-        return self.context
-
-    @property
-    def add_layer(self):
-        heirarchy = self.layer_heirarchy
-        if heirarchy is None:
-            return None
-        for index, layer in enumerate(heirarchy[:-1]):
-            if layer in self.context.layers:
-                return heirarchy[index + 1]
-        else:
-            return None
-
-    @property
-    def items(self):
-        result = []
-        if self.add_layer is None:
-            skillsets = list(self.context.skillsets)
-            if skillsets:
-                for skill in skillsets[0].values():
-                    result.append(self.skill_item(skill))
-        else:
-            for node in self.nodes:
-                if self.context in node.parents:
-                    result.append(self.node_item(node))
-        return result
+    def get_document(self):
+        document_id = self.request.get('document', '')
+        app = ISchoolToolApplication(None)
+        return IDocumentContainer(app).get(document_id, None)
 
 
 class DocumentAddLinks(flourish.page.RefineLinksViewlet):
@@ -248,17 +219,21 @@ class DocumentAddNodeLink(flourish.page.LinkViewlet, DocumentMixin):
 
     @property
     def title(self):
-        layer = self.add_layer
-        if layer is None:
-            return None
-        return layer.title
+        return self.layer_title
+
+    @property
+    def url(self):
+        if len(self.layer_heirarchy) < 3:
+            url = 'add_document_skillset.html'
+        else:
+            url = 'add_document_node.html'
+        return '%s%s' % (url, self.query_string)
 
 
 class DocumentView(flourish.form.DisplayForm, DocumentMixin):
 
     template = InheritTemplate(flourish.page.Page.template)
     label = None
-    legend = _('SkillSets')
 
     fields = z3c.form.field.Fields(IDocument).select('title', 'description')
 
@@ -270,10 +245,6 @@ class DocumentView(flourish.form.DisplayForm, DocumentMixin):
     def done_link(self):
         app = ISchoolToolApplication(None)
         return '%s/documents' % absoluteURL(app, self.request)
-
-    @property
-    def rows(self):
-        return []
 
 
 class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
