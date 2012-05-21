@@ -81,6 +81,7 @@
       for="schooltool.cando.interfaces.IDocument"
       class=".document.DocumentView"
       content_template="templates/document.pt"
+      subtitle="View Skills Document"
       permission="schooltool.view"
       />
 
