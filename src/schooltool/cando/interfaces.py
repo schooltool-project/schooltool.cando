@@ -61,10 +61,6 @@ class ISkillSet(IRequirement, IAttributeAnnotatable):
     label = zope.schema.TextLine(title=_("Short label"), required=False)
 
 
-class ILayerContainerContainer(IContainer):
-    pass
-
-
 class ILayerContainer(IContainer):
     pass
 
@@ -77,10 +73,6 @@ class ILayer(Interface):
 
 
 class ILayerContained(ILayer, IContained, IAttributeAnnotatable):
-    pass
-
-
-class INodeContainerContainer(IContainer):
     pass
 
 
@@ -110,6 +102,25 @@ class INode(Interface):
 
 
 class INodeContained(INode, IContained, IAttributeAnnotatable):
+    pass
+
+
+class IDocumentContainer(IContainer):
+    pass
+
+
+class IDocument(INode):
+
+    hierarchy = Attribute("Hierarchy of layers for building node tree")
+
+    def getOrderedHierarchy():
+        """
+          Return the ordered list of layers that represents the document
+          hierarchy.
+        """
+
+
+class IDocumentContained(IDocument, IContained, IAttributeAnnotatable):
     pass
 
 
