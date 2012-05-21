@@ -72,7 +72,7 @@
       class=".document.DocumentAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
-      title="Skills Documents Container"
+      title="Skills Documents"
       subtitle="Add Document"
       />
 
@@ -137,7 +137,7 @@
 
   <flourish:page
       name="add_document_node.html"
-      for="schooltool.app.interfaces.ISchoolToolApplication"
+      for="schooltool.cando.interfaces.IDocument"
       class=".document.DocumentAddNodeView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
@@ -161,26 +161,93 @@
       />
 
   <flourish:page
-      name="add_document_skill.html"
-      for="schooltool.cando.interfaces.INode"
-      class=".document.DocumentNodeAddSkillView"
+      name="add_document_skillset.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentAddSkillSetView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
       />
 
   <flourish:page
-      name="document_skill.html"
+      name="add_document_skillset.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddSkillSetView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentSkillSetView"
+      content_template="templates/document_skillset.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".document.DocumentSkillSetSkillTable"
+      for="schooltool.cando.interfaces.ISkillSet"
+      view=".document.DocumentSkillSetView"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".document.DocumentSkillSetSkillTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="document_skillset_links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentSkillSetLinks"
+      for="schooltool.cando.interfaces.ISkillSet"
+      title="Add"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_document_skillset.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentSkillSetEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="add_document_skill.html"
+      class=".document.DocumentAddSkillLink"
+      manager=".document.DocumentSkillSetLinks"
+      view=".document.DocumentSkillSetView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_skill.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentAddSkillView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="document.html"
       for="schooltool.cando.interfaces.ISkill"
-      class=".document.DocumentNodeSkillView"
+      class=".document.DocumentSkillView"
       subtitle="View Skill"
-      content_template="templates/skill.pt"
+      content_template="templates/document_skill.pt"
       permission="schooltool.view"
       />
 
   <flourish:page
       name="edit_document_skill.html"
       for="schooltool.cando.interfaces.ISkill"
-      class=".document.DocumentNodeSkillEditView"
+      class=".document.DocumentSkillEditView"
       subtitle="Edit"
       content_template="templates/form.pt"
       permission="schooltool.edit"

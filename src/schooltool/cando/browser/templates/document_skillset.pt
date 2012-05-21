@@ -1,7 +1,7 @@
-<tal:block i18n:domain="schooltool.cando">
+<tal:block i18n:domain="schooltool">
   <h3>
     <tal:block replace="context/title" />
-    <a class="modify" href="" title="Edit this Document"
+    <a class="modify" href="" title="Edit this skill set"
        tal:attributes="href view/edit_url"
        i18n:attributes="title"
        tal:condition="view/can_edit">
@@ -23,26 +23,11 @@
   <h3>
     <tal:block content="view/legend" />
   </h3>
-  <table class="data" i18n:domain="schooltool">
-    <thead>
-      <tr>
-        <th>
-          <span i18n:translate="">Title</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr tal:repeat="item view/items">
-        <td>
-          <a tal:attributes="href item/url"
-             tal:content="item/obj/title" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div tal:content="structure context/schooltool:content/ajax/table" />
 
   <h3>
     <a tal:attributes="href view/done_link"
        i18n:translate="">Done</a>
   </h3>
+
 </tal:block>

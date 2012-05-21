@@ -1,8 +1,12 @@
 <div>
   <metal:block use-macro="macro:form">
     <metal:block fill-slot="above-buttons">
-      <input type="hidden" name="next_url"
-             tal:attributes="value request/next_url|nothing" />
+      <input type="hidden" name="document"
+             tal:attributes="value request/document|nothing" />
+      <input type="hidden" name="layer"
+             tal:attributes="value request/layer|nothing" />
+      <input type="hidden" name="node"
+             tal:attributes="value request/node|nothing" />
     </metal:block>
   </metal:block>
 </div>

@@ -24,7 +24,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts, getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
@@ -48,11 +48,11 @@ from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando.browser.skill import SkillAddView, SkillView
-from schooltool.cando.browser.skill import SkillEditView
+from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import IDocumentContainer, IDocument
-from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ISkillSetContainer, ISkillSet
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
 from schooltool.cando.model import Document
@@ -146,38 +146,63 @@ class DocumentMixin(object):
     def get_document(self):
         return self.context
 
-    def get_children(self):
-        return sorted(NodeLink.query(parent=self.context),
-                      key=lambda l: l.__name__)
+    def get_node(self):
+        return None
 
-    @property
-    def layer_heirarchy(self):
+    def get_layer_hierarchy(self):
         document = self.get_document()
         if document is None:
             return []
         return document.getOrderedHierarchy()
 
+    def get_layer(self):
+        layer_id = self.request.get('layer', '')
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app).get(layer_id, None)
+
+    def is_skillset_layer(self):
+        return len(self.get_layer_hierarchy()) < 3
+
+    def get_next_layer(self):
+        hierarchy = self.get_layer_hierarchy()
+        if not hierarchy:
+            return None
+        return hierarchy[0]
+
+    def get_previous_layer(self):
+        return None
+
+    def get_children(self):
+        if INode(self.context, None) is not None:
+            return sorted(NodeLink.query(parent=self.context),
+                          key=lambda l: l.__name__)
+        return []
+
     @property
     def layer_title(self):
-        heirarchy = self.layer_heirarchy
-        if not heirarchy:
+        layer = self.get_layer()
+        if layer is None:
             return _('SkillSet')
-        return heirarchy[0].title
+        return layer.title
 
     @property
-    def legend(self):
-        return _('${layer} list',
-                 mapping={'layer': self.layer_title})
+    def next_layer_title(self):
+        layer = self.get_next_layer()
+        if layer is None:
+            return _('SkillSet')
+        return layer.title
 
-    @property
-    def query_string(self):
+    def build_query_string(self, **kw):
         query_string_dict = {}
         document = self.get_document()
         if document is not None:
             query_string_dict['document'] = document.__name__
-        heirarchy = self.layer_heirarchy
-        if heirarchy:
-            query_string_dict['layer'] = heirarchy[0].__name__
+        layer = kw.get('layer', None)
+        if layer is not None:
+            query_string_dict['layer'] = layer.__name__
+        node = kw.get('node', None)
+        if node is not None:
+            query_string_dict['node'] = node.__name__
 
         query_string = ''
         for index, (k, v) in enumerate(query_string_dict.items()):
@@ -185,22 +210,44 @@ class DocumentMixin(object):
             query_string += '%s=%s' % (k, v)
         return query_string
 
-    def make_item(self, obj):
+    def make_node_item(self, node):
+        query_string = self.build_query_string(layer=self.get_next_layer())
         return {
-            'url': '%s/document.html' % absoluteURL(obj, self.request),
-            'obj': obj,
+            'url': '%s/document.html%s' % (absoluteURL(node, self.request),
+                                           query_string),
+            'obj': node,
+            }
+
+    def make_skillset_item(self, skillset):
+        query_string = self.build_query_string(layer=self.get_next_layer(),
+                                               node=self.get_node())
+        return {
+            'url': '%s/document.html%s' % (absoluteURL(skillset, self.request),
+                                           query_string),
+            'obj': skillset,
             }
 
     @property
     def items(self):
         result = []
-        if len(self.layer_heirarchy) < 3:
+        if self.is_skillset_layer():
             for skillset in self.context.skillsets:
-                result.append(self.make_item(skillset))
+                result.append(self.make_skillset_item(skillset))
         else:
             for node in self.get_children():
-                result.append(self.make_item(node))
+                result.append(self.make_node_item(node))
         return result
+
+    @property
+    def add_url(self):
+        if self.is_skillset_layer():
+            url = 'add_document_skillset.html'
+            query_string = self.build_query_string(layer=self.get_next_layer(),
+                                                   node=self.get_node())
+        else:
+            url = 'add_document_node.html'
+            query_string = self.build_query_string(layer=self.get_next_layer())
+        return '%s%s' % (url, query_string)
 
 
 class DocumentNodeMixin(DocumentMixin):
@@ -209,6 +256,67 @@ class DocumentNodeMixin(DocumentMixin):
         document_id = self.request.get('document', '')
         app = ISchoolToolApplication(None)
         return IDocumentContainer(app).get(document_id, None)
+
+    def get_node(self):
+        if INode(self.context, None) is not None:
+            return self.context
+        node_id = self.request.get('node', '')
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app).get(node_id, None)
+
+    def is_skillset_layer(self):
+        hierarchy = self.get_layer_hierarchy()
+        if len(hierarchy) < 3:
+            return True
+        current_layer = self.get_next_layer()
+        if current_layer is None:
+            return True
+        for index, layer in enumerate(hierarchy):
+            if layer is current_layer and index < len(hierarchy) - 2:
+                return False
+        return True
+
+    def get_next_layer(self):
+        hierarchy = self.get_layer_hierarchy()
+        if hierarchy:
+            current_layer = self.get_layer()
+            if current_layer is None:
+                return None
+            for index, layer in enumerate(hierarchy):
+                if layer is current_layer and index < len(hierarchy) - 1:
+                    return hierarchy[index + 1]
+        return None
+
+    def get_previous_layer(self):
+        hierarchy = self.get_layer_hierarchy()
+        if hierarchy:
+            current_layer = self.get_layer()
+            if current_layer is None:
+                return None
+            for index, layer in enumerate(hierarchy):
+                if layer is current_layer and index > 0:
+                    return hierarchy[index - 1]
+        return None
+
+
+class DocumentSkillSetMixin(DocumentNodeMixin):
+
+    @property
+    def next_layer_title(self):
+        hierarchy = self.get_layer_hierarchy()
+        if len(hierarchy) > 1:
+            return hierarchy[-1].title
+        return _('Skill')
+
+
+class DocumentSkillMixin(DocumentSkillSetMixin):
+
+    @property
+    def layer_title(self):
+        layer = self.get_layer()
+        if layer is None:
+            return _('Skill')
+        return layer.title
 
 
 class DocumentAddLinks(flourish.page.RefineLinksViewlet):
@@ -219,15 +327,11 @@ class DocumentAddNodeLink(flourish.page.LinkViewlet, DocumentMixin):
 
     @property
     def title(self):
-        return self.layer_title
+        return self.next_layer_title
 
     @property
     def url(self):
-        if len(self.layer_heirarchy) < 3:
-            url = 'add_document_skillset.html'
-        else:
-            url = 'add_document_node.html'
-        return '%s%s' % (url, self.query_string)
+        return self.add_url
 
 
 class DocumentView(flourish.form.DisplayForm, DocumentMixin):
@@ -238,8 +342,17 @@ class DocumentView(flourish.form.DisplayForm, DocumentMixin):
     fields = z3c.form.field.Fields(IDocument).select('title', 'description')
 
     @property
+    def legend(self):
+        return _('${layer} list',
+                 mapping={'layer': self.next_layer_title})
+
+    @property
     def can_edit(self):
         return flourish.canEdit(self.context)
+
+    @property
+    def edit_url(self):
+        return absoluteURL(self.context, self.request) + '/edit.html'
 
     @property
     def done_link(self):
@@ -277,40 +390,43 @@ class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
         self.actions['cancel'].addClass('button-cancel')
 
 
-class DocumentNodeView(flourish.page.Page, DocumentNodeMixin):
+class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
     """Same as DocumentView but for a particular node"""
 
-    @property
-    def title(self):
-        return self.context.title
+    template = InheritTemplate(flourish.page.Page.template)
+    label = None
+
+    fields = z3c.form.field.Fields(INode).select('title', 'description')
 
     @property
     def legend(self):
-        layer = self.add_layer
-        if layer is None:
-            return _('Skill list')
         return _('${layer} list',
-                 mapping={'layer': layer.title})
+                 mapping={'layer': self.next_layer_title})
 
     @property
-    def rows(self):
-        rows = []
-        for attr in ['title', 'description']:
-            rows.append({
-                'label': INode[attr].title,
-                'value': getattr(self.context, attr),
-                })
-        return rows
+    def can_edit(self):
+        return flourish.canEdit(self.context)
+
+    @property
+    def edit_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_layer())
+        return '%s/edit_document_node.html%s' % (url, query_string)
 
     @property
     def done_link(self):
-        parents = list(self.context.parents)
-        if parents:
-            parent = parents[0]
-            return '%s/document.html' % absoluteURL(parent, self.request)
-        else:
+        document = self.get_document()
+        if document is None:
             app = ISchoolToolApplication(None)
-            return '%s/document.html' % absoluteURL(app, self.request)
+            return '%s/documents' % absoluteURL(app, self.request)
+        layer = self.get_previous_layer()
+        if layer is not None:
+            for parent in self.context.parents:
+                if layer in parent.layers:
+                    url = absoluteURL(parent, self.request)
+                    query_string = self.build_query_string(layer=layer)
+                    return '%s/document.html%s' % (url, query_string)
+        return absoluteURL(document, self.request)
 
 
 class DocumentNodeAddLinks(flourish.page.RefineLinksViewlet):
@@ -321,16 +437,11 @@ class DocumentNodeAddNodeLink(flourish.page.LinkViewlet, DocumentNodeMixin):
 
     @property
     def title(self):
-        layer = self.add_layer
-        if layer is None:
-            return 'Skill'
-        return layer.title
+        return self.next_layer_title
 
     @property
     def url(self):
-        if self.add_layer is None:
-            return 'add_document_skill.html'
-        return 'add_document_node.html'
+        return self.add_url
 
 
 class DocumentAddNodeBase(flourish.form.AddForm):
@@ -341,19 +452,13 @@ class DocumentAddNodeBase(flourish.form.AddForm):
 
     @property
     def subtitle(self):
-        layer = self.add_layer
-        if layer is None:
-            return ''
         return _('Add ${layer}',
-                 mapping={'layer': layer.title})
+                 mapping={'layer': self.layer_title})
 
     @property
     def legend(self):
-        layer = self.add_layer
-        if layer is None:
-            return ''
         return _('${layer} Information',
-                 mapping={'layer': layer.title})
+                 mapping={'layer': self.layer_title})
 
     def updateActions(self):
         super(DocumentAddNodeBase, self).updateActions()
@@ -373,10 +478,8 @@ class DocumentAddNodeBase(flourish.form.AddForm):
             data['description'] = u''
         node = Node(data['title'])
         z3c.form.form.applyChanges(self, node, data)
-        context = self.node_context
-        if context is not None:
-            node.parents.add(removeSecurityProxy(context))
-        layer = self.add_layer
+        node.parents.add(removeSecurityProxy(self.context))
+        layer = self.get_layer()
         if layer is not None:
             node.layers.add(removeSecurityProxy(layer))
         return node
@@ -388,9 +491,6 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         nodes[name] = node
         return node
 
-    def nextURL(self):
-        return absoluteURL(self.context, self.request) + '/document.html'
-
 
 class DocumentAddNodeView(DocumentAddNodeBase, DocumentMixin):
     """Add Node from DocumentView"""
@@ -398,6 +498,9 @@ class DocumentAddNodeView(DocumentAddNodeBase, DocumentMixin):
     @property
     def title(self):
         return _('Skills Document')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
 
 
 class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
@@ -407,8 +510,12 @@ class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
     def title(self):
         return self.context.title
 
+    def nextURL(self):
+        return absoluteURL(self.context, self.request) + '/document.html'
 
-class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
+                           DocumentNodeMixin):
     fields = z3c.form.field.Fields(INode)
     fields = fields.select('title', 'description')
 
@@ -438,8 +545,199 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm):
     def nextURL(self):
         return absoluteURL(self.context, self.request) + '/document.html'
 
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_layer())
+        return '%s/document.html%s' % (url, query_string)
 
-class DocumentNodeAddSkillView(SkillAddView):
+
+class DocumentAddSkillSetBase(flourish.form.AddForm):
+
+    _skillset = None
+    label = None
+    fields = z3c.form.field.Fields(ISkillSet)
+    fields = fields.select('title', 'label', 'external_id')
+
+    @property
+    def legend(self):
+        return self.layer_title
+
+    @property
+    def subtitle(self):
+        return _('Add ${layer}',
+                 mapping={'layer': self.layer_title})
+
+    def updateActions(self):
+        super(DocumentAddSkillSetBase, self).updateActions()
+        self.actions['add'].addClass('button-ok')
+        self.actions['cancel'].addClass('button-cancel')
+
+    def create(self, data):
+        if not data['label']:
+            title = unicode(data['title'])
+            if len(title) < 10:
+                data['label'] = title
+            else:
+                data['label'] = title[:7]+'...'
+        skillset = SkillSet(data['title'])
+        z3c.form.form.applyChanges(self, skillset, data)
+        self._skillset = skillset
+        return skillset
+
+    def add(self, skillset):
+        skillsets = ISkillSetContainer(ISchoolToolApplication(None))
+        chooser = INameChooser(skillsets)
+        name = unicode(skillset.title).encode('punycode')
+        name = name[:8]+str(len(skillsets)+1)
+        name = chooser.chooseName(name, skillset)
+        skillsets[name] = skillset
+        removeSecurityProxy(self.context.skillsets).add(
+            removeSecurityProxy(skillset))
+        return skillset
+
+    def nextURL(self):
+        if self._skillset is not None:
+            url = absoluteURL(self._skillset, self.request) + '/document.html'
+            layer = self.get_layer()
+        else:
+            url = self.contextURL()
+            layer = self.get_previous_layer()
+        query_string = self.build_query_string(layer=layer,
+                                               node=self.get_node())
+        return '%s%s' % (url, query_string)
+
+
+class DocumentAddSkillSetView(DocumentAddSkillSetBase, DocumentMixin):
+    """Add SkillSet from DocumentView"""
+
+    def contextURL(self):
+        return absoluteURL(self.context, self.request)
+
+
+class DocumentNodeAddSkillSetView(DocumentAddSkillSetBase, DocumentNodeMixin):
+    """Add SkillSet from DocumentNodeView"""
+
+    def contextURL(self):
+        return absoluteURL(self.context, self.request) + '/document.html'
+
+
+class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
+    template = InheritTemplate(flourish.page.Page.template)
+    fields = z3c.form.field.Fields(ISkillSet)
+    fields = fields.select('label', 'external_id')
+
+    @property
+    def legend(self):
+        layer = self.get_next_layer()
+        if layer is None:
+            return _('Skills')
+        return _('${layer} list',
+                 mapping={'layer': layer.title})
+
+    @property
+    def can_edit(self):
+        return flourish.canEdit(self.context)
+
+    @property
+    def edit_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_layer(),
+                                               node=self.get_node())
+        return '%s/edit_document_skillset.html%s' % (url, query_string)
+
+    @property
+    def done_link(self):
+        app = ISchoolToolApplication(None)
+        document = self.get_document()
+        if document is None:
+            return '%s/skills' % absoluteURL(app, self.request)
+        node_id = self.request.get('node', '')
+        node = INodeContainer(app).get(node_id, None)
+        if node is not None:
+            previous_layer = self.get_previous_layer()
+            query_string = self.build_query_string(layer=previous_layer)
+            return '%s/document.html%s' % (absoluteURL(node, self.request),
+                                           query_string)
+        else:
+            return '%s/index.html' % absoluteURL(document, self.request)
+
+
+class DocumentSkillSetSkillTable(table.ajax.Table, DocumentSkillSetMixin):
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+    def sortOn(self):
+        return (("required", True), ("title", False))
+
+    def title_url_formatter(self, value, item, formatter):
+        query_string = self.build_query_string(layer=self.get_next_layer(),
+                                               node=self.get_node())
+        url = '%s/document.html%s' % (absoluteURL(item, formatter.request),
+                                      query_string)
+        return '<a href="%s">%s</a>' % (url, value)
+
+    def columns(self):
+        title = zc.table.column.GetterColumn(
+            name='title',
+            title=_(u"Title"),
+            cell_formatter=lambda v, i, f: self.title_url_formatter(v, i, f),
+            getter=lambda i, f: i.title)
+        directlyProvides(title, zc.table.interfaces.ISortableColumn)
+        required = zc.table.column.GetterColumn(
+            name='required',
+            title=_(u'Required'),
+            getter=lambda i, f: i.required and _('required') or _('optional'))
+        directlyProvides(required, zc.table.interfaces.ISortableColumn)
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or '')
+        return [required, label, title]
+
+
+class DocumentSkillSetEditView(SkillSetEditView, DocumentSkillSetMixin):
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_layer(),
+                                               node=self.get_node())
+        return '%s/document.html%s' % (url, query_string)
+
+
+class DocumentSkillSetLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class DocumentAddSkillLink(flourish.page.LinkViewlet, DocumentSkillSetMixin):
+
+    @property
+    def title(self):
+        return self.next_layer_title
+
+    @property
+    def url(self):
+        url = 'add_document_skill.html'
+        query_string = self.build_query_string(layer=self.get_next_layer(),
+                                               node=self.get_node())
+        return '%s%s' % (url, query_string)
+
+
+class DocumentAddSkillView(SkillAddView, DocumentSkillSetMixin):
+
+    @property
+    def legend(self):
+        return _('${layer} Information',
+                 mapping={'layer': self.next_layer_title})
+
+    @property
+    def subtitle(self):
+        return _('Add ${layer}',
+                 mapping={'layer': self.next_layer_title})
 
     def create(self, data):
         skill = Skill(data['title'])
@@ -448,20 +746,7 @@ class DocumentNodeAddSkillView(SkillAddView):
         return skill
 
     def add(self, skill):
-        skillsets = list(self.context.skillsets)
-        if skillsets:
-            skillset = skillsets[0]
-        else:
-            skillset = SkillSet(self.context.title)
-            skillsets = ISkillSetContainer(ISchoolToolApplication(None))
-            chooser = INameChooser(skillsets)
-            name = unicode(skillset.title).encode('punycode')
-            name = name[:8]+str(len(skillsets)+1)
-            name = chooser.chooseName(name, skillset)
-            skillsets[name] = skillset
-            removeSecurityProxy(self.context.skillsets).add(
-                removeSecurityProxy(skillset))
-
+        skillset = self.context
         if not skill.label:
             skill.label = u'%02d' % (len(skillset) + 1)
         chooser = INameChooser(skillset)
@@ -469,7 +754,7 @@ class DocumentNodeAddSkillView(SkillAddView):
             name = skill.external_id
         else:
             name = unicode(skill.title).encode('punycode')
-            name = name[:8]+str(len(skillsets)+1)
+            name = name[:8]+str(len(skillset)+1)
         name = chooser.chooseName(name, skill)
         skillset[name] = skill
         return skill
@@ -477,34 +762,42 @@ class DocumentNodeAddSkillView(SkillAddView):
     def nextURL(self):
         url = absoluteURL(self.context, self.request)
         if self.add_next:
-            return url + '/add_document_skill.html'
-        return url + '/document.html'
+            query_string = self.build_query_string(layer=self.get_layer(),
+                                                   node=self.get_node())
+            return '%s/add_document_skill.html%s' % (url, query_string)
+        else:
+            previous_layer = self.get_previous_layer()
+            query_string = self.build_query_string(layer=previous_layer,
+                                                   node=self.get_node())
+            return '%s/document.html%s' % (url, query_string)
 
 
-class DocumentNodeSkillView(SkillView):
+class DocumentSkillView(SkillView, DocumentSkillMixin):
+
+    @property
+    def can_edit(self):
+        return flourish.canEdit(self.context)
 
     @property
     def edit_url(self):
-        next_url = self.request.get('next_url', '')
-        if next_url:
-            next_url = '?next_url=' + next_url
         url = absoluteURL(self.context, self.request)
-        return '%s/edit_document_skill.html%s' % (url, next_url)
+        query_string = self.build_query_string(layer=self.get_layer(),
+                                               node=self.get_node())
+        return '%s/edit_document_skill.html%s' % (url, query_string)
 
     @property
-    def done_url(self):
-        next_url = self.request.get('next_url')
-        if next_url:
-            return next_url + '/document.html'
-        return absoluteURL(self.context.__parent__, self.request)
+    def done_link(self):
+        url = absoluteURL(self.context.__parent__, self.request)
+        query_string = self.build_query_string(layer=self.get_previous_layer(),
+                                               node=self.get_node())
+        return '%s/document.html%s' % (url, query_string)
 
 
-class DocumentNodeSkillEditView(SkillEditView):
+class DocumentSkillEditView(SkillEditView, DocumentSkillMixin):
 
     def nextURL(self):
-        next_url = self.request.get('next_url', '')
-        if next_url:
-            next_url = '?next_url=' + next_url
         url = absoluteURL(self.context, self.request)
-        return '%s/document_skill.html%s' % (url, next_url)
+        query_string = self.build_query_string(layer=self.get_layer(),
+                                               node=self.get_node())
+        return '%s/document.html%s' % (url, query_string)
 
