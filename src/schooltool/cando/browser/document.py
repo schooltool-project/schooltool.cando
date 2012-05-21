@@ -399,6 +399,11 @@ class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
     fields = z3c.form.field.Fields(INode).select('title', 'description')
 
     @property
+    def subtitle(self):
+        return _('View ${layer}',
+                 mapping={'layer': self.layer_title})
+
+    @property
     def legend(self):
         return _('${layer} list',
                  mapping={'layer': self.next_layer_title})
@@ -627,6 +632,11 @@ class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
     fields = fields.select('label', 'external_id')
 
     @property
+    def subtitle(self):
+        return _('View ${layer}',
+                 mapping={'layer': self.layer_title})
+
+    @property
     def legend(self):
         layer = self.get_next_layer()
         if layer is None:
@@ -773,6 +783,11 @@ class DocumentAddSkillView(SkillAddView, DocumentSkillSetMixin):
 
 
 class DocumentSkillView(SkillView, DocumentSkillMixin):
+
+    @property
+    def subtitle(self):
+        return _('View ${layer}',
+                 mapping={'layer': self.layer_title})
 
     @property
     def can_edit(self):

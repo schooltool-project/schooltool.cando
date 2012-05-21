@@ -239,7 +239,6 @@
       name="document.html"
       for="schooltool.cando.interfaces.ISkill"
       class=".document.DocumentSkillView"
-      subtitle="View Skill"
       content_template="templates/document_skill.pt"
       permission="schooltool.view"
       />
