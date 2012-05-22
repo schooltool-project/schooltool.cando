@@ -143,6 +143,9 @@ class DocumentAddView(flourish.form.AddForm):
 
 class DocumentMixin(object):
 
+    def is_document(self):
+        return IDocument(self.context, None) is not None
+
     def get_document(self):
         return self.context
 
