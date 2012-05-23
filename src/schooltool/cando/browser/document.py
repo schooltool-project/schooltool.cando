@@ -47,6 +47,7 @@ from schooltool.app.browser.app import ContentTitle
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
+from schooltool.cando.browser.model import LayersTable
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
@@ -391,6 +392,43 @@ class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
         super(DocumentEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+
+class EditDocumentHierarchyView(EditRelationships):
+    current_title = _("Current document hierarchy layers")
+    available_title = _("Available layers")
+
+    def getCollection(self):
+        return self.context.hierarchy
+
+    def getAvailableItemsContainer(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class LayerContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+
+class AvailableLayersTable(LayerContainerSourceMixin,
+                           RelationshipAddTableMixin,
+                           LayersTable):
+    pass
+
+
+class RemoveLayersTable(LayerContainerSourceMixin,
+                        RelationshipRemoveTableMixin,
+                        LayersTable):
+    pass
 
 
 class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
