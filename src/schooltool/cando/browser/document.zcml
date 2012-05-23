@@ -122,6 +122,48 @@
 
   <flourish:page
       name="document.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerView"
+      content_template="templates/layer.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerEditView"
+      content_template="templates/form.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer_parents.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.EditDocumntLayerParentsView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="document.html"
       for="schooltool.cando.interfaces.INode"
       class=".document.DocumentNodeView"
       content_template="templates/document.pt"

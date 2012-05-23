@@ -47,7 +47,8 @@ from schooltool.app.browser.app import ContentTitle
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
-from schooltool.cando.browser.model import LayersTable
+from schooltool.cando.browser.model import LayersTable, LayerView, LayerEditView
+from schooltool.cando.browser.model import EditParentLayersView
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
@@ -429,6 +430,45 @@ class RemoveLayersTable(LayerContainerSourceMixin,
                         RelationshipRemoveTableMixin,
                         LayersTable):
     pass
+
+
+class DocumentLayerView(LayerView, DocumentNodeMixin):
+
+    @property
+    def edit_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/edit_document_layer.html%s' % (url, query_string)
+
+    @property
+    def edit_parents_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/edit_document_layer_parents.html%s' % (url, query_string)
+
+    @property
+    def done_link(self):
+        document = self.get_document()
+        if document is None:
+            app = ISchoolToolApplication(None)
+            return '%s/documents' % absoluteURL(app, self.request)
+        return absoluteURL(document, self.request)
+
+
+class DocumentLayerEditView(LayerEditView, DocumentNodeMixin):
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/document.html%s' % (url, query_string)
+
+
+class EditDocumntLayerParentsView(EditParentLayersView, DocumentNodeMixin):
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/document.html%s' % (url, query_string)
 
 
 class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):

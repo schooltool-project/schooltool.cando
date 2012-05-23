@@ -2,7 +2,7 @@
   <h3>
     <tal:block replace="context/title" />
     <a class="modify" href="" title="Edit this Layer"
-       tal:attributes="href string:${context/@@absolute_url}/edit.html"
+       tal:attributes="href view/edit_url"
        i18n:attributes="title"
        tal:condition="context/schooltool:can_edit">
       <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
@@ -75,7 +75,7 @@
   <h3>
     <tal:block i18n:translate="">Parent layers</tal:block>
     <a class="modify" href="" title="Edit parents"
-       tal:attributes="href string:${context/@@absolute_url}/edit_parents.html"
+       tal:attributes="href view/edit_parents_url"
        i18n:attributes="title"
        tal:condition="context/schooltool:can_edit">
       <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
