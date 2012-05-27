@@ -112,6 +112,32 @@ class DocumentAddView(flourish.form.AddForm):
     legend = _('Document Information')
     fields = z3c.form.field.Fields(IDocument).select('title', 'description')
 
+    @property
+    def layer_titles(self):
+        items = []
+        for key in [k for k in self.request.keys() if k.startswith('row')]:
+            index = int(key[3:])
+            items.append([index, self.request[key]])
+        return [v for k, v in reversed(sorted(items))]
+
+    @property
+    def nonempty_titles(self):
+        return [t for t in self.layer_titles if t]
+
+    def rows(self):
+        titles = self.layer_titles
+        if not titles:
+            titles = [_('SkillSet'), _('Skill')]
+        num_titles = len(titles)
+        rows = []
+        for index, title in enumerate(titles):
+            rows.append({
+                'name': 'row%d' % (num_titles - index - 1),
+                'value': title,
+                'add': index == 0,
+                })
+        return rows
+
     def updateActions(self):
         super(DocumentAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
@@ -137,6 +163,18 @@ class DocumentAddView(flourish.form.AddForm):
         name = chooser.chooseName(u'', document)
         self.context[name] = document
         self._document = document
+
+        layers = ILayerContainer(ISchoolToolApplication(None))
+        chooser = INameChooser(layers)
+        previous_layer = None
+        for title in self.nonempty_titles:
+            layer = Layer(title)
+            name = chooser.chooseName(u'', layer)
+            layers[name] = layer
+            if previous_layer is not None:
+                layer.parents.add(previous_layer)
+            document.hierarchy.add(layer)
+            previous_layer = layer
         return document
 
     def nextURL(self):

@@ -70,7 +70,7 @@
       name="add.html"
       for="schooltool.cando.interfaces.IDocumentContainer"
       class=".document.DocumentAddView"
-      content_template="templates/form.pt"
+      content_template="templates/document_add.pt"
       permission="schooltool.edit"
       title="Skills Documents"
       subtitle="Add Document"
