@@ -24,12 +24,17 @@ from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.course.interfaces import ICourseContainer
+from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
+    ERROR_INVALID_SCHOOL_YEAR, ERROR_MISSING_YEAR_ID, ERROR_INVALID_COURSE_ID)
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+
+from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import ILayerContainer, INodeContainer
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.model import Layer, Node
 from schooltool.cando.skill import SkillSet, Skill
-from schooltool.export.importer import ImporterBase
-from schooltool.export.importer import FlourishMegaImporter
 
 from schooltool.common import SchoolToolMessage as _
 
@@ -257,6 +262,55 @@ class NodesImporter(ImporterBase):
                 node.skillsets.add(removeSecurityProxy(skillsets[part]))
 
 
+class CourseSkillsImporter(ImporterBase):
+
+    sheet_name = 'CourseSkills'
+
+    def process(self):
+        sh = self.sheet
+        skillsets = ISkillSetContainer(self.context)
+        schoolyears = ISchoolYearContainer(self.context)
+        year = None
+
+        for row in range(1, sh.nrows):
+            if (sh.cell_value(rowx=row, colx=0) == '' and
+                sh.cell_value(rowx=row, colx=1) == ''):
+                break
+
+            num_errors = len(self.errors)
+            year_id = self.getTextFromCell(sh, row, 0)
+            course_id = self.getRequiredTextFromCell(sh, row, 1)
+            course_skillset_ids = self.getTextFromCell(sh, row, 2)
+            if num_errors < len(self.errors):
+                continue
+
+            if year_id:
+                if year_id not in schoolyears:
+                    self.error(row, 0, ERROR_INVALID_SCHOOL_YEAR)
+                    year = None
+                else:
+                    year = schoolyears[year_id]
+                    courses = ICourseContainer(year)
+            elif year is None:
+                self.error(row, 0, ERROR_MISSING_YEAR_ID)
+            if year is None:
+                continue
+
+            if course_id not in courses:
+                self.error(row, 1, ERROR_INVALID_COURSE_ID)
+                continue
+            course = courses[course_id]
+
+            course_skills = ICourseSkills(course)
+            for key in list(course_skills):
+                del course_skills[key]
+            for part in breakupIds(course_skillset_ids):
+                if part not in skillsets:
+                    self.error(row, 2, ERROR_INVALID_SKILLSET)
+                    break
+                course_skills[part] = CourseSkillSet(skillsets[part])
+
+
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
 
     def nextURL(self):
@@ -270,5 +324,6 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
             SkillsImporter,
             LayersImporter,
             NodesImporter,
+            CourseSkillsImporter,
             ]
 
