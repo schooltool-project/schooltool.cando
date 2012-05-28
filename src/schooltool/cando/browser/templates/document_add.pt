@@ -1,0 +1,69 @@
+<div>
+  <metal:block use-macro="macro:form">
+    <metal:block fill-slot="above-buttons">
+      <style type="text/css">
+          table.document-add tbody td {
+              padding: 0px;
+          }
+
+          table.document-add td, table.document-add th {
+              width: 250px;
+          }
+
+          table.document-add tbody td.buttons input[type="submit"] {
+              height: 24px;
+          }
+
+          table.document-add tbody input[type="text"] {
+              background-color: #ffffff;
+              border: 1px solid #ccc1c1;
+              color: #333333;
+              font-size: 12px;
+              height: 20px;
+              width: 265px;
+          }
+      </style>
+      <script type="text/javascript">
+          $(document).ready(function() {
+              $('#add-button').click(function(e) {
+                  var this_row = $(this).closest('tr');
+                  var this_elem = $(this_row).find('input')[0];
+                  if (!$(this_elem).attr('value')){
+                      return false;
+                  }
+                  var name = $(this_elem).attr('name');
+                  var new_name = 'row' + (Number(name.substring(3)) + 1);
+                  new_row = $(this_row).clone();
+                  $(new_row).find('#add-button').remove();
+                  $(this_elem).attr('name', new_name);
+                  $(this_elem).attr('value', '');
+                  new_row.insertAfter(this_row);
+                  return false;
+              });
+          });
+      </script>
+      <h3>
+        Layer Hierarchy
+      </h3>
+      <table class="document-add">
+        <thead>
+          <tr>
+            <th i18n:translate="">Title</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="row view/rows">
+            <td>
+              <input type="text" tal:attributes="name row/name; value row/value" />
+            </td>
+            <td class="buttons">
+              <input type="submit" id="add-button" class="button-ok" value="Add layer"
+                     tal:condition="row/add" i18n:attributes="value" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </metal:block>
+  </metal:block>
+</div>

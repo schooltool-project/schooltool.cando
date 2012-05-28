@@ -70,7 +70,7 @@
       name="add.html"
       for="schooltool.cando.interfaces.IDocumentContainer"
       class=".document.DocumentAddView"
-      content_template="templates/form.pt"
+      content_template="templates/document_add.pt"
       permission="schooltool.edit"
       title="Skills Documents"
       subtitle="Add Document"
@@ -92,6 +92,74 @@
       subtitle="Edit"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_hierarchy.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.EditDocumentHierarchyView"
+      subtitle="Edit Layer Hierarchy"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".document.AvailableLayersTable"
+      for="schooltool.cando.interfaces.IDocument"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumentHierarchyView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".document.RemoveLayersTable"
+      for="schooltool.cando.interfaces.IDocument"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumentHierarchyView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerView"
+      content_template="templates/layer.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerEditView"
+      content_template="templates/form.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer_parents.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.EditDocumntLayerParentsView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
       />
 
   <flourish:page

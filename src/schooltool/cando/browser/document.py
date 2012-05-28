@@ -47,6 +47,8 @@ from schooltool.app.browser.app import ContentTitle
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
+from schooltool.cando.browser.model import LayersTable, LayerView, LayerEditView
+from schooltool.cando.browser.model import EditParentLayersView
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
@@ -110,6 +112,32 @@ class DocumentAddView(flourish.form.AddForm):
     legend = _('Document Information')
     fields = z3c.form.field.Fields(IDocument).select('title', 'description')
 
+    @property
+    def layer_titles(self):
+        items = []
+        for key in [k for k in self.request.keys() if k.startswith('row')]:
+            index = int(key[3:])
+            items.append([index, self.request[key]])
+        return [v for k, v in reversed(sorted(items))]
+
+    @property
+    def nonempty_titles(self):
+        return [t for t in self.layer_titles if t]
+
+    def rows(self):
+        titles = self.layer_titles
+        if not titles:
+            titles = [_('SkillSet'), _('Skill')]
+        num_titles = len(titles)
+        rows = []
+        for index, title in enumerate(titles):
+            rows.append({
+                'name': 'row%d' % (num_titles - index - 1),
+                'value': title,
+                'add': index == 0,
+                })
+        return rows
+
     def updateActions(self):
         super(DocumentAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
@@ -135,6 +163,18 @@ class DocumentAddView(flourish.form.AddForm):
         name = chooser.chooseName(u'', document)
         self.context[name] = document
         self._document = document
+
+        layers = ILayerContainer(ISchoolToolApplication(None))
+        chooser = INameChooser(layers)
+        previous_layer = None
+        for title in self.nonempty_titles:
+            layer = Layer(title)
+            name = chooser.chooseName(u'', layer)
+            layers[name] = layer
+            if previous_layer is not None:
+                layer.parents.add(previous_layer)
+            document.hierarchy.add(layer)
+            previous_layer = layer
         return document
 
     def nextURL(self):
@@ -142,6 +182,9 @@ class DocumentAddView(flourish.form.AddForm):
 
 
 class DocumentMixin(object):
+
+    def is_document(self):
+        return IDocument(self.context, None) is not None
 
     def get_document(self):
         return self.context
@@ -388,6 +431,82 @@ class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
         super(DocumentEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+
+class EditDocumentHierarchyView(EditRelationships):
+    current_title = _("Current document hierarchy layers")
+    available_title = _("Available layers")
+
+    def getCollection(self):
+        return self.context.hierarchy
+
+    def getAvailableItemsContainer(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class LayerContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+
+class AvailableLayersTable(LayerContainerSourceMixin,
+                           RelationshipAddTableMixin,
+                           LayersTable):
+    pass
+
+
+class RemoveLayersTable(LayerContainerSourceMixin,
+                        RelationshipRemoveTableMixin,
+                        LayersTable):
+    pass
+
+
+class DocumentLayerView(LayerView, DocumentNodeMixin):
+
+    @property
+    def edit_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/edit_document_layer.html%s' % (url, query_string)
+
+    @property
+    def edit_parents_url(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/edit_document_layer_parents.html%s' % (url, query_string)
+
+    @property
+    def done_link(self):
+        document = self.get_document()
+        if document is None:
+            app = ISchoolToolApplication(None)
+            return '%s/documents' % absoluteURL(app, self.request)
+        return absoluteURL(document, self.request)
+
+
+class DocumentLayerEditView(LayerEditView, DocumentNodeMixin):
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/document.html%s' % (url, query_string)
+
+
+class EditDocumntLayerParentsView(EditParentLayersView, DocumentNodeMixin):
+
+    def nextURL(self):
+        url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        return '%s/document.html%s' % (url, query_string)
 
 
 class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
