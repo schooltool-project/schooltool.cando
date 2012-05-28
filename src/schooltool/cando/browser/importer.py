@@ -51,7 +51,7 @@ class SkillSetsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = self.context
+        skillsets = ISkillSetContainer(self.context)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -80,7 +80,7 @@ class SkillsImporter(ImporterBase):
 
     def process(self):
         sh = self.sheet
-        skillsets = self.context
+        skillsets = ISkillSetContainer(self.context)
         skillset = None
 
         for row in range(1, sh.nrows):
@@ -182,14 +182,14 @@ class LayersImporter(ImporterBase):
             if name not in layers:
                 continue
 
-            layer = layers[name]
+            layer = removeSecurityProxy(layers[name])
             for parent in list(layer.parents):
                 layer.parents.remove(parent)
             for part in breakupIds(parents):
                 if part not in layers:
                     self.error(row, 2, ERROR_INVALID_PARENTS)
                     break
-                layer.parents.add(layers[part])
+                layer.parents.add(removeSecurityProxy(layers[part]))
 
 
 class NodesImporter(ImporterBase):
@@ -200,7 +200,7 @@ class NodesImporter(ImporterBase):
         sh = self.sheet
         nodes = INodeContainer(self.context)
         layers = ILayerContainer(self.context)
-        skillsets = ISkillSetContainer(ISchoolToolApplication(None))
+        skillsets = ISkillSetContainer(self.context)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -230,7 +230,7 @@ class NodesImporter(ImporterBase):
             if name not in nodes:
                 continue
 
-            node = nodes[name]
+            node = removeSecurityProxy(nodes[name])
 
             for parent in list(node.parents):
                 node.parents.remove(parent)
@@ -238,7 +238,7 @@ class NodesImporter(ImporterBase):
                 if part not in nodes:
                     self.error(row, 3, ERROR_INVALID_PARENTS)
                     break
-                node.parents.add(nodes[part])
+                node.parents.add(removeSecurityProxy(nodes[part]))
 
             for layer in list(node.layers):
                 node.layers.remove(layer)
@@ -246,7 +246,7 @@ class NodesImporter(ImporterBase):
                 if part not in layers:
                     self.error(row, 4, ERROR_INVALID_LAYERS)
                     break
-                node.layers.add(layers[part])
+                node.layers.add(removeSecurityProxy(layers[part]))
 
             for skillset in list(node.skillsets):
                 node.skillsets.remove(skillset)
@@ -254,13 +254,13 @@ class NodesImporter(ImporterBase):
                 if part not in skillsets:
                     self.error(row, 5, ERROR_INVALID_SKILLSET)
                     break
-                node.skillsets.add(skillsets[part])
+                node.skillsets.add(removeSecurityProxy(skillsets[part]))
 
 
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
 
     def nextURL(self):
-        url = absoluteURL(self.context, self.request)
+        url = absoluteURL(self.context, self.request) + '/manage'
         return url
 
     @property
@@ -268,18 +268,6 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
         return [
             SkillSetsImporter,
             SkillsImporter,
-            ]
-
-
-class YearlySkillsMegaImporter(FlourishMegaImporter):
-
-    def nextURL(self):
-        url = absoluteURL(self.context, self.request)
-        return url
-
-    @property
-    def importers(self):
-        return [
             LayersImporter,
             NodesImporter,
             ]

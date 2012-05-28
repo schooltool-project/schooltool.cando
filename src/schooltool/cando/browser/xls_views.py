@@ -30,8 +30,46 @@ from schooltool.cando.interfaces import ILayerContainer, INodeContainer
 from schooltool.cando.interfaces import ISkillSetContainer
 
 
-class ExportYearlySkillsView(export.ExcelExportView, flourish.page.Page):
-    """A view for exporting yearly skill data to an XLS file"""
+class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
+    """A view for exporting global skill data to an XLS file"""
+
+    def export_skillsets(self, wb):
+        ws = wb.add_sheet('SkillSets')
+
+        headers = ['ID', 'Title', 'External ID', 'Label']
+        for index, header in enumerate(headers):
+            self.write_header(ws, 0, index, header)
+
+        skillsets = ISkillSetContainer(self.context)
+        for index, skillset in enumerate(skillsets.values()):
+            self.write(ws, index + 1, 0, skillset.__name__)
+            self.write(ws, index + 1, 1, skillset.title)
+            self.write(ws, index + 1, 2, skillset.external_id)
+            self.write(ws, index + 1, 3, skillset.label)
+
+    def export_skills(self, wb):
+        ws = wb.add_sheet('Skills')
+
+        headers = ['SkillSet ID', 'Skill ID', 'Title', 'Equivalent',
+                   'Description', 'External ID', 'Label', 'Required', 'Retired']
+        for index, header in enumerate(headers):
+            self.write_header(ws, 0, index, header)
+
+        row = 1
+        skillsets = ISkillSetContainer(self.context)
+        for skillset in skillsets.values():
+            for skill in skillset.values():
+                self.write(ws, row, 0, skillset.__name__)
+                self.write(ws, row, 1, skill.__name__)
+                self.write(ws, row, 2, skill.title)
+                equivalent = ', '.join([s.__name__ for s in skill.equivalent])
+                self.write(ws, row, 3, equivalent)
+                self.write(ws, row, 4, skill.description)
+                self.write(ws, row, 5, skill.external_id)
+                self.write(ws, row, 6, skill.label)
+                self.write(ws, row, 7, skill.required)
+                self.write(ws, row, 8, skill.retired)
+                row += 1
 
     def export_layers(self, wb):
         ws = wb.add_sheet('Layers')
@@ -66,68 +104,14 @@ class ExportYearlySkillsView(export.ExcelExportView, flourish.page.Page):
             self.write(ws, index + 1, 4, skillsets)
 
     def getFileName(self):
-        return 'yearly_skill_data_%s.xls' % self.context.__name__
-
-    def __call__(self):
-        wb = xlwt.Workbook()
-        self.export_layers(wb)
-        self.export_nodes(wb)
-
-        datafile = StringIO()
-        wb.save(datafile)
-        data = datafile.getvalue()
-        self.setUpHeaders(data)
-        disposition = 'filename="%s"' % self.getFileName()
-        self.request.response.setHeader('Content-Disposition', disposition)
-        return data
-
-
-class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
-    """A view for exporting global skill data to an XLS file"""
-
-    def export_skillsets(self, wb):
-        ws = wb.add_sheet('SkillSets')
-
-        headers = ['ID', 'Title', 'External ID', 'Label']
-        for index, header in enumerate(headers):
-            self.write_header(ws, 0, index, header)
-
-        for index, skillset in enumerate(self.context.values()):
-            self.write(ws, index + 1, 0, skillset.__name__)
-            self.write(ws, index + 1, 1, skillset.title)
-            self.write(ws, index + 1, 2, skillset.external_id)
-            self.write(ws, index + 1, 3, skillset.label)
-
-    def export_skills(self, wb):
-        ws = wb.add_sheet('Skills')
-
-        headers = ['SkillSet ID', 'Skill ID', 'Title', 'Equivalent',
-                   'Description', 'External ID', 'Label', 'Required', 'Retired']
-        for index, header in enumerate(headers):
-            self.write_header(ws, 0, index, header)
-
-        row = 1
-        for skillset in self.context.values():
-            for skill in skillset.values():
-                self.write(ws, row, 0, skillset.__name__)
-                self.write(ws, row, 1, skill.__name__)
-                self.write(ws, row, 2, skill.title)
-                equivalent = ', '.join([s.__name__ for s in skill.equivalent])
-                self.write(ws, row, 3, equivalent)
-                self.write(ws, row, 4, skill.description)
-                self.write(ws, row, 5, skill.external_id)
-                self.write(ws, row, 6, skill.label)
-                self.write(ws, row, 7, skill.required)
-                self.write(ws, row, 8, skill.retired)
-                row += 1
-
-    def getFileName(self):
         return 'global_skill_data.xls'
 
     def __call__(self):
         wb = xlwt.Workbook()
         self.export_skillsets(wb)
         self.export_skills(wb)
+        self.export_layers(wb)
+        self.export_nodes(wb)
 
         datafile = StringIO()
         wb.save(datafile)

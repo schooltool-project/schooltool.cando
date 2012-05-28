@@ -65,43 +65,6 @@
       view=".model.NodesView"
       />
 
-  <configure package="schooltool.export">
-
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.cando.browser.skill.SkillSetContainerActionLinks"
-        permission="schooltool.edit"
-        />
-
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
-        permission="schooltool.edit"
-        />
-
-    <flourish:page
-       name="import-skills.html"
-       title="Skills"
-       subtitle="Import Skill Data"
-       for="schooltool.cando.interfaces.ISkillSetContainer"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
-       permission="schooltool.edit" />
-
-    <flourish:page
-       name="import-skills.html"
-       subtitle="Import Skill Data"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.YearlySkillsMegaImporter"
-       permission="schooltool.edit" />
-
-  </configure>
-
   <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ISkillSetContainer"
@@ -692,6 +655,30 @@
       view=".model.EditParentNodesView"
       permission="schooltool.view"
       />
+
+  <!-- All objects imported using global importer -->
+
+  <configure package="schooltool.export">
+
+    <flourish:viewlet
+        name="import-skills.html"
+        after="import.html"
+        title="Import Skill Data"
+        class="schooltool.skin.flourish.page.LinkViewlet"
+        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        permission="schooltool.edit"
+        />
+
+    <flourish:page
+       name="import-skills.html"
+       title="Skills"
+       subtitle="Import Skill Data"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       content_template="templates/f_import.pt"
+       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+       permission="schooltool.edit" />
+
+  </configure>
 
   <include file="document.zcml" />
   <include file="report.zcml" />

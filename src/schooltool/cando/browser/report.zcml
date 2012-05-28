@@ -7,45 +7,9 @@
 
   <!-- Report links, request views and output views -->
 
-  <flourish:viewlet
-      name="skills-reports-links"
-      after="skillset_container_actions"
-      manager="schooltool.skin.flourish.page.IPageRefineManager"
-      class="schooltool.report.browser.report.ReportsLinks"
-      title="Reports"
-      view=".skill.SkillSetContainerView"
-      permission="schooltool.edit"
-      />
-
-  <report:reportLink
-       name="yearly_skills_export"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       layer="schooltool.skin.flourish.IFlourishLayer"
-       permission="schooltool.edit"
-       group="School Year"
-       description="Export skills data for the school year."
-       title="Skill Data"
-       file_type="xls"
-       link="request_yearly_skills_export.html"
-       />
-
-  <flourish:page
-       name="request_yearly_skills_export.html"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       class=".request_reports.RequestYearlySkillsExportView"
-       permission="schooltool.edit"
-       />
-
-  <flourish:page
-       name="export_yearly_skills.xls"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       class=".xls_views.ExportYearlySkillsView"
-       permission="schooltool.edit"
-       />
-
   <report:reportLink
        name="global_skills_export"
-       for="schooltool.cando.interfaces.ISkillSetContainer"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
        layer="schooltool.skin.flourish.IFlourishLayer"
        permission="schooltool.edit"
        group="School"
@@ -57,14 +21,14 @@
 
   <flourish:page
        name="request_global_skills_export.html"
-       for="schooltool.cando.interfaces.ISkillSetContainer"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
        class=".request_reports.RequestGlobalSkillsExportView"
        permission="schooltool.edit"
        />
 
   <flourish:page
        name="export_global_skills.xls"
-       for="schooltool.cando.interfaces.ISkillSetContainer"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
        class=".xls_views.ExportGlobalSkillsView"
        permission="schooltool.edit"
        />
