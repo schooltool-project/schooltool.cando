@@ -24,14 +24,6 @@
       />
 
   <flourish:viewlet
-      name="table"
-      class=".document.DocumentsTable"
-      for="schooltool.cando.interfaces.IDocumentContainer"
-      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      permission="schooltool.view"
-      />
-
-  <flourish:viewlet
       name="documents"
       after="scoresystems"
       title="Skills Documents"
@@ -45,6 +37,25 @@
       for="schooltool.cando.interfaces.IDocumentContainer"
       title="Skills Documents"
       class=".document.DocumentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".document.DocumentsTable"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".document.DocumentsTable"
+      view=".document.DocumentsView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
       permission="schooltool.view"
       />
 
