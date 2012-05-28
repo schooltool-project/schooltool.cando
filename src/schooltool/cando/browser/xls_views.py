@@ -23,11 +23,14 @@ XLS Views
 import xlwt
 from StringIO import StringIO
 
+from schooltool.course.interfaces import ICourseContainer
 from schooltool.export import export
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.skin import flourish
 
 from schooltool.cando.interfaces import ILayerContainer, INodeContainer
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ICourseSkills
 
 
 class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
@@ -103,6 +106,28 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
             skillsets = ', '.join([p.__name__ for p in node.skillsets])
             self.write(ws, index + 1, 4, skillsets)
 
+    def export_course_skills(self, wb):
+        ws = wb.add_sheet('CourseSkills')
+
+        headers = ['Year ID', 'Course ID', 'SkillSets']
+        for index, header in enumerate(headers):
+            self.write_header(ws, 0, index, header)
+
+        skillsets = ISkillSetContainer(self.context)
+        schoolyears = ISchoolYearContainer(self.context)
+        row = 1
+        for year in schoolyears.values():
+            courses = ICourseContainer(year)
+            if not len(courses):
+                continue
+            self.write(ws, row, 0, year.__name__)
+            for course in courses.values():
+                self.write(ws, row, 1, course.__name__)
+                course_skills = ICourseSkills(course)
+                skillsets = ', '.join(course_skills.keys())
+                self.write(ws, row, 2, skillsets)
+                row += 1
+
     def getFileName(self):
         return 'global_skill_data.xls'
 
@@ -112,6 +137,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
         self.export_skills(wb)
         self.export_layers(wb)
         self.export_nodes(wb)
+        self.export_course_skills(wb)
 
         datafile = StringIO()
         wb.save(datafile)
