@@ -109,7 +109,7 @@
 
   <tal:block define="skillsets context/skillsets" condition="skillsets">
     <h3 i18n:translate="">
-      Layers
+      SkillSets
     </h3>
     <p tal:repeat="skillset skillsets"
        tal:content="structure skillset/title" />
