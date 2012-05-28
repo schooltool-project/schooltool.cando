@@ -25,13 +25,6 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from schooltool.report.browser.report import RequestReportDownloadDialog
 
 
-class RequestYearlySkillsExportView(RequestReportDownloadDialog):
-
-    def nextURL(self):
-        url = absoluteURL(self.context, self.request)
-        return url + '/export_yearly_skills.xls'
-
-
 class RequestGlobalSkillsExportView(RequestReportDownloadDialog):
 
     def nextURL(self):

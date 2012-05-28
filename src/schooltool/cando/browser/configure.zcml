@@ -65,43 +65,6 @@
       view=".model.NodesView"
       />
 
-  <configure package="schooltool.export">
-
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.cando.browser.skill.SkillSetContainerActionLinks"
-        permission="schooltool.edit"
-        />
-
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
-        permission="schooltool.edit"
-        />
-
-    <flourish:page
-       name="import-skills.html"
-       title="Skills"
-       subtitle="Import Skill Data"
-       for="schooltool.cando.interfaces.ISkillSetContainer"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
-       permission="schooltool.edit" />
-
-    <flourish:page
-       name="import-skills.html"
-       subtitle="Import Skill Data"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.YearlySkillsMegaImporter"
-       permission="schooltool.edit" />
-
-  </configure>
-
   <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ISkillSetContainer"
@@ -460,14 +423,6 @@
       />
 
   <flourish:viewlet
-      name="table"
-      class=".model.LayersTable"
-      for="schooltool.cando.interfaces.ILayerContainer"
-      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      permission="schooltool.view"
-      />
-
-  <flourish:viewlet
       name="manage-layers-overview"
       after="manage-skills-overview"
       view="schooltool.app.browser.app.ManageSchool"
@@ -481,6 +436,25 @@
       for="schooltool.cando.interfaces.ILayerContainer"
       title="Layers Container"
       class=".model.LayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".model.LayersTable"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".model.LayersTable"
+      view=".model.LayersView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
       permission="schooltool.view"
       />
 
@@ -575,14 +549,6 @@
       />
 
   <flourish:viewlet
-      name="table"
-      class=".model.NodesTable"
-      for="schooltool.cando.interfaces.INodeContainer"
-      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      permission="schooltool.view"
-      />
-
-  <flourish:viewlet
       name="manage-nodes-overview"
       after="manage-layers-overview"
       view="schooltool.app.browser.app.ManageSchool"
@@ -596,6 +562,25 @@
       for="schooltool.cando.interfaces.INodeContainer"
       title="Nodes Container"
       class=".model.NodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".model.NodesTable"
+      for="schooltool.cando.interfaces.INodeContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".model.NodesTable"
+      view=".model.NodesView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
       permission="schooltool.view"
       />
 
@@ -670,6 +655,30 @@
       view=".model.EditParentNodesView"
       permission="schooltool.view"
       />
+
+  <!-- All objects imported using global importer -->
+
+  <configure package="schooltool.export">
+
+    <flourish:viewlet
+        name="import-skills.html"
+        after="import.html"
+        title="Import Skill Data"
+        class="schooltool.skin.flourish.page.LinkViewlet"
+        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        permission="schooltool.edit"
+        />
+
+    <flourish:page
+       name="import-skills.html"
+       title="Skills"
+       subtitle="Import Skill Data"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       content_template="templates/f_import.pt"
+       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+       permission="schooltool.edit" />
+
+  </configure>
 
   <include file="document.zcml" />
   <include file="report.zcml" />
