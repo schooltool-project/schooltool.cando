@@ -28,9 +28,8 @@ from schooltool.export import export
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.skin import flourish
 
-from schooltool.cando.interfaces import ILayerContainer, INodeContainer
-from schooltool.cando.interfaces import ISkillSetContainer
-from schooltool.cando.interfaces import ICourseSkills
+from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
+    ISkillSetContainer, ICourseSkills, IDocument)
 
 
 class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
@@ -91,7 +90,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
     def export_nodes(self, wb):
         ws = wb.add_sheet('Nodes')
 
-        headers = ['ID', 'Title', 'Description', 'Parents', 'Layers', 'SkillSets']
+        headers = ['ID', 'Title', 'Description', 'Documents', 'Parents', 'Layers', 'SkillSets']
         for index, header in enumerate(headers):
             self.write_header(ws, 0, index, header)
 
@@ -100,12 +99,16 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
             self.write(ws, index + 1, 0, node.__name__)
             self.write(ws, index + 1, 1, node.title)
             self.write(ws, index + 1, 2, node.description)
-            parents = ', '.join([p.__name__ for p in node.parents])
-            self.write(ws, index + 1, 3, parents)
+            documents = ', '.join([p.__name__ for p in node.parents
+                                   if IDocument(p, None) is not None])
+            self.write(ws, index + 1, 3, documents)
+            parents = ', '.join([p.__name__ for p in node.parents
+                                 if IDocument(p, None) is None])
+            self.write(ws, index + 1, 4, parents)
             layers = ', '.join([p.__name__ for p in node.layers])
-            self.write(ws, index + 1, 4, layers)
+            self.write(ws, index + 1, 5, layers)
             skillsets = ', '.join([p.__name__ for p in node.skillsets])
-            self.write(ws, index + 1, 5, skillsets)
+            self.write(ws, index + 1, 6, skillsets)
 
     def export_course_skills(self, wb):
         ws = wb.add_sheet('CourseSkills')

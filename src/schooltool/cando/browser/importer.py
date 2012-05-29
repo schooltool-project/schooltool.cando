@@ -30,9 +30,8 @@ from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando.course import CourseSkillSet
-from schooltool.cando.interfaces import ILayerContainer, INodeContainer
-from schooltool.cando.interfaces import ISkillSetContainer
-from schooltool.cando.interfaces import ICourseSkills
+from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
+    ISkillSetContainer, ICourseSkills, IDocumentContainer)
 from schooltool.cando.model import Layer, Node
 from schooltool.cando.skill import SkillSet, Skill
 
@@ -206,6 +205,7 @@ class NodesImporter(ImporterBase):
         nodes = INodeContainer(self.context)
         layers = ILayerContainer(self.context)
         skillsets = ISkillSetContainer(self.context)
+        documents = IDocumentContainer(self.context)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -229,9 +229,10 @@ class NodesImporter(ImporterBase):
                 break
 
             name = self.getTextFromCell(sh, row, 0)
-            parents = self.getTextFromCell(sh, row, 3)
-            node_layers = self.getTextFromCell(sh, row, 4)
-            node_skillsets = self.getTextFromCell(sh, row, 5)
+            node_documents = self.getTextFromCell(sh, row, 3)
+            parents = self.getTextFromCell(sh, row, 4)
+            node_layers = self.getTextFromCell(sh, row, 5)
+            node_skillsets = self.getTextFromCell(sh, row, 6)
             if name not in nodes:
                 continue
 
@@ -244,6 +245,11 @@ class NodesImporter(ImporterBase):
                     self.error(row, 3, ERROR_INVALID_PARENTS)
                     break
                 node.parents.add(removeSecurityProxy(nodes[part]))
+            for part in breakupIds(node_documents):
+                if part not in documents:
+                    self.error(row, 3, ERROR_INVALID_PARENTS)
+                    break
+                node.parents.add(removeSecurityProxy(documents[part]))
 
             for layer in list(node.layers):
                 node.layers.remove(layer)
