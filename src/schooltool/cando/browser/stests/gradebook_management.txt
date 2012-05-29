@@ -1,0 +1,58 @@
+CanDo Gradebook management tests
+================================
+
+We'll test how to add and score Projects and Skills in the CanDo
+gradebook.
+
+Let's do some set up first.
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Add a school year:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+
+Add a term:
+
+    >>> manager.ui.term.add('2012', 'Single Year', '2012-01-01', '2012-12-31')
+
+Add some people:
+
+    >>> manager.ui.person.add('Tom', 'Hoffman', 'tom', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+    >>> manager.ui.person.add('Nestor', 'Guzman', 'nestor', 'pwd')
+
+Add a course:
+
+    >>> manager.ui.course.add('2012', 'Baseball')
+
+Add a section:
+
+    >>> manager.ui.section.add('2012', 'Single Year', 'Baseball')
+
+with instructors:
+
+    >>> manager.ui.section.instructors.add('2012', 'Single Year',
+    ...                                    'Baseball (1)', ['tom'])
+
+and students:
+
+    >>> manager.ui.section.students.add('2012', 'Single Year', 'Baseball (1)',
+    ...                                 ['camila', 'mario', 'nestor'])
+
+Let's login as the teacher:
+
+    >>> tom = browsers.tom
+    >>> tom.ui.login('tom', 'pwd')
+
+The teacher can access CanDo's gradebook using the link in the top
+navigation bar:
+
+    >>> sel = '//ul[@class="navigation"]//a[text()="CanDo"]'
+    >>> tom.query.xpath(sel).click()
+    >>> tom.url
+    u'http://localhost/schoolyears/2012/single-year/sections/1/projects/Project/gradebook'

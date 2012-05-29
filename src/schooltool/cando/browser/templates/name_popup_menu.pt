@@ -1,0 +1,6 @@
+<ul class="popup_menu" i18n:domain="schooltool.cando">
+  <li class="header" i18n:translate="">Name</li>
+  <li>
+    <a href="?sort_by=student" i18n:translate="">Sort by</a>
+  </li>
+</ul>

@@ -25,6 +25,7 @@ from zope.interface import implements, implementer
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapter
 from zope.container.contained import containedEvent
+from zope.location.location import LocationProxy
 from zope.proxy.decorator import SpecificationDecoratorBase
 from zope.proxy import getProxiedObject
 
@@ -161,12 +162,26 @@ class SectionSkills(Worksheets):
         sheets = []
         courses = self.courses
         for course in courses:
-            skills = ICourseSkills(course)
-            sheets.extend(skills.values())
+            skills = []
+            for skill in ICourseSkills(course).values():
+                worksheet = LocationProxy(
+                    skill,
+                    container=self,
+                    name=skill.__name__)
+                skills.append(worksheet)
+            sheets.extend(skills)
         return sheets
 
     def values(self):
         return self.worksheets
+
+    def __getitem__(self, key):
+        items = [(value.__name__, value)
+                 for value in self.values()]
+        return dict(items)[key]
+
+    def keys(self):
+        return [value.__name__ for value in self.values()]
 
 
 @adapter(ISection)

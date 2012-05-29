@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".gradebook.ProjectsGradebook">
+    <require
+        permission="schooltool.view"
+        interface="schooltool.gradebook.interfaces.IReadGradebook" />
+    <require
+        permission="schooltool.edit"
+        interface="schooltool.gradebook.interfaces.IEditGradebook" />
+  </class>
+
+  <class class=".gradebook.SkillsGradebook">
+    <require
+        permission="schooltool.view"
+        interface="schooltool.gradebook.interfaces.IReadGradebook" />
+    <require
+        permission="schooltool.edit"
+        interface="schooltool.gradebook.interfaces.IEditGradebook" />
+  </class>
+
+  <adapter
+      for=".interfaces.IProject"
+      provides=".interfaces.IProjectsGradebook"
+      factory="schooltool.cando.gradebook.ProjectsGradebook"
+      trusted="true"
+      />
+
+  <adapter
+      for=".interfaces.ICourseSkillSet"
+      provides=".interfaces.ISkillsGradebook"
+      factory="schooltool.cando.gradebook.SkillsGradebook"
+      trusted="true"
+      />
+
+  <adapter factory=".gradebook.getSkillScore" />
+
+  <adapter
+      for=".interfaces.IProject
+           zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.publisher.interfaces.IPublishTraverse"
+      factory=".gradebook.ProjectGradebookTraverser" />
+
+  <adapter
+      for=".interfaces.ICourseSkillSet
+           zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.publisher.interfaces.IPublishTraverse"
+      factory=".gradebook.SkillsGradebookTraverser" />
+
+  <adapter
+      for=".interfaces.ICourseSkillSet"
+      provides="schooltool.course.interfaces.ISection"
+      factory=".gradebook.getCourseSkillSetSection"
+      />
+
+</configure>

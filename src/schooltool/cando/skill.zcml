@@ -12,6 +12,10 @@
     <require
         permission="schooltool.view"
         interface=".interfaces.ISkill" />
+    <!-- XXX: hack to bypass GradebookOverview checks -->
+    <require
+        permission="schooltool.view"
+        attributes="scoresystem" />
   </class>
 
   <class class=".skill.SkillSet">
@@ -53,5 +57,12 @@
   <adapter
       factory=".skill.ScoreSystemAppStartup"
       name="schooltool.cando.skill.scoresystem" />
+
+  <adapterTraverserPlugin
+      for="schooltool.course.interfaces.ISection"
+      layer="zope.publisher.interfaces.http.IHTTPRequest"
+      name="skills"
+      adapter="schooltool.cando.interfaces.ISectionSkills"
+      />
 
 </configure>

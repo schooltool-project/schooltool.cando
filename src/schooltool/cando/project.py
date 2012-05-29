@@ -29,7 +29,7 @@ from zope.keyreference.interfaces import IKeyReference
 from zope.proxy import sameProxiedObjects
 
 from schooltool.requirement.requirement import Requirement
-from schooltool.gradebook.activity import Worksheets, GenericWorksheet
+from schooltool.gradebook.activity import Worksheets, Worksheet
 from schooltool.cando.interfaces import IProjects, IProject
 from schooltool.cando.interfaces import ICourseProjects, ICourseProject
 from schooltool.cando.skill import SkillSet
@@ -47,7 +47,7 @@ class Projects(Worksheets):
     annotations_current_worksheet_key = 'schooltool.cando.project.currentworksheet'
 
 
-class Project(SkillSet, GenericWorksheet):
+class Project(SkillSet, Worksheet):
     implements(IProject)
 
 
@@ -138,7 +138,7 @@ getCourseProjects.factory = CourseProjects
 
 @adapter(ICourseProjects)
 @implementer(ICourse)
-def getCourseProjectsCourse(projects):
+def getCourseFromProjects(projects):
     annotations = projects.__parent__
     course = annotations.__parent__
     return course
@@ -163,7 +163,7 @@ getSectionProjects.factory = Projects
 
 @adapter(IProjects)
 @implementer(ISection)
-def getSectionProjectsSection(projects):
+def getSectionFromProjects(projects):
     annotations = projects.__parent__
     section = annotations.__parent__
     return section

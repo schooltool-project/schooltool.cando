@@ -1,0 +1,376 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           xmlns:report="http://namespaces.schooltool.org/report"
+           i18n_domain="schooltool.cando">
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.IProjects"
+      title="CanDo"
+      class=".gradebook.ProjectsBreadcrumbs"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.IProject"
+      title=""
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      title=""
+      />
+
+  <flourish:viewlet
+      name="cando"
+      after="manage_school gradebook"
+      title="CanDo"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      class=".gradebook.CanDoStartupNavLink"
+      permission="schooltool.view"
+      />
+
+  <flourish:activeViewlet
+      name="cando"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".gradebook.CanDoStartupView"
+      />
+
+  <flourish:activeViewlet
+      name="cando"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.IProject"
+      />
+
+  <flourish:viewlet
+      name="gradebook_modes"
+      before="*"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.CanDoModes"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      title="View"
+      permission="schooltool.edit"
+      view=".gradebook.ProjectsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="gradebook_modes"
+      before="*"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.CanDoModes"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      title="View"
+      permission="schooltool.edit"
+      view=".gradebook.SkillsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="gradebook_modes_buttons"
+      manager=".gradebook.CanDoModes"
+      class=".gradebook.CanDoModesViewlet"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="gradebook_overview"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.CanDoProjectsAddLinks"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      title="Add"
+      permission="schooltool.edit"
+      view=".gradebook.ProjectsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="../addSkill.html"
+      class=".gradebook.SkillAddLink"
+      manager=".gradebook.CanDoProjectsAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="../../addProject.html"
+      title="Project"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".gradebook.CanDoProjectsAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="gradebook_settings"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.CanDoProjectsSettingsLinks"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      title="Settings"
+      permission="schooltool.edit"
+      view=".gradebook.ProjectsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="../.."
+      title="Projects"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".gradebook.CanDoProjectsSettingsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.IProjects"
+      subtitle="Projects"
+      content_template="templates/projects.pt"
+      class="schooltool.gradebook.browser.activity.FlourishWorksheetsView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ISectionSkills"
+      subtitle="Skill Sets"
+      content_template="templates/skillsets.pt"
+      class="schooltool.gradebook.browser.activity.FlourishWorksheetsView"
+      permission="schooltool.edit"
+      />
+
+  <configure package="schooltool.skin.flourish">
+
+    <flourish:page
+        name="addProject.html"
+        for="schooltool.cando.interfaces.IProjects"
+        class="schooltool.cando.browser.gradebook.ProjectAddView"
+        content_template="templates/z3c_form_edit.pt"
+        permission="schooltool.edit"
+        title="CanDo"
+        subtitle="New Project"
+        />
+
+  </configure>
+
+  <flourish:page
+      name="addSkill.html"
+      for="schooltool.cando.interfaces.IProject"
+      subtitle="New Skill"
+      class="schooltool.cando.browser.gradebook.ProjectSkillAddView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="cando.html"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      title="CanDo"
+      class=".gradebook.CanDoStartupView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="gradebook-projects"
+      for="schooltool.course.interfaces.ISection"
+      class=".gradebook.SectionProjectsCanDoRedirectView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="gradebook-skills"
+      for="schooltool.course.interfaces.ISection"
+      class=".gradebook.SectionSkillsCanDoRedirectView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      class="schooltool.cando.browser.gradebook.ProjectsGradebookOverview"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="export.xls"
+      for="schooltool.cando.interfaces.IProjects"
+      class="schooltool.gradebook.browser.activity.WorksheetsExportView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view="schooltool.cando.browser.gradebook.ProjectsGradebookOverview"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.edit"
+      />
+
+  <zope:resourceLibrary
+      name="schooltool.cando.flourish"
+      require="schooltool.skin.flourish-gradebook"
+      layer="schooltool.skin.flourish.IFlourishLayer">
+    <directory
+          source="resources"
+          include="cando.css
+                   cando.js"
+          />
+  </zope:resourceLibrary>
+
+  <flourish:page
+      name="name_popup_menu"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      template="templates/name_popup_menu.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="activity_popup_menu"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      class=".gradebook.SkillPopupMenuView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.ISkill"
+      title="CanDo"
+      subtitle="Edit Skill"
+      content_template="templates/skill_edit.pt"
+      class=".gradebook.SkillEditView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".gradebook.ProjectsGradebookTertiaryNavigationManager"
+      view=".gradebook.ProjectsGradebookOverview"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".gradebook.ProjectsGradebookTertiaryNavigationManager"
+      view=".gradebook.SkillsGradebookOverview"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="select_year"
+      class=".gradebook.CanDoProjectsYearNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookYearNavigation"
+      view=".gradebook.ProjectsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="select_term"
+      class=".gradebook.CanDoProjectsTermNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookTermNavigation"
+      view=".gradebook.ProjectsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="select_section"
+      class=".gradebook.CanDoProjectsSectionNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookSectionNavigation"
+      view=".gradebook.ProjectsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <!-- XXX: Some of these are duplicated. Remove them after
+            writing enough stests and maybe unifying both
+            gradebook modes -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISectionSkills"
+      title="CanDo"
+      class=".gradebook.SkillsBreadcrumbs"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view=".gradebook.SkillsGradebookOverview"
+      title=""
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view="schooltool.gradebook.browser.gradebook.FlourishGradeActivity"
+      title=""
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      title=""
+      />
+
+  <flourish:activeViewlet
+      name="cando"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view=".gradebook.SkillsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="select_year"
+      class=".gradebook.CanDoSkillsYearNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookYearNavigation"
+      view=".gradebook.SkillsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="select_term"
+      class=".gradebook.CanDoSkillsTermNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookTermNavigation"
+      view=".gradebook.SkillsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="select_section"
+      class=".gradebook.CanDoSkillsSectionNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishGradebookSectionNavigation"
+      view=".gradebook.SkillsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="gradebook_overview"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      permission="schooltool.edit"
+      view=".gradebook.SkillsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="gradebook_settings"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      permission="schooltool.edit"
+      view=".gradebook.SkillsGradebookOverview"
+      />
+
+  <flourish:viewlet
+      name="gradebook-reports-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      view=".gradebook.SkillsGradebookOverview"
+      permission="schooltool.edit"
+      />
+
+</configure>
