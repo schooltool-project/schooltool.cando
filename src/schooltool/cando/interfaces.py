@@ -25,6 +25,7 @@ from zope.interface import Interface, Attribute
 
 from schooltool.requirement.interfaces import IRequirement
 from schooltool.gradebook.interfaces import IWorksheets, IWorksheet
+from schooltool.gradebook.interfaces import IGradebook
 from schooltool.cando import CanDoMessage as _
 
 
@@ -61,10 +62,6 @@ class ISkillSet(IRequirement, IAttributeAnnotatable):
     label = zope.schema.TextLine(title=_("Short label"), required=False)
 
 
-class ILayerContainerContainer(IContainer):
-    pass
-
-
 class ILayerContainer(IContainer):
     pass
 
@@ -80,18 +77,19 @@ class ILayerContained(ILayer, IContained, IAttributeAnnotatable):
     pass
 
 
-class INodeContainerContainer(IContainer):
-    pass
-
-
 class INodeContainer(IContainer):
     pass
 
 
 class INode(Interface):
 
+    title = zope.schema.TextLine(
+        title=_("Title"),
+        required=True)
     description = zope.schema.TextLine(
-        title=_("Description"))
+        title=_("Description"),
+        required=False,
+        default=u'')
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
@@ -105,6 +103,25 @@ class INode(Interface):
 
 
 class INodeContained(INode, IContained, IAttributeAnnotatable):
+    pass
+
+
+class IDocumentContainer(IContainer):
+    pass
+
+
+class IDocument(INode):
+
+    hierarchy = Attribute("Hierarchy of layers for building node tree")
+
+    def getOrderedHierarchy():
+        """
+          Return the ordered list of layers that represents the document
+          hierarchy.
+        """
+
+
+class IDocumentContained(IDocument, IContained, IAttributeAnnotatable):
     pass
 
 
@@ -164,3 +181,10 @@ class ICourseSkill(ISkill):
 class ISectionSkills(IWorksheets):
     pass
 
+
+class IProjectsGradebook(IGradebook):
+    pass
+
+
+class ISkillsGradebook(IGradebook):
+    pass

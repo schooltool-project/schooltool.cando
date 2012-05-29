@@ -21,6 +21,10 @@ skills.
     ...     while fields:
     ...         print '%-20s%s' % (fields.pop(0) + ':', fields.pop(0))
 
+A school year is needed for importing skillsets and skills:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+
 Let's import a file containing the SkillSets and Skills sheets:
 
     >>> import os

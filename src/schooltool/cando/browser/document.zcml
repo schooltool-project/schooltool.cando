@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           xmlns:report="http://namespaces.schooltool.org/report"
+           i18n_domain="schooltool.cando">
+
+  <!-- Skills Document -->
+
+  <zope:adapter
+      factory=".document.DocumentContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".document.DocumentContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="documents"
+      adapter="schooltool.cando.interfaces.IDocumentContainer"
+      />
+
+  <flourish:viewlet
+      name="documents"
+      after="scoresystems"
+      title="Skills Documents"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager="schooltool.app.browser.app.CustomizeSchoolLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      title="Skills Documents"
+      class=".document.DocumentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".document.DocumentsTable"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".document.DocumentsTable"
+      view=".document.DocumentsView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="documents-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentsAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentsView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Document"
+      view=".document.DocumentsView"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".document.DocumentsAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      class=".document.DocumentAddView"
+      content_template="templates/document_add.pt"
+      permission="schooltool.edit"
+      title="Skills Documents"
+      subtitle="Add Document"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentView"
+      content_template="templates/document.pt"
+      subtitle="View Skills Document"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_hierarchy.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.EditDocumentHierarchyView"
+      subtitle="Edit Layer Hierarchy"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".document.AvailableLayersTable"
+      for="schooltool.cando.interfaces.IDocument"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumentHierarchyView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".document.RemoveLayersTable"
+      for="schooltool.cando.interfaces.IDocument"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumentHierarchyView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerView"
+      content_template="templates/layer.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.DocumentLayerEditView"
+      content_template="templates/form.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_layer_parents.html"
+      for="schooltool.cando.interfaces.ILayer"
+      class=".document.EditDocumntLayerParentsView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentLayersTable"
+      for="schooltool.cando.interfaces.ILayer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".document.EditDocumntLayerParentsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeView"
+      content_template="templates/document.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="document-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentView"
+      />
+
+  <flourish:viewlet
+      name="add_document_node.html"
+      view=".document.DocumentView"
+      class=".document.DocumentAddNodeLink"
+      manager=".document.DocumentAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="document-node-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentNodeAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".document.DocumentNodeView"
+      />
+
+  <flourish:viewlet
+      name="add_document_node.html"
+      view=".document.DocumentNodeView"
+      class=".document.DocumentNodeAddNodeLink"
+      manager=".document.DocumentNodeAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_node.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddNodeView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_document_node.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_skillset.html"
+      for="schooltool.cando.interfaces.IDocument"
+      class=".document.DocumentAddSkillSetView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_skillset.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".document.DocumentNodeAddSkillSetView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentSkillSetView"
+      content_template="templates/document_skillset.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".document.DocumentSkillSetSkillTable"
+      for="schooltool.cando.interfaces.ISkillSet"
+      view=".document.DocumentSkillSetView"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".document.DocumentSkillSetSkillTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="document_skillset_links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentSkillSetLinks"
+      for="schooltool.cando.interfaces.ISkillSet"
+      title="Add"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_document_skillset.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentSkillSetEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="add_document_skill.html"
+      class=".document.DocumentAddSkillLink"
+      manager=".document.DocumentSkillSetLinks"
+      view=".document.DocumentSkillSetView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add_document_skill.html"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".document.DocumentAddSkillView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="document.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".document.DocumentSkillView"
+      content_template="templates/document_skill.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_document_skill.html"
+      for="schooltool.cando.interfaces.ISkill"
+      class=".document.DocumentSkillEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+</configure>

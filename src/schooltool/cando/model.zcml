@@ -3,24 +3,6 @@
 
   <!-- layers -->
 
-  <interface
-      interface=".interfaces.ILayerContainerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
-  <class class=".model.LayerContainerContainer">
-    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
-    <require permission="schooltool.view"
-             attributes="keys values items __iter__ __len__" />
-    <require permission="schooltool.edit"
-             interface="zope.container.interfaces.IWriteContainer" />
-  </class>
-
-  <interface
-      interface=".interfaces.ILayerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
   <class class=".model.LayerContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
     <require permission="schooltool.view"
@@ -28,11 +10,6 @@
     <require permission="schooltool.edit"
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
-
-  <interface
-      interface=".interfaces.ILayer"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <class class=".model.Layer">
     <require permission="schooltool.view"
@@ -48,34 +25,16 @@
 
   <adapter
       for="schooltool.app.interfaces.ISchoolToolApplication"
-      factory=".model.LayerStartUp"
+      factory=".model.LayerAppInit"
       name="schooltool.cando.layer" />
 
-  <adapter factory=".model.RemoveLayersWhenSchoolYearIsDeleted"
-           name="layers" />
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.LayerStartUp"
+      name="schooltool.cando.layer" />
   <adapter factory=".model.getLayerContainer" />
-  <adapter factory=".model.getLayerContainerForApp" />
-  <adapter factory=".model.getSchoolYearForLayerContainer" />
 
   <!-- nodes -->
-
-  <interface
-      interface=".interfaces.INodeContainerContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
-
-  <class class=".model.NodeContainerContainer">
-    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
-    <require permission="schooltool.view"
-             attributes="keys values items __iter__ __len__" />
-    <require permission="schooltool.edit"
-             interface="zope.container.interfaces.IWriteContainer" />
-  </class>
-
-  <interface
-      interface=".interfaces.INodeContainer"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <class class=".model.NodeContainer">
     <allow interface="zope.container.interfaces.ISimpleReadContainer" />
@@ -84,11 +43,6 @@
     <require permission="schooltool.edit"
              interface="zope.container.interfaces.IWriteContainer" />
   </class>
-
-  <interface
-      interface=".interfaces.INode"
-      type="zope.app.content.interfaces.IContentType"
-      />
 
   <class class=".model.Node">
     <require permission="schooltool.view"
@@ -104,18 +58,53 @@
 
   <adapter
       for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.NodeAppInit"
+      name="schooltool.cando.node" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
       factory=".model.NodeStartUp"
       name="schooltool.cando.node" />
 
-  <adapter factory=".model.RemoveNodesWhenSchoolYearIsDeleted"
-           name="nodes" />
   <adapter factory=".model.getNodeContainer" />
-  <adapter factory=".model.getNodeContainerForApp" />
-  <adapter factory=".model.getSchoolYearForNodeContainer" />
 
   <subscriber
       for="schooltool.relationship.interfaces.IBeforeRelationshipEvent"
       handler=".model.preventLayerCycles"
     />
+
+  <!-- documents -->
+
+  <class class=".model.DocumentContainer">
+    <allow interface="zope.container.interfaces.ISimpleReadContainer" />
+    <require permission="schooltool.view"
+             attributes="keys values items __iter__ __len__" />
+    <require permission="schooltool.edit"
+             interface="zope.container.interfaces.IWriteContainer" />
+  </class>
+
+  <class class=".model.Document">
+    <require permission="schooltool.view"
+             interface=".interfaces.IDocument" />
+    <require permission="schooltool.edit"
+             set_schema=".interfaces.IDocument" />
+  </class>
+
+  <adapter
+      for=".interfaces.IDocumentContainer"
+      factory="schooltool.app.app.SimpleNameChooser"
+      provides="zope.container.interfaces.INameChooser" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.DocumentAppInit"
+      name="schooltool.cando.document" />
+
+  <adapter
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      factory=".model.DocumentStartUp"
+      name="schooltool.cando.document" />
+
+  <adapter factory=".model.getDocumentContainer" />
 
 </configure>

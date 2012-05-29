@@ -35,41 +35,35 @@
       view=".skill.SkillSetContainerView"
       />
 
-  <configure package="schooltool.export">
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      />
 
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.app.browser.app.SchoolActionsLinks"
-        permission="schooltool.edit"
-        />
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      />
 
-    <flourish:viewlet
-        name="import-skills.html"
-        title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.schoolyear.browser.schoolyear.FlourishSchoolYearActionLinks"
-        permission="schooltool.edit"
-        />
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      for="schooltool.cando.interfaces.INodeContainer"
+      />
 
-    <flourish:page
-       name="import-skills.html"
-       subtitle="Import Skill Data"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
-       permission="schooltool.edit" />
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".model.LayersView"
+      />
 
-    <flourish:page
-       name="import-skills.html"
-       subtitle="Import Skill Data"
-       for="schooltool.schoolyear.interfaces.ISchoolYear"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.YearlySkillsMegaImporter"
-       permission="schooltool.edit" />
-
-  </configure>
+  <flourish:activeViewlet
+      name="manage_school"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".model.NodesView"
+      />
 
   <flourish:page
       name="index.html"
@@ -145,6 +139,16 @@
       class=".skill.SkillSetContainerLinks"
       for="schooltool.cando.interfaces.ISkillSetContainer"
       title="Add"
+      permission="schooltool.edit"
+      view=".skill.SkillSetContainerView"
+      />
+
+  <flourish:viewlet
+      name="skillset_container_actions"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".skill.SkillSetContainerActionLinks"
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      title="Actions"
       permission="schooltool.edit"
       view=".skill.SkillSetContainerView"
       />
@@ -400,8 +404,7 @@
       permission="schooltool.view"
       />
 
-  <!-- Layers and nodes -->
-
+  <!-- Layers -->
 
   <zope:adapter
       factory=".model.LayerContainerAbsoluteURLAdapter"
@@ -413,18 +416,10 @@
       name="absolute_url"/>
 
   <zope:adapterTraverserPlugin
-      for="schooltool.schoolyear.interfaces.ISchoolYear"
+      for="schooltool.app.interfaces.ISchoolToolApplication"
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       name="layers"
       adapter="schooltool.cando.interfaces.ILayerContainer"
-      />
-
-  <flourish:viewlet
-      name="table"
-      class=".model.LayersTable"
-      for="schooltool.cando.interfaces.ILayerContainer"
-      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      permission="schooltool.view"
       />
 
   <flourish:viewlet
@@ -436,18 +431,30 @@
       class=".model.ManageLayersOverview"
       />
 
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".model.LayersTertiaryNavigationManager"
-      view=".model.LayersView"
-      permission="zope.Public"
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      title="Layers Container"
+      class=".model.LayersView"
+      permission="schooltool.view"
       />
 
-  <flourish:page
-      name="layers"
-      for="schooltool.app.interfaces.ISchoolToolApplication"
-      class=".model.LayersView"
+  <flourish:viewlet
+      name="table"
+      class=".model.LayersTable"
+      for="schooltool.cando.interfaces.ILayerContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".model.LayersTable"
+      view=".model.LayersView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
       permission="schooltool.view"
       />
 
@@ -464,7 +471,7 @@
       name="add.html"
       title="Layer"
       view=".model.LayersView"
-      class=".model.LayersSchoolyearLink"
+      class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".model.LayersAddLinks"
       permission="schooltool.edit"
       />
@@ -475,6 +482,7 @@
       class="schooltool.cando.browser.model.FlourishLayerAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      title="Layers Container"
       subtitle="Add Layer"
       />
 
@@ -521,5 +529,159 @@
       view=".model.EditParentLayersView"
       permission="schooltool.view"
       />
+
+  <!-- Nodes -->
+
+  <zope:adapter
+      factory=".model.NodeContainerAbsoluteURLAdapter"
+      provides="zope.traversing.browser.interfaces.IAbsoluteURL" />
+
+  <zope:adapter
+      factory=".model.NodeContainerAbsoluteURLAdapter"
+      provides="zope.interface.Interface"
+      name="absolute_url"/>
+
+  <zope:adapterTraverserPlugin
+      for="schooltool.app.interfaces.ISchoolToolApplication"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      name="nodes"
+      adapter="schooltool.cando.interfaces.INodeContainer"
+      />
+
+  <flourish:viewlet
+      name="manage-nodes-overview"
+      after="manage-layers-overview"
+      view="schooltool.app.browser.app.ManageSchool"
+      permission="schooltool.edit"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".model.ManageNodesOverview"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      title="Nodes Container"
+      class=".model.NodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".model.NodesTable"
+      for="schooltool.cando.interfaces.INodeContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".model.NodesTable"
+      view=".model.NodesView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="nodes-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".model.NodesAddLinks"
+      title="Add"
+      permission="schooltool.edit"
+      view=".model.NodesView"
+      />
+
+  <flourish:viewlet
+      name="add.html"
+      title="Node"
+      view=".model.NodesView"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".model.NodesAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="add.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      class="schooltool.cando.browser.model.FlourishNodeAddView"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      title="Nodes Container"
+      subtitle="Add Node"
+      />
+
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.NodeView"
+      subtitle="View Node"
+      content_template="templates/node.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.NodeEditView"
+      subtitle="Edit"
+      content_template="templates/form.pt"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="edit_parents.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditParentNodesView"
+      subtitle="Edit Parents"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableParentNodesTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentNodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveParentNodesTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditParentNodesView"
+      permission="schooltool.view"
+      />
+
+  <!-- All objects imported using global importer -->
+
+  <configure package="schooltool.export">
+
+    <flourish:viewlet
+        name="import-skills.html"
+        after="import.html"
+        title="Import Skill Data"
+        class="schooltool.skin.flourish.page.LinkViewlet"
+        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        permission="schooltool.edit"
+        />
+
+    <flourish:page
+       name="import-skills.html"
+       title="Skills"
+       subtitle="Import Skill Data"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       content_template="templates/f_import.pt"
+       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+       permission="schooltool.edit" />
+
+  </configure>
+
+  <include file="document.zcml" />
+  <include file="report.zcml" />
+  <include file="gradebook.zcml" />
 
 </configure>

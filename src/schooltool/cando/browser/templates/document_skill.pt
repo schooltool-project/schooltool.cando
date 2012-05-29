@@ -1,0 +1,28 @@
+<tal:block i18n:domain="schooltool">
+  <h3>
+    <tal:block replace="context/title" />
+    <a class="modify" href="" title="Edit this skill"
+       tal:attributes="href view/edit_url"
+       i18n:attributes="title"
+       tal:condition="view/can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
+  </h3>
+
+  <table class="form-fields">
+    <tbody>
+      <tr tal:repeat="widget view/widgets/values">
+        <td tal:content="widget/label" class="label"/>
+        <td tal:content="structure widget/render" />
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>
+    <a tal:attributes="href view/done_link"
+       i18n:translate="">Done</a>
+  </h3>
+
+</tal:block>

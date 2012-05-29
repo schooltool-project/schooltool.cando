@@ -20,15 +20,21 @@
 Skills importer.
 """
 
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.course.interfaces import ICourseContainer
+from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
+    ERROR_INVALID_SCHOOL_YEAR, ERROR_MISSING_YEAR_ID, ERROR_INVALID_COURSE_ID)
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+
+from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import ILayerContainer, INodeContainer
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.model import Layer, Node
 from schooltool.cando.skill import SkillSet, Skill
-from schooltool.export.importer import ImporterBase
-from schooltool.export.importer import FlourishMegaImporter
 
 from schooltool.common import SchoolToolMessage as _
 
@@ -119,27 +125,34 @@ class SkillsImporter(ImporterBase):
             skill.required = bool(required)
             skill.retired = bool(retired)
 
+        skillset = None
+
         for row in range(1, sh.nrows):
-            if sh.cell_value(rowx=row, colx=0) == '':
+            if (sh.cell_value(rowx=row, colx=0) == '' and
+                sh.cell_value(rowx=row, colx=1) == ''):
                 break
 
-            skillset_id = self.getRequiredTextFromCell(sh, row, 0)
+            skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
             equivalent = self.getTextFromCell(sh, row, 3)
 
-            if skillset_id not in skillsets:
-                continue
-            skillset = skillsets[skillset_id]
-            if name not in skillset:
+            if skillset_id:
+                if skillset_id not in skillsets:
+                    skillset = None
+                else:
+                    skillset = skillsets[skillset_id]
+            if skillset is None or name not in skillset:
                 continue
             skill = skillset[name]
-            for eq in list(skill.equivalent):
-                skill.equivalent.remove(eq)
+
+            equiv = removeSecurityProxy(skill.equivalent)
+            for eq in list(equiv):
+                equiv.remove(eq)
             for part in breakupIds(equivalent):
                 if part not in skillset:
                     self.error(row, 3, ERROR_INVALID_EQUIVALENT)
                     break
-                skill.equivalent.add(skillset[part])
+                equiv.add(removeSecurityProxy(skillset[part]))
 
 
 class LayersImporter(ImporterBase):
@@ -169,17 +182,19 @@ class LayersImporter(ImporterBase):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
 
-            name = self.getRequiredTextFromCell(sh, row, 0)
+            name = self.getTextFromCell(sh, row, 0)
             parents = self.getTextFromCell(sh, row, 2)
+            if name not in layers:
+                continue
 
-            layer = layers[name]
+            layer = removeSecurityProxy(layers[name])
             for parent in list(layer.parents):
                 layer.parents.remove(parent)
             for part in breakupIds(parents):
                 if part not in layers:
                     self.error(row, 2, ERROR_INVALID_PARENTS)
                     break
-                layer.parents.add(layers[part])
+                layer.parents.add(removeSecurityProxy(layers[part]))
 
 
 class NodesImporter(ImporterBase):
@@ -190,7 +205,7 @@ class NodesImporter(ImporterBase):
         sh = self.sheet
         nodes = INodeContainer(self.context)
         layers = ILayerContainer(self.context)
-        skillsets = ISkillSetContainer(ISchoolToolApplication(None))
+        skillsets = ISkillSetContainer(self.context)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -199,54 +214,107 @@ class NodesImporter(ImporterBase):
             num_errors = len(self.errors)
             name = self.getRequiredTextFromCell(sh, row, 0)
             title = self.getRequiredTextFromCell(sh, row, 1)
+            description = self.getTextFromCell(sh, row, 2)
             if num_errors < len(self.errors):
                 continue
 
             if name in nodes:
                 nodes[name].title = title
+                nodes[name].description = description
             else:
-                nodes[name] = Node(title)
+                nodes[name] = Node(title, description)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
 
-            name = self.getRequiredTextFromCell(sh, row, 0)
-            parents = self.getTextFromCell(sh, row, 2)
-            node_layers = self.getTextFromCell(sh, row, 3)
-            node_skillsets = self.getTextFromCell(sh, row, 4)
+            name = self.getTextFromCell(sh, row, 0)
+            parents = self.getTextFromCell(sh, row, 3)
+            node_layers = self.getTextFromCell(sh, row, 4)
+            node_skillsets = self.getTextFromCell(sh, row, 5)
+            if name not in nodes:
+                continue
 
-            node = nodes[name]
+            node = removeSecurityProxy(nodes[name])
 
             for parent in list(node.parents):
-                layer.parents.remove(parent)
+                node.parents.remove(parent)
             for part in breakupIds(parents):
                 if part not in nodes:
-                    self.error(row, 2, ERROR_INVALID_PARENTS)
+                    self.error(row, 3, ERROR_INVALID_PARENTS)
                     break
-                node.parents.add(nodes[part])
+                node.parents.add(removeSecurityProxy(nodes[part]))
 
             for layer in list(node.layers):
                 node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
-                    self.error(row, 3, ERROR_INVALID_LAYERS)
+                    self.error(row, 4, ERROR_INVALID_LAYERS)
                     break
-                node.layers.add(layers[part])
+                node.layers.add(removeSecurityProxy(layers[part]))
 
             for skillset in list(node.skillsets):
                 node.skillsets.remove(skillset)
             for part in breakupIds(node_skillsets):
                 if part not in skillsets:
-                    self.error(row, 4, ERROR_INVALID_SKILLSET)
+                    self.error(row, 5, ERROR_INVALID_SKILLSET)
                     break
-                node.skillsets.add(skillsets[part])
+                node.skillsets.add(removeSecurityProxy(skillsets[part]))
+
+
+class CourseSkillsImporter(ImporterBase):
+
+    sheet_name = 'CourseSkills'
+
+    def process(self):
+        sh = self.sheet
+        skillsets = ISkillSetContainer(self.context)
+        schoolyears = ISchoolYearContainer(self.context)
+        year = None
+
+        for row in range(1, sh.nrows):
+            if (sh.cell_value(rowx=row, colx=0) == '' and
+                sh.cell_value(rowx=row, colx=1) == ''):
+                break
+
+            num_errors = len(self.errors)
+            year_id = self.getTextFromCell(sh, row, 0)
+            course_id = self.getRequiredTextFromCell(sh, row, 1)
+            course_skillset_ids = self.getTextFromCell(sh, row, 2)
+            if num_errors < len(self.errors):
+                continue
+
+            if year_id:
+                if year_id not in schoolyears:
+                    self.error(row, 0, ERROR_INVALID_SCHOOL_YEAR)
+                    year = None
+                else:
+                    year = schoolyears[year_id]
+                    courses = ICourseContainer(year)
+            elif year is None:
+                self.error(row, 0, ERROR_MISSING_YEAR_ID)
+            if year is None:
+                continue
+
+            if course_id not in courses:
+                self.error(row, 1, ERROR_INVALID_COURSE_ID)
+                continue
+            course = courses[course_id]
+
+            course_skills = ICourseSkills(course)
+            for key in list(course_skills):
+                del course_skills[key]
+            for part in breakupIds(course_skillset_ids):
+                if part not in skillsets:
+                    self.error(row, 2, ERROR_INVALID_SKILLSET)
+                    break
+                course_skills[part] = CourseSkillSet(skillsets[part])
 
 
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
 
     def nextURL(self):
-        url = absoluteURL(self.context, self.request)
+        url = absoluteURL(self.context, self.request) + '/manage'
         return url
 
     @property
@@ -254,19 +322,8 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
         return [
             SkillSetsImporter,
             SkillsImporter,
-            ]
-
-
-class YearlySkillsMegaImporter(FlourishMegaImporter):
-
-    def nextURL(self):
-        url = absoluteURL(self.context, self.request)
-        return url
-
-    @property
-    def importers(self):
-        return [
             LayersImporter,
             NodesImporter,
+            CourseSkillsImporter,
             ]
 

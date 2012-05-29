@@ -42,6 +42,7 @@ from schooltool.cando.interfaces import ISkillSet, ISkill
 from schooltool.cando.skill import SkillSet, Skill
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando import CanDoMessage as _
 
@@ -102,15 +103,24 @@ class ManageSkillsOverview(flourish.page.Content):
     @property
     def skillsets(self):
         app = ISchoolToolApplication(None)
-        contacts = ISkillSetContainer(app)
-        return contacts
+        skillsets = ISkillSetContainer(app)
+        return skillsets
 
     @property
     def total_skillsets(self):
         return len(self.skillsets)
 
+    @property
+    def enabled(self):
+        schoolyears = ISchoolYearContainer(self.context)
+        return schoolyears.getActiveSchoolYear() is not None
+
 
 class SkillSetContainerLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class SkillSetContainerActionLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
@@ -170,18 +180,19 @@ class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
         super(SkillSetEditView, self).handleApply.func(self, action)
         if (self.status == self.successMessage or
             self.status == self.noChangesMessage):
-            url = absoluteURL(self.context, self.request)
-            self.request.response.redirect(url)
+            self.request.response.redirect(self.nextURL())
 
     @z3c.form.button.buttonAndHandler(_("Cancel"))
     def handle_cancel_action(self, action):
-        url = absoluteURL(self.context, self.request)
-        self.request.response.redirect(url)
+        self.request.response.redirect(self.nextURL())
 
     def updateActions(self):
         super(SkillSetEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
 
 
 class SkillSetSkillTable(table.ajax.Table):
@@ -293,6 +304,14 @@ class SkillView(flourish.form.DisplayForm):
     def can_edit(self):
         return flourish.canEdit(self.context)
 
+    @property
+    def edit_url(self):
+        return absoluteURL(self.context, self.request) + '/edit.html'
+
+    @property
+    def done_url(self):
+        return absoluteURL(self.context.__parent__, self.request)
+
 
 class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkill)
@@ -306,16 +325,17 @@ class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
         super(SkillEditView, self).handleApply.func(self, action)
         if (self.status == self.successMessage or
             self.status == self.noChangesMessage):
-            url = absoluteURL(self.context, self.request)
-            self.request.response.redirect(url)
+            self.request.response.redirect(self.nextURL())
 
     @z3c.form.button.buttonAndHandler(_("Cancel"))
     def handle_cancel_action(self, action):
-        url = absoluteURL(self.context, self.request)
-        self.request.response.redirect(url)
+        self.request.response.redirect(self.nextURL())
 
     def updateActions(self):
         super(SkillEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
 

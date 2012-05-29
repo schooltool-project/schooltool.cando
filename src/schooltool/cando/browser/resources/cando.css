@@ -1,0 +1,64 @@
+.grid .third-nav-container,
+.grid a.navbar-arrow {
+    top: 90px;
+}
+
+.grid > .body > .container {
+    margin-top: 86px;
+}
+
+.grades thead th, .grades tbody td {
+    width: 3em;
+}
+
+.grades thead th.optional > a {
+    color: black;
+}
+
+.skill-title {
+    display: table-row;
+    left: 208px;
+    overflow: hidden;
+    position: absolute;
+}
+
+.skill-title p {
+    background: #ffffff;
+    border-color: #6C7B7C;
+    border-style: solid;
+    border-width: 2px;
+    color: black;
+    display: table-cell;
+    height: 42px;
+    margin: 0px;
+    text-align: center;
+    vertical-align: middle;
+    width: 748px;
+}
+
+.skill-title p.required {
+    background: #6C7B7C;
+    border-color: white;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.skill-title p.optional {
+    background: #F0EFEE;
+    border-color: gray;
+    color: black;
+}
+
+.worksheets-list {
+    top: 122px;
+}
+
+/* XXX: move this to the gradebook css? */
+
+.popup_menu {
+    max-width: 400px;
+}
+
+.popup_menu li.header {
+    white-space: normal;
+}

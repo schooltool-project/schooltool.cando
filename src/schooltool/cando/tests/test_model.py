@@ -33,6 +33,7 @@ from schooltool.relationship.tests import setUpRelationships
 from schooltool.cando.interfaces import (
     ILayer, ILayerContained, ILayerContainer,
     INode, INodeContained, INodeContainer,
+    IDocument, IDocumentContained, IDocumentContainer,
     )
 from schooltool.cando.model import (
     Layer, LayerContainer,
@@ -42,6 +43,7 @@ from schooltool.cando.model import (
     nodeLayerDoesntViolateModel,
     removingLayerDoesntViolateModel,
     NodeSkillSets,
+    DocumentContainer, Document,
     )
 from schooltool.cando.skill import (
     Skill, SkillSet,
@@ -109,6 +111,16 @@ def buildTestModel_crafts():
     nodes['pounding'].parents.add(nodes['creative'])
     nodes['pounding'].parents.add(nodes['conventional'])
     return layers, nodes
+
+
+def buildTestModel_documents():
+    layers, nodes = buildTestModel_crafts()
+    documents = DocumentContainer()
+    main = documents['main'] = Document('Main Document')
+    main.hierarchy.add(layers['craft'])
+    main.hierarchy.add(layers['branch'])
+    main.hierarchy.add(layers['topic'])
+    return documents
 
 
 def doctest_Node():
@@ -348,6 +360,23 @@ def doctest_Node_skillsets():
 
         >>> print list(NodeSkillSets.query(skillset=sc1))
         [<Node 'Whacking' <Layer 'Topic'>>]
+
+    """
+
+
+def doctest_Document():
+    """Tests for Document.
+
+        >>> documents = buildTestModel_documents()
+
+        >>> verifyObject(IDocumentContainer, documents)
+        True
+
+        >>> verifyObject(IDocumentContained, documents['main'])
+        True
+
+        >>> documents['main']
+        <Document 'Main Document' <Layer 'Craft'>, <Layer 'Branch'>, <Layer 'Topic'>>
 
     """
 

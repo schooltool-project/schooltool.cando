@@ -45,6 +45,10 @@
     <require
         permission="schooltool.view"
         interface=".interfaces.ICourseSkill" />
+    <!-- XXX: hack to bypass GradebookOverview checks -->
+    <require
+        permission="schooltool.view"
+        attributes="scoresystem" />
   </class>
 
 </configure>

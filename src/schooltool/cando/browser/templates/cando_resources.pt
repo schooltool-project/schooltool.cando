@@ -1,0 +1,1 @@
+<tal:block replace="resource_library:schooltool.cando.flourish" />
