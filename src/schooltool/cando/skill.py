@@ -98,6 +98,10 @@ class Skill(Requirement):
             desc = desc[:17]+'...'+desc[-20:]
         return '<Skill %r>' % unicode(desc)
 
+    @property
+    def scoresystem(self):
+        return querySkillScoreSystem()
+
 
 class SkillSetContainer(BTreeContainer):
     """Container of skill sets."""

@@ -1,0 +1,25 @@
+<div i18n:domain="schooltool.cando" class="skill-title" id="skill-title">
+  <p i18n:translate="">
+    Scroll over a skill ID to see its description here
+  </p>
+</div>
+<a href="#" id="navbar-go-previous"
+   class="navbar-arrow navbar-go-previous">
+  &#x25C0;
+</a>
+<div class="third-nav-container" id="third-nav-container">
+  <ul tal:attributes="class view/list_class">
+    <li tal:repeat="item view/items"
+        tal:attributes="class item/class"
+        tal:content="structure item/viewlet">
+    </li>
+  </ul>
+</div>
+<a href="#" id="navbar-go-next"
+   class="navbar-arrow navbar-go-next">
+  &#x25B6;
+</a>
+<a href="#" id="navbar-list-worksheets"
+   class="navbar-arrow navbar-list-worksheets">
+  &#x25BC;
+</a>

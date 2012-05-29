@@ -682,5 +682,6 @@
 
   <include file="document.zcml" />
   <include file="report.zcml" />
+  <include file="gradebook.zcml" />
 
 </configure>

@@ -25,6 +25,7 @@ from zope.interface import Interface, Attribute
 
 from schooltool.requirement.interfaces import IRequirement
 from schooltool.gradebook.interfaces import IWorksheets, IWorksheet
+from schooltool.gradebook.interfaces import IGradebook
 from schooltool.cando import CanDoMessage as _
 
 
@@ -180,3 +181,10 @@ class ICourseSkill(ISkill):
 class ISectionSkills(IWorksheets):
     pass
 
+
+class IProjectsGradebook(IGradebook):
+    pass
+
+
+class ISkillsGradebook(IGradebook):
+    pass

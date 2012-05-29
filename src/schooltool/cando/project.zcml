@@ -12,6 +12,10 @@
         interface="zope.interface.common.mapping.IWriteMapping"
         set_schema=".interfaces.IProject"
         />
+    <require
+        permission="schooltool.edit"
+        attributes="add"
+        />
   </class>
 
   <class class=".project.Projects">
@@ -57,8 +61,16 @@
   </class>
 
   <adapter factory=".project.getCourseProjects" />
-  <adapter factory=".project.getCourseProjectsCourse" />
-  <adapter factory=".project.getSectionProjects" />
-  <adapter factory=".project.getSectionProjectsSection" />
+  <adapter factory=".project.getCourseFromProjects" />
+  <adapter factory=".project.getSectionProjects"
+           trusted="true" />
+  <adapter factory=".project.getSectionFromProjects" />
+
+  <adapterTraverserPlugin
+      for="schooltool.course.interfaces.ISection"
+      layer="zope.publisher.interfaces.http.IHTTPRequest"
+      name="projects"
+      adapter="schooltool.cando.interfaces.IProjects"
+      />
 
 </configure>
