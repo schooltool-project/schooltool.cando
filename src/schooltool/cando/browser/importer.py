@@ -32,12 +32,13 @@ from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
     ISkillSetContainer, ICourseSkills, IDocumentContainer)
-from schooltool.cando.model import Layer, Node
+from schooltool.cando.model import Layer, Node, Document
 from schooltool.cando.skill import SkillSet, Skill
 
 from schooltool.common import SchoolToolMessage as _
 
 
+ERROR_INVALID_DOCUMENTS = _("has an invalid document id")
 ERROR_INVALID_PARENTS = _("has an invalid parent id")
 ERROR_INVALID_LAYERS = _("has an invalid layer id")
 ERROR_INVALID_SKILLSET = _("has an invalid skillset id")
@@ -196,6 +197,44 @@ class LayersImporter(ImporterBase):
                 layer.parents.add(removeSecurityProxy(layers[part]))
 
 
+class DocumentsImporter(ImporterBase):
+
+    sheet_name = 'Documents'
+
+    def process(self):
+        sh = self.sheet
+        layers = ILayerContainer(self.context)
+        documents = IDocumentContainer(self.context)
+
+        for row in range(1, sh.nrows):
+            if sh.cell_value(rowx=row, colx=0) == '':
+                break
+
+            num_errors = len(self.errors)
+            name = self.getRequiredTextFromCell(sh, row, 0)
+            title = self.getRequiredTextFromCell(sh, row, 1)
+            description = self.getTextFromCell(sh, row, 2)
+            hierarchy = self.getTextFromCell(sh, row, 3)
+            if num_errors < len(self.errors):
+                continue
+
+            if name in documents:
+                documents[name].title = title
+                documents[name].description = description
+            else:
+                documents[name] = Document(title, description)
+
+            document = removeSecurityProxy(documents[name])
+
+            for layer in list(document.hierarchy):
+                document.hierarchy.remove(layer)
+            for part in breakupIds(hierarchy):
+                if part not in layers:
+                    self.error(row, 4, ERROR_INVALID_LAYERS)
+                    break
+                document.hierarchy.add(removeSecurityProxy(layers[part]))    
+
+
 class NodesImporter(ImporterBase):
 
     sheet_name = 'Nodes'
@@ -240,22 +279,22 @@ class NodesImporter(ImporterBase):
 
             for parent in list(node.parents):
                 node.parents.remove(parent)
-            for part in breakupIds(parents):
-                if part not in nodes:
-                    self.error(row, 3, ERROR_INVALID_PARENTS)
-                    break
-                node.parents.add(removeSecurityProxy(nodes[part]))
             for part in breakupIds(node_documents):
                 if part not in documents:
-                    self.error(row, 3, ERROR_INVALID_PARENTS)
+                    self.error(row, 3, ERROR_INVALID_DOCUMENTS)
                     break
                 node.parents.add(removeSecurityProxy(documents[part]))
+            for part in breakupIds(parents):
+                if part not in nodes:
+                    self.error(row, 4, ERROR_INVALID_PARENTS)
+                    break
+                node.parents.add(removeSecurityProxy(nodes[part]))
 
             for layer in list(node.layers):
                 node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
-                    self.error(row, 4, ERROR_INVALID_LAYERS)
+                    self.error(row, 5, ERROR_INVALID_LAYERS)
                     break
                 node.layers.add(removeSecurityProxy(layers[part]))
 
@@ -263,7 +302,7 @@ class NodesImporter(ImporterBase):
                 node.skillsets.remove(skillset)
             for part in breakupIds(node_skillsets):
                 if part not in skillsets:
-                    self.error(row, 5, ERROR_INVALID_SKILLSET)
+                    self.error(row, 6, ERROR_INVALID_SKILLSET)
                     break
                 node.skillsets.add(removeSecurityProxy(skillsets[part]))
 
@@ -329,6 +368,7 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
             SkillSetsImporter,
             SkillsImporter,
             LayersImporter,
+            DocumentsImporter,
             NodesImporter,
             CourseSkillsImporter,
             ]
