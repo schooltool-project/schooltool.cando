@@ -289,6 +289,32 @@
       permission="schooltool.edit"
       />
 
+  <flourish:viewlet
+      name="gradebook-help"
+      after="gradebook-reports-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view=".gradebook.ProjectsGradebookOverview"
+      title="Help"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="scoresystemhelp.html"
+      title="Score System"
+      class=".gradebook.ScoreSystemHelpViewlet"
+      manager=".gradebook.GradebookHelpLinks"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="scoresystemhelp.html"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      class=".gradebook.ScoreSystemHelpView"
+      template="templates/scoresystem_help.pt"
+      permission="schooltool.view"
+      />
+
   <!-- XXX: Some of these are duplicated. Remove them after
             writing enough stests and maybe unifying both
             gradebook modes -->
@@ -371,6 +397,24 @@
       class="schooltool.skin.flourish.page.DisabledViewlet"
       view=".gradebook.SkillsGradebookOverview"
       permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="gradebook-help"
+      after="gradebook_year_navigation"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view=".gradebook.SkillsGradebookOverview"
+      title="Help"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="scoresystemhelp.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".gradebook.ScoreSystemHelpView"
+      template="templates/scoresystem_help.pt"
+      permission="schooltool.view"
       />
 
 </configure>
