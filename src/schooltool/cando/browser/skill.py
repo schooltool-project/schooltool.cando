@@ -23,7 +23,7 @@ Skill views.
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
-from zope.interface import implements, directlyProvides
+from zope.interface import implements
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -205,24 +205,15 @@ class SkillSetSkillTable(table.ajax.Table):
                        css_classes={'table': 'data'})
 
     def sortOn(self):
-        return (("required", True), ("title", False))
+        return (("title", False),)
 
     def columns(self):
         default = table.ajax.Table.columns(self)
-        required = zc.table.column.GetterColumn(
-            name='required',
-            title=_(u'Required'),
-            getter=lambda i, f: i.required and _('required') or _('optional'))
-        directlyProvides(required, zc.table.interfaces.ISortableColumn)
-        external_id = zc.table.column.GetterColumn(
-            name='external_id',
-            title=_(u'External ID'),
-            getter=lambda i, f: i.external_id or '')
         label = zc.table.column.GetterColumn(
             name='label',
             title=_(u'Label'),
             getter=lambda i, f: i.label or '')
-        return [required, external_id, label] + default
+        return [label] + default
 
 
 class SkillSetLinks(flourish.page.RefineLinksViewlet):
