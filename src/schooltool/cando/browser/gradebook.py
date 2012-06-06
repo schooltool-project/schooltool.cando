@@ -22,6 +22,7 @@ CanDo view components.
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.container.interfaces import INameChooser
+from zope.i18n import translate
 from zope.location.location import LocationProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
@@ -52,6 +53,7 @@ from schooltool.cando.gradebook import ensureAtLeastOneProject
 from schooltool.cando.gradebook import getCurrentSectionTaught
 from schooltool.cando.gradebook import getCurrentSectionAttended
 from schooltool.cando.project import Project
+from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
 from schooltool.cando import CanDoMessage as _
 
@@ -435,3 +437,43 @@ class CanDoSkillsTermNavigationViewlet(
 class CanDoSkillsSectionNavigationViewlet(
     CanDoSkillsNavigationViewletBase,
     FlourishGradebookSectionNavigationViewlet): pass
+
+
+class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class ScoreSystemHelpViewlet(flourish.page.ModalFormLinkViewlet):
+
+    @property
+    def dialog_title(self):
+        title = _(u'Score System Help')
+        return translate(title, context=self.request)
+
+
+class ScoreSystemHelpView(flourish.form.Dialog):
+
+    def updateDialog(self):
+        # XXX: fix the width of dialog content in css
+        if self.ajax_settings['dialog'] != 'close':
+            self.ajax_settings['dialog']['width'] = 144 + 16
+
+    def initDialog(self):
+        self.ajax_settings['dialog'] = {
+            'autoOpen': True,
+            'modal': False,
+            'resizable': False,
+            'draggable': True,
+            'position': ['center','middle'],
+            'width': 'auto',
+            }
+
+    def items(self):
+        result = []
+        scoresystem = querySkillScoreSystem()
+        for score in scoresystem.scores:
+            result.append({
+                    'score': score[0],
+                    'rating': score[1],
+                    })
+        return result
