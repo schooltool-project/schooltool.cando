@@ -203,7 +203,7 @@
       view="schooltool.cando.browser.gradebook.ProjectsGradebookOverview"
       manager="schooltool.skin.flourish.page.IPageContentManager"
       template="templates/cando_resources.pt"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet
@@ -211,7 +211,7 @@
       view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
       manager="schooltool.skin.flourish.page.IPageContentManager"
       template="templates/cando_resources.pt"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <zope:resourceLibrary
