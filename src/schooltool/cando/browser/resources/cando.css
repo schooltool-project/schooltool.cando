@@ -1,10 +1,10 @@
 .grid .third-nav-container,
 .grid a.navbar-arrow {
-    top: 90px;
+    top: 36px;
 }
 
 .grid > .body > .container {
-    margin-top: 86px;
+    margin-top: 32px;
 }
 
 .grades thead th, .grades tbody td {
@@ -17,36 +17,40 @@
 
 .skill-title {
     display: table-row;
-    left: 208px;
     overflow: hidden;
     position: absolute;
+    right: 92px;
+    top: 2px;
+    z-index: 1;
 }
 
 .skill-title p {
     background: #ffffff;
-    border-color: #6C7B7C;
+    border-color: #dddddd;
+    border-radius: 0 0 4px 4px;
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     color: black;
     display: table-cell;
-    height: 42px;
+    font-size: 11px;
     margin: 0px;
+    opacity: 0.9;
+    padding: 5px;
     text-align: center;
     vertical-align: middle;
-    width: 748px;
+    width: 598px;
 }
 
 .skill-title p.required {
     background: #6C7B7C;
-    border-color: white;
     color: #ffffff;
     font-weight: bold;
 }
 
 .skill-title p.optional {
     background: #F0EFEE;
-    border-color: gray;
     color: black;
+    font-weight: bold;
 }
 
 .worksheets-list {
