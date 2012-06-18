@@ -29,4 +29,22 @@ $(document).ready(function() {
             width: normal_width
         });
     });
+    // tertiary navigation
+    var third_nav_container = $('#third-nav-container');
+    var third_nav = third_nav_container.find('.third-nav');
+    var active_tab = third_nav.find('.active');
+    var tab_width = active_tab.outerWidth();
+    if (third_nav.children().length > 0) {
+        var scrollTo = tab_width * (active_tab.index());
+        third_nav_container.scrollTo(scrollTo, 0, {axis: 'x'});
+    }
+    third_nav.on('click', 'li', function(e) {
+        if ($('#worksheets-list').length < 1) {
+            var ul = createWorksheetsList();
+            $('#navbar-list-worksheets').after(ul);
+        }
+        $('#worksheets-list').slideToggle('fast');
+        $('#navbar-list-worksheets').toggleClass('navbar-list-worksheets-active');
+        e.preventDefault();
+    });
 });

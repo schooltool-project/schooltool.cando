@@ -252,7 +252,7 @@
   <flourish:viewletManager
       name="tertiary_navigation"
       provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".gradebook.ProjectsGradebookTertiaryNavigationManager"
+      class=".gradebook.CanDoGradebookTertiaryNavigationManager"
       view=".gradebook.ProjectsGradebookOverview"
       permission="zope.Public"
       />
@@ -260,14 +260,14 @@
   <flourish:viewletManager
       name="tertiary_navigation"
       provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".gradebook.ProjectsGradebookTertiaryNavigationManager"
+      class=".gradebook.CanDoGradebookTertiaryNavigationManager"
       view=".gradebook.SkillsGradebookOverview"
       permission="zope.Public"
       />
 
   <flourish:viewlet
       name="select_year"
-      class=".gradebook.CanDoProjectsYearNavigationViewlet"
+      class=".gradebook.CanDoYearNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookYearNavigation"
       view=".gradebook.ProjectsGradebookOverview"
       permission="schooltool.edit"
@@ -275,7 +275,7 @@
 
   <flourish:viewlet
       name="select_term"
-      class=".gradebook.CanDoProjectsTermNavigationViewlet"
+      class=".gradebook.CanDoTermNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookTermNavigation"
       view=".gradebook.ProjectsGradebookOverview"
       permission="schooltool.edit"
@@ -283,7 +283,7 @@
 
   <flourish:viewlet
       name="select_section"
-      class=".gradebook.CanDoProjectsSectionNavigationViewlet"
+      class=".gradebook.CanDoSectionNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookSectionNavigation"
       view=".gradebook.ProjectsGradebookOverview"
       permission="schooltool.edit"
@@ -351,7 +351,7 @@
 
   <flourish:viewlet
       name="select_year"
-      class=".gradebook.CanDoSkillsYearNavigationViewlet"
+      class=".gradebook.CanDoYearNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookYearNavigation"
       view=".gradebook.SkillsGradebookOverview"
       permission="schooltool.edit"
@@ -359,7 +359,7 @@
 
   <flourish:viewlet
       name="select_term"
-      class=".gradebook.CanDoSkillsTermNavigationViewlet"
+      class=".gradebook.CanDoTermNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookTermNavigation"
       view=".gradebook.SkillsGradebookOverview"
       permission="schooltool.edit"
@@ -367,7 +367,7 @@
 
   <flourish:viewlet
       name="select_section"
-      class=".gradebook.CanDoSkillsSectionNavigationViewlet"
+      class=".gradebook.CanDoSectionNavigationViewlet"
       manager="schooltool.gradebook.browser.gradebook.FlourishGradebookSectionNavigation"
       view=".gradebook.SkillsGradebookOverview"
       permission="schooltool.edit"

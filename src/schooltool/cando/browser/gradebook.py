@@ -65,8 +65,8 @@ class CanDoStartupNavLink(GradebookStartupNavLink):
 
 class CanDoStartupView(FlourishGradebookStartup):
 
-    teacher_gradebook_view_name = 'gradebook-projects'
-    student_gradebook_view_name = 'mygrades-projects'
+    teacher_gradebook_view_name = 'gradebook-skills'
+    student_gradebook_view_name = 'mygrades-skills'
 
     def update(self):
         self.person = IPerson(self.request.principal)
@@ -121,9 +121,16 @@ class SectionSkillsCanDoRedirectView(flourish.page.Page):
     def __call__(self):
         person = IPerson(self.request.principal)
         worksheets = ISectionSkills(self.context)
-        # XXX: get Location proxy here
         current_worksheet = worksheets.getCurrentWorksheet(person)
         url = absoluteURL(worksheets, self.request)
+        if not worksheets:
+            url = absoluteURL(self.context, self.request)
+            if person in self.context.members:
+                url += '/mygrades-projects'
+            else:
+                url += '/gradebook-projects'
+            self.request.response.redirect(url)
+            return
         if current_worksheet is not None:
             container = ISectionSkills(self.context)
             current_worksheet = LocationProxy(
@@ -173,7 +180,6 @@ class ProjectsGradebookOverview(FlourishGradebookOverview):
             ProjectsGradebookOverview, self).getActivityAttrs(activity)
         longTitle = activity.label + ': ' + longTitle
         return shortTitle, longTitle, bestScore
-
 
 
 class SkillsGradebookOverview(FlourishGradebookOverview):
@@ -391,51 +397,46 @@ class SkillEditView(flourish.form.Form, form.EditForm):
         return absoluteURL(worksheet, self.request) + '/gradebook'
 
 
-class ProjectsGradebookTertiaryNavigationManager(
+class CanDoGradebookTertiaryNavigationManager(
     GradebookTertiaryNavigationManager):
 
     template = ViewPageTemplateFile('templates/cando_third_nav.pt')
 
-
-class CanDoProjectsNavigationViewletBase(object):
-
-    teacher_gradebook_view_name = 'gradebook-projects'
-    student_gradebook_view_name = 'mygrades-projects'
-
-
-class CanDoProjectsYearNavigationViewlet(
-    CanDoProjectsNavigationViewletBase,
-    FlourishGradebookYearNavigationViewlet): pass
-
-
-class CanDoProjectsTermNavigationViewlet(
-    CanDoProjectsNavigationViewletBase,
-    FlourishGradebookTermNavigationViewlet): pass
-
-
-class CanDoProjectsSectionNavigationViewlet(
-    CanDoProjectsNavigationViewletBase,
-    FlourishGradebookSectionNavigationViewlet): pass
+    @property
+    def items(self):
+        result = []
+        gradebook = proxy.removeSecurityProxy(self.context)
+        current = gradebook.context.__name__
+        for worksheet in gradebook.worksheets:
+            url = '%s/gradebook' % absoluteURL(worksheet, self.request)
+            classes = worksheet.__name__ == current and ['active'] or []
+            if worksheet.deployed:
+                classes.append('deployed')
+            result.append({
+                'class': classes and ' '.join(classes) or None,
+                'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (worksheet.title, url, worksheet.title),
+                })
+        return result
 
 
-class CanDoSkillsNavigationViewletBase(object):
+class CanDoNavigationViewletBase(object):
 
     teacher_gradebook_view_name = 'gradebook-skills'
     student_gradebook_view_name = 'mygrades-skills'
 
 
-class CanDoSkillsYearNavigationViewlet(
-    CanDoSkillsNavigationViewletBase,
+class CanDoYearNavigationViewlet(
+    CanDoNavigationViewletBase,
     FlourishGradebookYearNavigationViewlet): pass
 
 
-class CanDoSkillsTermNavigationViewlet(
-    CanDoSkillsNavigationViewletBase,
+class CanDoTermNavigationViewlet(
+    CanDoNavigationViewletBase,
     FlourishGradebookTermNavigationViewlet): pass
 
 
-class CanDoSkillsSectionNavigationViewlet(
-    CanDoSkillsNavigationViewletBase,
+class CanDoSectionNavigationViewlet(
+    CanDoNavigationViewletBase,
     FlourishGradebookSectionNavigationViewlet): pass
 
 

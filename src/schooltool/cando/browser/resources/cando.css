@@ -3,6 +3,18 @@
     top: 36px;
 }
 
+.grid .third-nav-container {
+    left: 208px;
+    width: 724px;
+    border-radius: 4px 0px 0px 0px;
+}
+
+.grid .third-nav li a {
+    width: 724px;
+    text-align: left;
+    padding: 8px 4px;
+}
+
 .grid > .body > .container {
     margin-top: 32px;
 }
@@ -53,10 +65,6 @@
     font-weight: bold;
 }
 
-.worksheets-list {
-    top: 122px;
-}
-
 /* XXX: move this to the gradebook css? */
 
 .popup_menu {
@@ -65,4 +73,10 @@
 
 .popup_menu li.header {
     white-space: normal;
+}
+
+.worksheets-list {
+    top: 68px;
+    max-width: 752px;
+    width: 752px;
 }
