@@ -82,7 +82,7 @@
       />
 
   <flourish:viewlet
-      name="../addSkill.html"
+      name="../addSkillBrowse.html"
       class=".gradebook.SkillAddLink"
       manager=".gradebook.CanDoProjectsAddLinks"
       permission="schooltool.edit"
@@ -147,12 +147,53 @@
   </configure>
 
   <flourish:page
-      name="addSkill.html"
+      name="addSkillBrowse.html"
       for="schooltool.cando.interfaces.IProject"
-      subtitle="New Skill"
+      subtitle="XXX Browse and Select Skill XXX"
+      class="schooltool.cando.browser.gradebook.ProjectSkillBrowseView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="table"
+      class=".gradebook.SkillsTable"
+      for="schooltool.cando.interfaces.IProject"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".gradebook.SkillsTableFilter"
+      render="template"
+      manager=".gradebook.SkillsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="addSkillCreate.html"
+      for="schooltool.cando.interfaces.IProject"
+      subtitle="XXX Create New Skill XXX"
       class="schooltool.cando.browser.gradebook.ProjectSkillAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".gradebook.SkillAddTertiaryNavigationManager"
+      view=".gradebook.ProjectSkillBrowseView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".gradebook.SkillAddTertiaryNavigationManager"
+      view=".gradebook.ProjectSkillAddView"
+      permission="zope.Public"
       />
 
   <flourish:page

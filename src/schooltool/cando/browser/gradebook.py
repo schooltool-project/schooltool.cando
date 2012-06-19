@@ -21,14 +21,18 @@ CanDo view components.
 """
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.catalog.interfaces import ICatalog
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
 from zope.location.location import LocationProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
+import zc.table.column
 
 from z3c.form import form, field, button
 
+from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.app.catalog import buildQueryString
 from schooltool.course.interfaces import ISection
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
@@ -42,11 +46,13 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.person.interfaces import IPerson
 from schooltool.skin import flourish
+from schooltool import table
 
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import IProjectsGradebook
+from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.gradebook import ensureAtLeastOneProject
@@ -478,3 +484,86 @@ class ScoreSystemHelpView(flourish.form.Dialog):
                     'rating': score[1],
                     })
         return result
+
+
+class ProjectSkillBrowseView(flourish.page.Page):
+
+    content_template = InlineViewPageTemplate('''
+      <div tal:content="structure context/schooltool:content/ajax/table" />
+    ''')
+
+
+class SkillAddTertiaryNavigationManager(
+    flourish.page.TertiaryNavigationManager):
+
+    template = InlineViewPageTemplate("""
+        <ul tal:attributes="class view/list_class">
+          <li tal:repeat="item view/items"
+              tal:attributes="class item/class"
+              tal:content="structure item/viewlet">
+          </li>
+        </ul>
+    """)
+
+    @property
+    def items(self):
+        result = []
+        path = self.request['PATH_INFO']
+        current = path[path.rfind('/')+1:]
+        actions = [
+            ('addSkillBrowse.html', _('XXX Browse and Select Skill XXX')),
+            ('addSkillCreate.html', _('XXX Create New Skill XXX')),
+            ]
+        for action, title in actions:
+            url = '%s/%s' % (absoluteURL(self.context, self.request), action)
+            title = translate(title, context=self.request)
+            result.append({
+                'class': action == current and 'active' or None,
+                'viewlet': u'<a href="%s">%s</a>' % (url, title),
+                })
+        return result
+
+
+class SkillsTable(table.ajax.IndexedTable):
+
+    @property
+    def source(self):
+        app = ISchoolToolApplication(None)
+        return ISkillSetContainer(app)
+
+    def columns(self):
+        default = table.ajax.Table.columns(self)
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or '')
+        return [label] + default
+
+
+class SkillsTableFilter(table.ajax.IndexedTableFilter):
+
+    template = ViewPageTemplateFile('templates/project_skill_table_filter.pt')
+    title = _('Skill title, label, external ID and/or description')
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+"-title"
+
+    @property
+    def parameters(self):
+        return (self.search_title_id,)
+
+    def filter(self, items):
+        if self.ignoreRequest:
+            return items
+        if self.search_title_id in self.request:
+            searchstr = self.request[self.search_title_id]
+            query = buildQueryString(searchstr)
+            if query:
+                app = ISchoolToolApplication(None)
+                container = ISkillSetContainer(app)
+                catalog = ICatalog(container)
+                result = catalog['text'].apply(query)
+                items = [item for item in items
+                         if item['id'] in result]
+        return items

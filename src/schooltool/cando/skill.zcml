@@ -65,4 +65,15 @@
       adapter="schooltool.cando.interfaces.ISectionSkills"
       />
 
+  <adapter
+      factory=".skill.SkillCatalog"
+      name="schooltool.cando.skill.SkillCatalog" />
+
+  <adapter
+      for=".interfaces.ISkillSetContainer"
+      provides="zope.catalog.interfaces.ICatalog"
+      factory=".skill.getSkillCatalog" />
+
+  <adapter factory=".skill.SearchableTextSkill" />
+
 </configure>
