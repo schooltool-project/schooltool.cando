@@ -22,12 +22,17 @@ CanDo view components.
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.catalog.interfaces import ICatalog
+from zope.component import getUtility
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
+from zope.i18n.interfaces.locales import ICollator
+from zope.interface import directlyProvides
+from zope.intid.interfaces import IIntIds
 from zope.location.location import LocationProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
 import zc.table.column
+from zc.table.interfaces import ISortableColumn
 
 from z3c.form import form, field, button
 
@@ -53,6 +58,7 @@ from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import IProjectsGradebook
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.gradebook import ensureAtLeastOneProject
@@ -537,7 +543,11 @@ class SkillsTable(table.ajax.IndexedTable):
             name='label',
             title=_(u'Label'),
             getter=lambda i, f: i.label or '')
+        directlyProvides(label, ISortableColumn)
         return [label] + default
+
+    def sortOn(self):
+        return (('label', False), ("title", False),)
 
 
 class SkillsTableFilter(table.ajax.IndexedTableFilter):
@@ -550,12 +560,26 @@ class SkillsTableFilter(table.ajax.IndexedTableFilter):
         return self.manager.html_id+"-title"
 
     @property
+    def search_group_id(self):
+        return self.manager.html_id+"-group"
+
+    @property
     def parameters(self):
-        return (self.search_title_id,)
+        return (self.search_title_id, self.search_group_id)
 
     def filter(self, items):
         if self.ignoreRequest:
             return items
+        if self.search_group_id in self.request:
+            group = self.groupContainer().get(self.request[self.search_group_id])
+            if group:
+                int_ids = getUtility(IIntIds)
+                keys = set()
+                for skillset in group.skillsets:
+                    for skill in skillset.values():
+                        keys.add(int_ids.queryId(skill))
+                items = [item for item in items
+                         if item['id'] in keys]
         if self.search_title_id in self.request:
             searchstr = self.request[self.search_title_id]
             query = buildQueryString(searchstr)
@@ -567,3 +591,25 @@ class SkillsTableFilter(table.ajax.IndexedTableFilter):
                 items = [item for item in items
                          if item['id'] in result]
         return items
+
+    def groupContainer(self):
+        # XXX must know which group container to pick
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app, {})
+
+    def groups(self):
+        groups = []
+        container = self.groupContainer()
+        collator = ICollator(self.request.locale)
+        group_items = sorted(container.items(),
+                             cmp=collator.cmp,
+                             key=lambda (gid, g): g.title)
+        for id, group in group_items:
+            skills = []
+            for skillset in group.skillsets:
+                for skill in skillset.values():
+                    skills.append(skill)
+            if len(skills) > 0:
+                groups.append({'id': id,
+                               'title': "%s (%s)" % (group.title, len(skills))})
+        return groups

@@ -33,6 +33,35 @@
                />
       </div>
     </div>
+    <div class="row" tal:define="group_id view/search_group_id">
+      <div class="label">
+        <label tal:attributes="for group_id">
+          <span i18n:translate="">Filter by...</span>
+        </label>
+      </div>
+      <div class="widget">
+        <select tal:attributes="id group_id; name group_id"
+                class="select-widget">
+          <option i18n:translate="">All nodes</option>
+          <option tal:repeat="group view/groups"
+                  tal:content="group/title"
+                  tal:attributes="value group/id;
+                                  selected python:group['id'] == request.get(group_id)"/>
+        </select>
+        <tal:script replace="structure scriptlocal: group_id" />
+        <script>
+          $(ST.dialogs.jquery_id(ST.local.group_id)).change(
+            function(){
+              var group_id = ST.local.group_id;
+              var container_id = ST.local.container_id;
+              var search_id = ST.local.search_id;
+              return function(element) {
+                return ST.table.on_form_submit(
+                    container_id, document.getElementById(search_id));
+              }}());
+        </script>
+      </div>
+    </div>
   </fieldset>
   <div class="buttons">
     <input type="submit" name="SEARCH_BUTTON" value="Search"
