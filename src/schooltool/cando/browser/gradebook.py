@@ -355,7 +355,7 @@ class ProjectAddView(flourish.form.AddForm):
         return worksheet
 
     def nextURL(self):
-        return absoluteURL(self.worksheet, self.request)
+        return absoluteURL(self.worksheet, self.request) + '/gradebook'
 
     def updateActions(self):
         super(ProjectAddView, self).updateActions()
