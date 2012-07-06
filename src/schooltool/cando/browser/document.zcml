@@ -26,7 +26,7 @@
   <flourish:viewlet
       name="documents"
       after="scoresystems"
-      title="Skills Documents"
+      title="Skills"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager="schooltool.app.browser.app.CustomizeSchoolLinks"
       permission="schooltool.edit"
@@ -38,6 +38,38 @@
       title="Skills Documents"
       class=".document.DocumentsView"
       permission="schooltool.view"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentsView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillSetContainerView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.LayersView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.NodesView"
+      permission="zope.Public"
       />
 
   <flourish:viewlet

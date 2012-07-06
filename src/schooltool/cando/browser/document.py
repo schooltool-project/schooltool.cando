@@ -101,6 +101,38 @@ class DocumentsTable(table.ajax.Table):
                        css_classes={'table': 'data'})
 
 
+class DocumentsTertiaryNavigationManager(
+    flourish.page.TertiaryNavigationManager):
+
+    template = InlineViewPageTemplate("""
+        <ul tal:attributes="class view/list_class">
+          <li tal:repeat="item view/items"
+              tal:attributes="class item/class"
+              tal:content="structure item/viewlet">
+          </li>
+        </ul>
+    """)
+
+    @property
+    def items(self):
+        views = {
+            'DocumentsView': ('documents', _('Documents')),
+            'SkillSetContainerView': ('skills', _('Skill Sets')),
+            'LayersView': ('layers', _('Layers')),
+            'NodesView': ('nodes', _('Nodes')),
+            }
+        result = []
+        app = ISchoolToolApplication(None)
+        for class_name, (link, title) in views.items():
+            url = '%s/%s' % (absoluteURL(app, self.request), link)
+            active = class_name in str(self.view.__class__)
+            result.append({
+                'class': active and 'active' or None,
+                'viewlet': u'<a href="%s">%s</a>' % (url, title),
+                })
+        return result
+
+
 class DocumentsAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentsView"""
 

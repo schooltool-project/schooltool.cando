@@ -70,7 +70,7 @@
       for="schooltool.cando.interfaces.ISkillSetContainer"
       class=".skill.SkillSetContainerView"
       permission="schooltool.view"
-      title="Skills"
+      title="Skill Sets"
       />
 
   <flourish:viewlet
@@ -123,15 +123,6 @@
       factory=".skill.SkillSetContainerAbsoluteURLAdapter"
       provides="zope.interface.Interface"
       name="absolute_url"/>
-
-  <flourish:viewlet
-      name="manage-skills-overview"
-      after="manage-courses-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".skill.ManageSkillsOverview"
-      />
 
   <flourish:viewlet
       name="skillset_container"
@@ -422,15 +413,6 @@
       adapter="schooltool.cando.interfaces.ILayerContainer"
       />
 
-  <flourish:viewlet
-      name="manage-layers-overview"
-      after="manage-skills-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".model.ManageLayersOverview"
-      />
-
   <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ILayerContainer"
@@ -546,15 +528,6 @@
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       name="nodes"
       adapter="schooltool.cando.interfaces.INodeContainer"
-      />
-
-  <flourish:viewlet
-      name="manage-nodes-overview"
-      after="manage-layers-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".model.ManageNodesOverview"
       />
 
   <flourish:page
