@@ -32,14 +32,16 @@ Let's import a file containing the SkillSets and Skills sheets:
     >>> filename = os.path.join(dirname, 'sample_global_data.xls')
     >>> manager.ui.import_global_skills(filename)
 
-There should be no errors:
+There should be no errors so we should be back at the School tab view:
 
-    >>> print manager.query_all.css('.status div').text
+    >>> manager.url
+    u'http://localhost/manage'
 
 Let's check the data.  Ther is one skillset called Carpentry.
 
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Skill Sets').click()
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/skills/carpentry
 
@@ -49,8 +51,8 @@ Let's check the data.  Ther is one skillset called Carpentry.
     External ID:        ext_carp
 
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/skills/carpentry/pounding
     http://localhost/skills/carpentry/hammering
+    http://localhost/skills/carpentry/pounding
     http://localhost/skills/carpentry/whacking
 
     >>> manager.query.link('Pounding').click()

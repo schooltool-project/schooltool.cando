@@ -95,27 +95,6 @@ class SkillSetContainerAbsoluteURLAdapter(BrowserView):
     __call__ = __str__
 
 
-class ManageSkillsOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_skills_overview.pt')
-
-    @property
-    def skillsets(self):
-        app = ISchoolToolApplication(None)
-        skillsets = ISkillSetContainer(app)
-        return skillsets
-
-    @property
-    def total_skillsets(self):
-        return len(self.skillsets)
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
-
-
 class SkillSetContainerLinks(flourish.page.RefineLinksViewlet):
     pass
 

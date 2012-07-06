@@ -77,21 +77,6 @@ class LayersView(flourish.page.Page):
         return ILayerContainer(ISchoolToolApplication(None))
 
 
-class ManageLayersOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_layers_overview.pt')
-
-    @property
-    def layers(self):
-        return ILayerContainer(ISchoolToolApplication(None))
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
-
-
 class LayersAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in LayersView"""
 
@@ -297,21 +282,6 @@ class NodesView(flourish.page.Page):
     @Lazy
     def container(self):
         return INodeContainer(ISchoolToolApplication(None))
-
-
-class ManageNodesOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_nodes_overview.pt')
-
-    @property
-    def nodes(self):
-        return INodeContainer(ISchoolToolApplication(None))
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
 
 
 class NodesAddLinks(flourish.page.RefineLinksViewlet):
