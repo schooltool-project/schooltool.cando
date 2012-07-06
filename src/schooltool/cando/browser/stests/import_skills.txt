@@ -9,17 +9,10 @@ Log in as manager:
 We'll define a helper function for printing the form fields of skillsets and
 skills.
 
-    >>> def printFormFields():
-    ...     fields = []
-    ...     for row in manager.query_all.xpath('//table[@class="form-fields"]//tr'):
-    ...         fields.append(row.query.css('label span').text)
-    ...         elems = row.query_all.css('.selected-option').text
-    ...         if elems:
-    ...             fields.append(elems[0])
-    ...         else:
-    ...             fields.append(row.query.css('.widget span').text)
-    ...     while fields:
-    ...         print '%-20s%s' % (fields.pop(0) + ':', fields.pop(0))
+    >>> def format_row(row):
+    ...     label = row.query.xpath('td[1]').text
+    ...     value = row.query.xpath('td[2]').text
+    ...     return '%s: %s' % (label, value)
 
 A school year is needed for importing skillsets and skills:
 
@@ -46,9 +39,11 @@ Let's check the data.  Ther is one skillset called Carpentry.
     http://localhost/skills/carpentry
 
     >>> manager.query.link('Carpentry').click()
-    >>> printFormFields()
-    Short label:        Carp label
-    External ID:        ext_carp
+    >>> sel = 'table.form-fields tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     print format_row(row)
+    Short label: Carp label
+    External ID: ext_carp
 
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/skills/carpentry/hammering
@@ -56,25 +51,30 @@ Let's check the data.  Ther is one skillset called Carpentry.
     http://localhost/skills/carpentry/whacking
 
     >>> manager.query.link('Pounding').click()
-    >>> printFormFields()
+    >>> sel = 'table.form-fields tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     print format_row(row)
     Full description:
     Short label:
-    Required:           Yes
-    External ID:        ext_123
+    Required: Yes
+    External ID: ext_123
 
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Hammering').click()
-    >>> printFormFields()
-    Full description:   This is hammering.
-    Short label:        Label
-    Required:           No
+    >>> sel = 'table.form-fields tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     print format_row(row)
+    Full description: This is hammering.
+    Short label: Label
+    Required: No
     External ID:
 
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Whacking').click()
-    >>> printFormFields()
-    Full description:   Whacking desc.
+    >>> sel = 'table.form-fields tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     print format_row(row)
+    Full description: Whacking desc.
     Short label:
-    Required:           No
+    Required: No
     External ID:
-
