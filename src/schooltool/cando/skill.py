@@ -18,12 +18,15 @@
 #
 from decimal import Decimal
 
+from zope.catalog.text import TextIndex
+from zope.index.text.interfaces import ISearchableText
 from zope.interface import implements, implementer
-from zope.component import adapter
+from zope.component import adapter, adapts
 from zope.container.btree import BTreeContainer
 from zope.container.interfaces import INameChooser
 
 from schooltool.app.app import InitBase, StartUpBase
+from schooltool.app.catalog import AttributeCatalog
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando import interfaces
 from schooltool.relationship import URIObject
@@ -177,7 +180,38 @@ def querySkillScoreSystem():
     return ss
 
 
-# XXX: skill catalog
-#
+class SkillCatalog(AttributeCatalog):
+
+    version = '1 - attributes and text indexes'
+    interface = interfaces.ISkill
+    attributes = ('title', 'external_id', 'label', 'description',
+                  'required', 'retired')
+
+    def setIndexes(self, catalog):
+        super(SkillCatalog, self).setIndexes(catalog)
+        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+
+
+getSkillCatalog = SkillCatalog.get
+
+
+class SearchableTextSkill(object):
+
+    adapts(interfaces.ISkill)
+    implements(ISearchableText)
+
+    def __init__(self, context):
+        self.context = context
+
+    def getSearchableText(self):
+        result = [
+            self.context.title,
+            self.context.external_id or '',
+            self.context.label or '',
+            self.context.description or '',
+            ]
+        return ' '.join(result)
+
+
 # + directly equivalent
 # + all equivalent
