@@ -24,7 +24,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts, getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
@@ -32,6 +32,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
 import zc.table.column
+from zc.table.interfaces import ISortableColumn
 import z3c.form.form
 import z3c.form.button
 import z3c.form.field
@@ -400,28 +401,23 @@ class NodesTable(table.ajax.Table):
             return sorted(NodeLink.query(child=node),
                           key=lambda n: n.__name__)
 
-        default = table.ajax.Table.columns(self)
-        description = zc.table.column.GetterColumn(
-            name='description',
-            title=_(u"Description"),
-            getter=lambda i, f: i.description
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u"Label"),
+            getter=lambda i, f: i.label
             )
-        parents = zc.table.column.GetterColumn(
-            name='parents',
-            title=_(u'Parents'),
-            getter=lambda i, f: u', '.join([n.title for n in get_parents(i)])
-            )
+        title = zc.table.column.GetterColumn(name='title',
+            title=_(u"Title"),
+            cell_formatter=table.ajax.url_cell_formatter,
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
         layers = zc.table.column.GetterColumn(
             name='layers',
             title=_(u'Layers'),
             getter=lambda i, f: u', '.join([l.title for l in i.layers])
             )
-        skillsets = zc.table.column.GetterColumn(
-            name='skillsets',
-            title=_(u'SkillSets'),
-            getter=lambda i, f: u', '.join([s.title for s in i.skillsets])
-            )
-        return default + [description, parents, layers, skillsets]
+        return [label, title, layers]
 
     def updateFormatter(self):
         if self._table_formatter is None:
