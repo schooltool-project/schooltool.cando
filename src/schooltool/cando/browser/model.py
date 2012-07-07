@@ -293,7 +293,8 @@ class FlourishNodeAddView(flourish.form.AddForm):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
     legend = _('Node Information')
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     def updateActions(self):
         super(FlourishNodeAddView, self).updateActions()
@@ -340,7 +341,7 @@ class NodeView(flourish.form.DisplayForm):
     legend = _('Node')
 
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     @property
     def can_edit(self):
@@ -364,7 +365,7 @@ class NodeView(flourish.form.DisplayForm):
 
 class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Node')
 
