@@ -254,6 +254,7 @@ class NodesImporter(ImporterBase):
             name = self.getRequiredTextFromCell(sh, row, 0)
             title = self.getRequiredTextFromCell(sh, row, 1)
             description = self.getTextFromCell(sh, row, 2)
+            label = self.getTextFromCell(sh, row, 3)
             if num_errors < len(self.errors):
                 continue
 
@@ -268,10 +269,10 @@ class NodesImporter(ImporterBase):
                 break
 
             name = self.getTextFromCell(sh, row, 0)
-            node_documents = self.getTextFromCell(sh, row, 3)
-            parents = self.getTextFromCell(sh, row, 4)
-            node_layers = self.getTextFromCell(sh, row, 5)
-            node_skillsets = self.getTextFromCell(sh, row, 6)
+            node_documents = self.getTextFromCell(sh, row, 4)
+            parents = self.getTextFromCell(sh, row, 5)
+            node_layers = self.getTextFromCell(sh, row, 6)
+            node_skillsets = self.getTextFromCell(sh, row, 7)
             if name not in nodes:
                 continue
 
@@ -281,12 +282,12 @@ class NodesImporter(ImporterBase):
                 node.parents.remove(parent)
             for part in breakupIds(node_documents):
                 if part not in documents:
-                    self.error(row, 3, ERROR_INVALID_DOCUMENTS)
+                    self.error(row, 4, ERROR_INVALID_DOCUMENTS)
                     break
                 node.parents.add(removeSecurityProxy(documents[part]))
             for part in breakupIds(parents):
                 if part not in nodes:
-                    self.error(row, 4, ERROR_INVALID_PARENTS)
+                    self.error(row, 5, ERROR_INVALID_PARENTS)
                     break
                 node.parents.add(removeSecurityProxy(nodes[part]))
 
@@ -294,7 +295,7 @@ class NodesImporter(ImporterBase):
                 node.layers.remove(layer)
             for part in breakupIds(node_layers):
                 if part not in layers:
-                    self.error(row, 5, ERROR_INVALID_LAYERS)
+                    self.error(row, 6, ERROR_INVALID_LAYERS)
                     break
                 node.layers.add(removeSecurityProxy(layers[part]))
 
@@ -302,7 +303,7 @@ class NodesImporter(ImporterBase):
                 node.skillsets.remove(skillset)
             for part in breakupIds(node_skillsets):
                 if part not in skillsets:
-                    self.error(row, 6, ERROR_INVALID_SKILLSET)
+                    self.error(row, 7, ERROR_INVALID_SKILLSET)
                     break
                 node.skillsets.add(removeSecurityProxy(skillsets[part]))
 

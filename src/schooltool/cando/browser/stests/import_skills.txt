@@ -22,7 +22,7 @@ Let's import a file containing the SkillSets and Skills sheets:
 
     >>> import os
     >>> dirname = os.path.abspath(os.path.dirname(__file__))
-    >>> filename = os.path.join(dirname, 'sample_global_data.xls')
+    >>> filename = os.path.join(dirname, 'sample_data.xls')
     >>> manager.ui.import_global_skills(filename)
 
 There should be no errors so we should be back at the School tab view:

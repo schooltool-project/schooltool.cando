@@ -406,7 +406,8 @@ class NodesTable(table.ajax.Table):
             title=_(u"Label"),
             getter=lambda i, f: i.label
             )
-        title = zc.table.column.GetterColumn(name='title',
+        title = zc.table.column.GetterColumn(
+            name='title',
             title=_(u"Title"),
             cell_formatter=table.ajax.url_cell_formatter,
             getter=lambda i, f: i.title,
