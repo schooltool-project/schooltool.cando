@@ -261,8 +261,9 @@ class NodesImporter(ImporterBase):
             if name in nodes:
                 nodes[name].title = title
                 nodes[name].description = description
+                nodes[name].label = label
             else:
-                nodes[name] = Node(title, description)
+                nodes[name] = Node(title, description, label)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
