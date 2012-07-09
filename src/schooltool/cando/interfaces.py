@@ -90,6 +90,10 @@ class INode(Interface):
         title=_("Description"),
         required=False,
         default=u'')
+    label = zope.schema.TextLine(
+        title=_("Label"),
+        required=False,
+        default=u'')
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
