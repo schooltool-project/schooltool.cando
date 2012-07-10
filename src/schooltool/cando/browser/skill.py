@@ -83,6 +83,23 @@ class SkillSetTable(table.ajax.Table):
         return [label] + default + [skills]
 
 
+class SkillSetTableFilter(table.ajax.TableFilter, table.table.FilterWidget):
+
+    title = _("Title, short label or external ID")
+
+    def filter(self, results):
+        if self.ignoreRequest:
+            return results
+        if 'SEARCH' in self.request:
+            searchstr = self.request['SEARCH'].lower()
+            results = [item for item in results
+                       if searchstr in item.title.lower() or
+                       (item.label and searchstr in item.label.lower()) or
+                       (item.external_id and
+                        searchstr in item.external_id.lower())]
+        return results
+
+
 class SkillSetContainerAbsoluteURLAdapter(BrowserView):
     adapts(ISkillSetContainer, IBrowserRequest)
     implements(IAbsoluteURL)

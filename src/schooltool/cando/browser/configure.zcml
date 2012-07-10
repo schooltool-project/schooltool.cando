@@ -82,6 +82,14 @@
       />
 
   <flourish:viewlet
+      name="filter"
+      manager=".skill.SkillSetTable"
+      class=".skill.SkillSetTableFilter"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="table"
       class=".skill.SkillSetSkillTable"
       for="schooltool.cando.interfaces.ISkillSet"
