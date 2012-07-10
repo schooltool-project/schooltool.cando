@@ -93,6 +93,7 @@ class INode(Interface):
     label = zope.schema.TextLine(
         title=_("Label"),
         required=False,
+        max_length=5,
         default=u'')
 
     layers = Attribute("Layers within this layer")
