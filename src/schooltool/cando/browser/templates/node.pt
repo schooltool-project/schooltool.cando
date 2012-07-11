@@ -1,4 +1,17 @@
 <tal:block i18n:domain="schooltool.cando">
+  <script>
+  $(document).ready(function() {
+      // accordion setup
+      $( ".related-objects" ).accordion({
+          header: 'h2',
+          collapsible: true,
+          autoHeight: false,
+      });
+  });
+  </script>
+  <div class="related-objects">
+  <h2 i18n:translate="">General Information</h2>
+  <div>
   <h3>
     <tal:block replace="context/title" />
     <a class="modify" href="" title="Edit this Node"
@@ -71,7 +84,10 @@
     <metal:block define-slot="bottom">
     </metal:block>
   </metal:block>
+  </div>
 
+  <h2 i18n:translate="">Parent nodes</h2>
+  <div>
   <h3>
     <tal:block i18n:translate="">Parent nodes</tal:block>
     <a class="modify" href="" title="Edit parents"
@@ -90,7 +106,10 @@
       There are none.
     </p>
   </tal:block>
+  </div>
 
+  <h2 i18n:translate="">Child nodes</h2>
+  <div>
   <tal:block define="children view/children" condition="children">
     <h3 i18n:translate="">
       Child nodes
@@ -98,7 +117,10 @@
     <p tal:repeat="child children"
        tal:content="structure child/title" />
   </tal:block>
+  </div>
 
+  <h2 i18n:translate="">Layers</h2>
+  <div>
   <tal:block define="layers context/layers" condition="layers">
     <h3 i18n:translate="">
       Layers
@@ -106,7 +128,10 @@
     <p tal:repeat="layer layers"
        tal:content="structure layer/title" />
   </tal:block>
+  </div>
 
+  <h2 i18n:translate="">SkillSets</h2>
+  <div>
   <tal:block define="skillsets context/skillsets" condition="skillsets">
     <h3 i18n:translate="">
       SkillSets
@@ -114,6 +139,8 @@
     <p tal:repeat="skillset skillsets"
        tal:content="structure skillset/title" />
   </tal:block>
+  </div>
+  </div>
 
   <h3>
     <a tal:attributes="href view/done_link"
