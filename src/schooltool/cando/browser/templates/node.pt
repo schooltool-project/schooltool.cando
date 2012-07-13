@@ -110,34 +110,43 @@
 
   <h2 i18n:translate="">Child nodes</h2>
   <div>
-  <tal:block define="children view/children" condition="children">
+  <tal:block define="children view/children">
     <h3 i18n:translate="">
       Child nodes
     </h3>
     <p tal:repeat="child children"
        tal:content="structure child/title" />
+    <p tal:condition="not: children" i18:translate="">
+      There are none.
+    </p>
   </tal:block>
   </div>
 
   <h2 i18n:translate="">Layers</h2>
   <div>
-  <tal:block define="layers context/layers" condition="layers">
+  <tal:block define="layers context/layers">
     <h3 i18n:translate="">
       Layers
     </h3>
     <p tal:repeat="layer layers"
        tal:content="structure layer/title" />
+    <p tal:condition="not: layers" i18:translate="">
+      There are none.
+    </p>
   </tal:block>
   </div>
 
   <h2 i18n:translate="">SkillSets</h2>
   <div>
-  <tal:block define="skillsets context/skillsets" condition="skillsets">
+  <tal:block define="skillsets context/skillsets">
     <h3 i18n:translate="">
       SkillSets
     </h3>
     <p tal:repeat="skillset skillsets"
        tal:content="structure skillset/title" />
+    <p tal:condition="not: skillsets" i18:translate="">
+      There are none.
+    </p>
   </tal:block>
   </div>
   </div>
