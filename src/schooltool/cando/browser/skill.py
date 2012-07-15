@@ -21,6 +21,7 @@ Skill views.
 """
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
 from zope.interface import implements
@@ -57,8 +58,12 @@ class LabelBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
 class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+      <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
     ''')
+
+    @Lazy
+    def container(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
 
 
 class SkillSetTable(table.ajax.Table):
