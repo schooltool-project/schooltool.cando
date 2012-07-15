@@ -111,9 +111,6 @@
   <h2 i18n:translate="">Child nodes</h2>
   <div>
   <tal:block define="children view/children">
-    <h3 i18n:translate="">
-      Child nodes
-    </h3>
     <p tal:repeat="child children"
        tal:content="structure child/title" />
     <p tal:condition="not: children" i18:translate="">
@@ -127,6 +124,14 @@
   <tal:block define="layers context/layers">
     <h3 i18n:translate="">
       Layers
+    <a class="modify" href="" title="Edit layers"
+       tal:attributes="href string:${context/@@absolute_url}/edit_layers.html"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
     </h3>
     <p tal:repeat="layer layers"
        tal:content="structure layer/title" />
@@ -141,6 +146,14 @@
   <tal:block define="skillsets context/skillsets">
     <h3 i18n:translate="">
       SkillSets
+    <a class="modify" href="" title="Edit skillsets"
+       tal:attributes="href string:${context/@@absolute_url}/edit_skillsets.html"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
     </h3>
     <p tal:repeat="skillset skillsets"
        tal:content="structure skillset/title" />

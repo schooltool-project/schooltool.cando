@@ -637,6 +637,58 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="edit_layers.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditNodeLayersView"
+      subtitle="Edit Layers"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableNodeLayersTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeLayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveNodeLayersTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeLayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_skillsets.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditNodeSkillSetsView"
+      subtitle="Edit SkillSets"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableNodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeSkillSetsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveNodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeSkillSetsView"
+      permission="schooltool.view"
+      />
+
   <!-- All objects imported using global importer -->
 
   <configure package="schooltool.export">
