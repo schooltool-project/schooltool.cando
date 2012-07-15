@@ -37,8 +37,8 @@ Let's check the data.  There is one skillset called Carpentry.
 
     >>> manager.query.link('Carpentry').click()
     >>> print_attrs()
-    Short label: Carp label
-    External ID: ext_carp
+    Full description: ext_carp
+    Label: Carp label
 
 It has three skills.
 

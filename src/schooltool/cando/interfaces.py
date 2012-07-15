@@ -56,10 +56,8 @@ class ISkillSetContainer(IContainer):
 
 class ISkillSet(IRequirement, IAttributeAnnotatable):
 
-    external_id = zope.schema.TextLine(title=_("External ID"),
-                                       required=False)
-
-    label = zope.schema.TextLine(title=_("Short label"), required=False)
+    description = zope.schema.Text(title=_("Full description"), required=False)
+    label = zope.schema.TextLine(title=_("Label"), required=False)
 
 
 class ILayerContainer(IContainer):

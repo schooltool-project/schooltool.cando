@@ -90,7 +90,7 @@ class SkillSetTable(table.ajax.Table):
 
 class SkillSetTableFilter(table.ajax.TableFilter, table.table.FilterWidget):
 
-    title = _("Title, short label or external ID")
+    title = _("Title, description or label")
 
     def filter(self, results):
         if self.ignoreRequest:
@@ -100,8 +100,8 @@ class SkillSetTableFilter(table.ajax.TableFilter, table.table.FilterWidget):
             results = [item for item in results
                        if searchstr in item.title.lower() or
                        (item.label and searchstr in item.label.lower()) or
-                       (item.external_id and
-                        searchstr in item.external_id.lower())]
+                       (item.description and
+                        searchstr in item.description.lower())]
         return results
 
 
@@ -131,7 +131,7 @@ class SkillSetAddView(flourish.form.AddForm):
     legend = _('Skill set')
 
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     def updateActions(self):
         super(SkillSetAddView, self).updateActions()
@@ -167,12 +167,12 @@ class SkillSetAddView(flourish.form.AddForm):
 class SkillSetView(flourish.form.DisplayForm):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('label', 'external_id')
+    fields = fields.select('description', 'label')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Skill set')
 

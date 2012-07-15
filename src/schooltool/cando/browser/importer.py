@@ -66,7 +66,7 @@ class SkillSetsImporter(ImporterBase):
             num_errors = len(self.errors)
             name = self.getRequiredTextFromCell(sh, row, 0)
             title = self.getRequiredTextFromCell(sh, row, 1)
-            external_id = self.getTextFromCell(sh, row, 2)
+            description = self.getTextFromCell(sh, row, 2)
             label = self.getTextFromCell(sh, row, 3)
             if num_errors < len(self.errors):
                 continue
@@ -76,7 +76,7 @@ class SkillSetsImporter(ImporterBase):
                 skillset.title = title
             else:
                 skillset = skillsets[name] = SkillSet(title)
-            skillset.external_id = external_id
+            skillset.description = description
             skillset.label = label
 
 
