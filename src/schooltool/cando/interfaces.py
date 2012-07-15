@@ -92,6 +92,7 @@ class INode(Interface):
         default=u'')
     label = zope.schema.TextLine(
         title=_("Label"),
+        description=_("Limit to 5 characters or less."),
         required=False,
         max_length=5,
         default=u'')
