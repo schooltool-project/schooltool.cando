@@ -1,0 +1,81 @@
+<metal:block i18n:domain="schooltool.cando"
+             tal:define="skillsets view/skillsets">
+  <form tal:attributes="action request/URL">
+    <input type="hidden" name="node_id"
+           tal:attributes="value request/node_id" />
+    <script type="text/javascript">
+      function toggle_checkboxes(checkbox) {
+          var checkbox = $(checkbox),
+              is_checked = checkbox.is(':checked'),
+              checkboxes = $('input[name="selected_skillsets"]');
+          checkboxes.attr('checked', is_checked);
+      }
+      $(document).ready(function() {
+          // accordion setup
+          $( ".skillsets-selection table" ).accordion({
+              header: 'h2',
+              active: false,
+              collapsible: true,
+              autoHeight: false
+          });
+      });
+    </script>
+    <div class="status" tal:condition="view/error">
+      <div class="summary ui-state-error ui-corner-all">
+        <span class="ui-icon ui-icon-alert">icon</span>
+        <tal:block i18n:translate="">
+          You must select at least one skill set.
+        </tal:block>
+      </div>
+    </div>
+    <div class="skillsets-selection">
+      <table class="form-fields">
+        <thead>
+          <tr>
+            <th i18n:translate="">Title</th>
+            <th i18n:translate="">Skills</th>
+            <th>
+              <input type="checkbox" name="select_all" checked="checked"
+                     onclick="javascript:toggle_checkboxes(this);" />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="skillset skillsets">
+            <tal:block define="skills skillset/skills">
+              <td>
+                <h2>
+                  <tal:block condition="skillset/label">
+                    <tal:block content="skillset/label" />:
+                  </tal:block>
+                  <tal:block content="skillset/title" />
+                </h2>
+                <div>
+                  <ul class="skills">
+                    <li tal:repeat="skill skills"
+                        tal:content="skill" />
+                  </ul>
+                </div>
+              </td>
+              <td tal:content="python:len(skills)" />
+              <td>
+                <input type="checkbox" name="selected_skillsets"
+                       tal:attributes="value skillset/id;
+                                       checked skillset/checked;" />
+              </td>
+            </tal:block>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="buttons">
+      <input type="submit" class="button-ok" name="SUBMIT_BUTTON"
+             onclick="return ST.dialogs.submit(this, this);"
+             value="Submit" i18n:attributes="value submit-button"
+             tal:condition="skillsets" />
+      <input type="submit" class="button-cancel" name="CANCEL"
+             onclick="return ST.dialogs.close(this);"
+             value="Cancel" i18n:attributes="value cancel-button" />
+    </div>
+  </form>
+</metal:block>

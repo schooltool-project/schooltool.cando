@@ -312,10 +312,18 @@
       />
 
   <flourish:viewlet
-      name="assign.html"
-      title="Skill Set"
+      name="assign-skills.html"
+      title="Skills"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="assign-skillsets.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseAssignSkillSetsDialog"
+      template="templates/course_assign_skillsets_dialog.pt"
       permission="schooltool.edit"
       />
 
@@ -334,6 +342,39 @@
       title="Skills"
       subtitle="Assign Skill Set"
       permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="assign-skills.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseAssignSkillsView"
+      subtitle="Assign Skills"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="nodes_table"
+      class=".course.SkillsetNodesTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".course.CourseAssignSkillsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".course.SkillsetNodesTableFilter"
+      manager=".course.SkillsetNodesTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseAssignSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
       />
 
   <flourish:page

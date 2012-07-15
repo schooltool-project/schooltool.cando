@@ -1,0 +1,25 @@
+<tal:block define="params options/params"
+           i18n:domain="schooltool.cando">
+  <a tal:attributes="id params/id;
+                     href params/dialog_url;
+                     title params/title;">
+    <img tal:attributes="src params/src;
+                         alt params/alt;" />
+  </a>
+  <script>ST.state.push()</script>
+  <tal:script
+      tal:replace="structure scriptlocal:
+                   link_id params/id;
+                   form_url params/dialog_url;
+                   form_id params/dialog_id;
+                   dialog_title params/dialog_title" />
+  <script>
+    ST.dialogs.modal_form(ST.local.link_id,
+    ST.local.form_url,
+    ST.local.form_id,
+    ST.local.dialog_title);
+  </script>
+  <script>ST.state.pop()</script>            
+  <div tal:attributes="id params/dialog_id">
+  </div>
+</tal:block>

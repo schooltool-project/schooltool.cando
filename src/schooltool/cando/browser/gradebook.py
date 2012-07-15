@@ -420,13 +420,17 @@ class CanDoGradebookTertiaryNavigationManager(
         gradebook = proxy.removeSecurityProxy(self.context)
         current = gradebook.context.__name__
         for worksheet in gradebook.worksheets:
+            title = worksheet.title
+            if ISkillsGradebook.providedBy(self.context) and \
+               worksheet.skillset.label:
+                title = '%s: %s' % (worksheet.skillset.label, title)
             url = '%s/gradebook' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
                 classes.append('deployed')
             result.append({
                 'class': classes and ' '.join(classes) or None,
-                'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (worksheet.title, url, worksheet.title),
+                'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 })
         return result
 

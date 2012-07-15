@@ -65,6 +65,43 @@
     font-weight: bold;
 }
 
+.skillsets-selection {
+    max-height: 550px;
+    overflow: auto;
+    margin-bottom: 8px;
+}
+
+.skillsets-selection ul.skills {
+    list-style-type: disc;
+    padding-left: 16px;
+}
+
+.skillsets-selection .ui-accordion .ui-accordion-header {
+    font-weight: normal;
+    color: #333333;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.skillsets-selection .ui-accordion .ui-state-active,
+.skillsets-selection .ui-accordion .ui-state-hover {
+    background-color: #008c93;
+    border-color: #008c93;
+    color: #ffffff;
+}
+
+/* XXX: to make the default arrows in the skillset accordion black
+        find a better way to do it */
+
+.skillsets-selection .ui-accordion .ui-state-default .ui-icon {
+    background-image: url("ui-icons_222222_256x240.png");
+}
+
+.skillsets-selection .ui-accordion .ui-state-active .ui-icon,
+.skillsets-selection .ui-accordion .ui-state-hover .ui-icon {
+    background-image: url("ui-icons_ffffff_256x240.png");
+}
+
 /* XXX: move this to the gradebook css? */
 
 .popup_menu {
