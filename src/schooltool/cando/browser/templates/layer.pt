@@ -74,14 +74,6 @@
 
   <h3>
     <tal:block i18n:translate="">Parent layers</tal:block>
-    <a class="modify" href="" title="Edit parents"
-       tal:attributes="href view/edit_parents_url"
-       i18n:attributes="title"
-       tal:condition="context/schooltool:can_edit">
-      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
-           alt="Edit"
-           i18n:attributes="alt" />
-    </a>
   </h3>
   <tal:block define="parents view/parents">
     <p tal:repeat="parent parents"
@@ -91,12 +83,23 @@
     </p>
   </tal:block>
 
-  <tal:block define="children view/children" condition="children">
+  <tal:block define="children view/children">
     <h3 i18n:translate="">
       Child layers
+    <a class="modify" href="" title="Edit children"
+       tal:attributes="href view/edit_children_url"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
     </h3>
     <p tal:repeat="child children"
        tal:content="structure child/schooltool:content/title" />
+    <p tal:condition="not: children" i18:translate="">
+      There are none.
+    </p>
   </tal:block>
 
   <h3>

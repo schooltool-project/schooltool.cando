@@ -128,6 +128,7 @@ class Layer(Persistent, Contained):
 
     title = None
     parents = RelationshipProperty(URILayerLink, URILayer, URIParentLayer)
+    children = RelationshipProperty(URILayerLink, URIParentLayer, URILayer)
 
     def __init__(self, title):
         self.title = title

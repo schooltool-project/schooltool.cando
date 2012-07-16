@@ -144,8 +144,8 @@ class LayerView(flourish.form.DisplayForm):
         return absoluteURL(self.context, self.request) + '/edit.html'
 
     @property
-    def edit_parents_url(self):
-        return absoluteURL(self.context, self.request) + '/edit_parents.html'
+    def edit_children_url(self):
+        return absoluteURL(self.context, self.request) + '/edit_children.html'
 
     @property
     def parents(self):
@@ -232,24 +232,24 @@ class LayerContainerSourceMixin(object):
         return self.layers
 
 
-class AvailableParentLayersTable(LayerContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 LayersTable):
+class AvailableChildLayersTable(LayerContainerSourceMixin,
+                                RelationshipAddTableMixin,
+                                LayersTable):
     pass
 
 
-class RemoveParentLayersTable(LayerContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              LayersTable):
+class RemoveChildLayersTable(LayerContainerSourceMixin,
+                             RelationshipRemoveTableMixin,
+                             LayersTable):
     pass
 
 
-class EditParentLayersView(EditRelationships):
-    current_title = _("Current parent layers")
-    available_title = _("Available parent layers")
+class EditChildLayersView(EditRelationships):
+    current_title = _("Current child layers")
+    available_title = _("Available child layers")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         layer = self.context

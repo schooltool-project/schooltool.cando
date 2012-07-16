@@ -536,28 +536,28 @@
       />
 
   <flourish:page
-      name="edit_parents.html"
+      name="edit_children.html"
       for="schooltool.cando.interfaces.ILayer"
-      class=".model.EditParentLayersView"
-      subtitle="Edit Parents"
+      class=".model.EditChildLayersView"
+      subtitle="Edit Children"
       permission="schooltool.edit"
       />
 
   <flourish:viewlet
       name="available_table"
-      class=".model.AvailableParentLayersTable"
+      class=".model.AvailableChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentLayersView"
+      view=".model.EditChildLayersView"
       permission="schooltool.view"
       />
 
   <flourish:viewlet
       name="current_table"
-      class=".model.RemoveParentLayersTable"
+      class=".model.RemoveChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentLayersView"
+      view=".model.EditChildLayersView"
       permission="schooltool.view"
       />
 

@@ -69,6 +69,7 @@ class ILayer(Interface):
         title=_("Title"))
 
     parents = Attribute("Parent layers")
+    children = Attribute("Child layers")
 
 
 class ILayerContained(ILayer, IContained, IAttributeAnnotatable):
