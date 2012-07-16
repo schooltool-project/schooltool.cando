@@ -76,8 +76,23 @@
     <tal:block i18n:translate="">Parent layers</tal:block>
   </h3>
   <tal:block define="parents view/parents">
-    <p tal:repeat="parent parents"
-       tal:content="structure parent/schooltool:content/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="parent parents">
+          <td>
+            <a tal:attributes="href string:${parent/@@absolute_url}"
+               tal:content="parent/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: parents" i18:translate="">
       There are none.
     </p>
@@ -95,8 +110,23 @@
            i18n:attributes="alt" />
     </a>
     </h3>
-    <p tal:repeat="child children"
-       tal:content="structure child/schooltool:content/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="child children">
+          <td>
+            <a tal:attributes="href string:${child/@@absolute_url}"
+               tal:content="child/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: children" i18:translate="">
       There are none.
     </p>
