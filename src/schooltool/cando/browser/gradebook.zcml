@@ -468,4 +468,11 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="filldown"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
+      template="templates/filldown_dialog.pt"
+      permission="schooltool.view"
+      />
+
 </configure>
