@@ -44,15 +44,16 @@ from schooltool.app.browser.app import RelationshipRemoveTableMixin
 from schooltool.app.browser.app import EditRelationships
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.browser.app import ContentTitle
+from schooltool.cando.browser.skill import SkillSetTable
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
+from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando import CanDoMessage as _
-
 
 
 class LayerContainerAbsoluteURLAdapter(BrowserView):
@@ -470,6 +471,80 @@ class EditParentNodesView(EditRelationships):
     def getAvailableItemsContainer(self):
         node = self.context
         return INodeContainer(node.__parent__)
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class LayerContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+
+class AvailableNodeLayersTable(LayerContainerSourceMixin,
+                               RelationshipAddTableMixin,
+                               LayersTable):
+    pass
+
+
+class RemoveNodeLayersTable(LayerContainerSourceMixin,
+                            RelationshipRemoveTableMixin,
+                            LayersTable):
+    pass
+
+
+class EditNodeLayersView(EditRelationships):
+    current_title = _("Current node layers")
+    available_title = _("Available node layers")
+
+    def getCollection(self):
+        return self.context.layers
+
+    def getAvailableItemsContainer(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class SkillSetContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
+
+
+class AvailableNodeSkillSetsTable(SkillSetContainerSourceMixin,
+                                  RelationshipAddTableMixin,
+                                  SkillSetTable):
+    pass
+
+
+class RemoveNodeSkillSetsTable(SkillSetContainerSourceMixin,
+                               RelationshipRemoveTableMixin,
+                               SkillSetTable):
+    pass
+
+
+class EditNodeSkillSetsView(EditRelationships):
+    current_title = _("Current node skillsets")
+    available_title = _("Available node skillsets")
+
+    def getCollection(self):
+        return self.context.skillsets
+
+    def getAvailableItemsContainer(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
 
     def getAvailableItems(self):
         """Return a sequence of items that can be selected."""

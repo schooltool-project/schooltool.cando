@@ -712,7 +712,7 @@ class DocumentAddSkillSetBase(flourish.form.AddForm):
     _skillset = None
     label = None
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     @property
     def legend(self):
@@ -780,7 +780,7 @@ class DocumentNodeAddSkillSetView(DocumentAddSkillSetBase, DocumentNodeMixin):
 class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('label', 'external_id')
+    fields = fields.select('description', 'label')
 
     @property
     def subtitle(self):
