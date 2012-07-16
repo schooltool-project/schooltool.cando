@@ -90,14 +90,6 @@
   <div>
   <h3>
     <tal:block i18n:translate="">Parent nodes</tal:block>
-    <a class="modify" href="" title="Edit parents"
-       tal:attributes="href string:${context/@@absolute_url}/edit_parents.html"
-       i18n:attributes="title"
-       tal:condition="context/schooltool:can_edit">
-      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
-           alt="Edit"
-           i18n:attributes="alt" />
-    </a>
   </h3>
   <tal:block define="parents view/parents">
     <p tal:repeat="parent parents"
@@ -110,6 +102,17 @@
 
   <h2 i18n:translate="">Child nodes</h2>
   <div>
+  <h3>
+    <tal:block i18n:translate="">Child nodes</tal:block>
+    <a class="modify" href="" title="Edit child nodes"
+       tal:attributes="href string:${context/@@absolute_url}/edit_children.html"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
+  </h3>
   <tal:block define="children view/children">
     <p tal:repeat="child children"
        tal:content="structure child/title" />

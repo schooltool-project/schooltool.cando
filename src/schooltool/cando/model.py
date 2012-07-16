@@ -168,6 +168,7 @@ class Node(Persistent, Contained):
     label = u''
     layers = RelationshipProperty(URINodeLayer, URINode, URILayer)
     parents = RelationshipProperty(URINodeLink, URINode, URIParentNode)
+    children = RelationshipProperty(URINodeLink, URIParentNode, URINode)
     skillsets = RelationshipProperty(URINodeSkillSets, URINode, URISkillSet)
 
     def __init__(self, title=u'', description=u'', label=u''):

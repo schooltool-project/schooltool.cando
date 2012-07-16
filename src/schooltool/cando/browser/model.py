@@ -449,24 +449,24 @@ class NodeContainerSourceMixin(object):
         return self.nodes
 
 
-class AvailableParentNodesTable(NodeContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 NodesTable):
+class AvailableChildNodesTable(NodeContainerSourceMixin,
+                               RelationshipAddTableMixin,
+                               NodesTable):
     pass
 
 
-class RemoveParentNodesTable(NodeContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              NodesTable):
+class RemoveChildNodesTable(NodeContainerSourceMixin,
+                            RelationshipRemoveTableMixin,
+                            NodesTable):
     pass
 
 
-class EditParentNodesView(EditRelationships):
-    current_title = _("Current parent nodes")
-    available_title = _("Available parent nodes")
+class EditChildNodesView(EditRelationships):
+    current_title = _("Current child nodes")
+    available_title = _("Available child nodes")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         node = self.context

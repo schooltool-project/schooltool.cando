@@ -97,6 +97,7 @@ class INode(Interface):
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
+    children = Attribute("Child nodes")
     skillsets = Attribute("Skillsets related to this node")
 
     def findPaths():
