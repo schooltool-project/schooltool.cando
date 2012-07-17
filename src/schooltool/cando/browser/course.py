@@ -492,6 +492,8 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
             title=_(u"Hidden"),
             id_getter=lambda i: i.__name__,
             value_getter=lambda i: i.retired)
+        directlyProvides(title, ISortableColumn)
+        directlyProvides(label, ISortableColumn)
         return [label, title, required, hidden]
 
     def items(self):
@@ -521,6 +523,9 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
         if 'CANCEL_BUTTON' in self.request:
             self.request.response.redirect(self.nextURL())
             return
+
+    def sortOn(self):
+        return (('label', False),)
 
 
 class CourseSkillSetBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
