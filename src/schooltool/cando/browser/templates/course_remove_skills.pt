@@ -2,12 +2,6 @@
              tal:define="skillsets view/skillsets">
   <form tal:attributes="action request/URL">
     <script type="text/javascript">
-      function toggle_checkboxes(checkbox) {
-          var checkbox = $(checkbox),
-              is_checked = checkbox.is(':checked'),
-              checkboxes = $('input[name="selected_skillsets"]');
-          checkboxes.attr('checked', is_checked);
-      }
       $(document).ready(function() {
           // accordion setup
           $( ".skillsets-selection table" ).accordion({
@@ -25,8 +19,9 @@
             <th i18n:translate="">Title</th>
             <th i18n:translate="">Skills</th>
             <th>
-              <input type="checkbox" name="select_all" checked="checked"
-                     onclick="javascript:toggle_checkboxes(this);" />
+              <span i18n:translate="">Remove</span>
+              <input class="select-all" type="checkbox" name="select_all"
+                     onclick="return ST.cando.column_select_all(this);" />
             </th>
           </tr>
         </thead>

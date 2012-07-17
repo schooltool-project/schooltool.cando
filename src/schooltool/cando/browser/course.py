@@ -495,7 +495,7 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
             self.setUp(table_formatter=self.table_formatter,
                        batch_size=self.batch_size,
                        prefix=self.__name__,
-                       css_classes={'table': 'data course-skillset-edit'})
+                       css_classes={'table': 'data'})
 
     def columns(self):
         title = zc.table.column.GetterColumn(name='title',
