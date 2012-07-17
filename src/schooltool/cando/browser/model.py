@@ -378,6 +378,8 @@ class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
     def applyChanges(self, data):
         if data['description'] is None:
             data['description'] = u''
+        if data['label'] is None:
+            data['label'] = u''
         super(NodeEditView, self).applyChanges(data)
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
