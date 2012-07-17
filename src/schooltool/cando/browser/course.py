@@ -462,6 +462,32 @@ class CourseSkillSetEditView(UseCourseTitleMixin, flourish.page.Page):
     pass
 
 
+class SelectAllCheckboxColumn(table.column.CheckboxColumn):
+
+    css_classes = 'select-all'
+    script = 'return ST.cando.column_select_all(this);'
+
+    def template(self):
+        result = [
+            '<span>%(title)s</span>',
+            '<input class="%(css_classes)s" type="checkbox" name="%(name)s"',
+            '       id="%(id)s" onclick="%(script)s" />',
+            ]
+        return ''.join(result)
+
+    def renderHeader(self, formatter):
+        title = translate(self.title, context=formatter.request,
+                          default=self.title)
+        name = self.prefix + '-select-all'
+        return self.template() % {
+            'title': title,
+            'css_classes': self.css_classes,
+            'name': name,
+            'id': name,
+            'script': self.script,
+            }
+
+
 class CourseEditSkillSetSkillsTable(table.ajax.Table):
 
     def updateFormatter(self):
@@ -469,7 +495,7 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
             self.setUp(table_formatter=self.table_formatter,
                        batch_size=self.batch_size,
                        prefix=self.__name__,
-                       css_classes={'table': 'data'})
+                       css_classes={'table': 'data course-skillset-edit'})
 
     def columns(self):
         title = zc.table.column.GetterColumn(name='title',
@@ -480,13 +506,13 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
             name='label',
             title=_(u'Label'),
             getter=lambda i, f: i.label or '')
-        required = table.column.CheckboxColumn(
+        required = SelectAllCheckboxColumn(
             self.prefix+'.required',
             name='required',
             title=_(u"Required"),
             id_getter=lambda i: i.__name__,
             value_getter=lambda i: i.required)
-        hidden = table.column.CheckboxColumn(
+        hidden = SelectAllCheckboxColumn(
             self.prefix+'.hidden',
             name='hidden',
             title=_(u"Hidden"),

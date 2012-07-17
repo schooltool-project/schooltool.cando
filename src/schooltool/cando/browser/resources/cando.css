@@ -108,6 +108,10 @@
     background-image: url("ui-icons_ffffff_256x240.png");
 }
 
+.course-skillset-edit .select-all {
+    display: block;
+}
+
 /* XXX: move this to the gradebook css? */
 
 .popup_menu {
