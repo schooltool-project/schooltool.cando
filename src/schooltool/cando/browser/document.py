@@ -55,10 +55,10 @@ from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import IDocumentContainer, IDocument
 from schooltool.cando.interfaces import ISkillSetContainer, ISkillSet
-from schooltool.cando.model import Layer, LayerLink
-from schooltool.cando.model import Node, NodeLink
-from schooltool.cando.model import Document
-from schooltool.cando.skill import SkillSet, Skill
+from schooltool.cando.model import LayerContainer, Layer, LayerLink
+from schooltool.cando.model import NodeContainer, Node, NodeLink
+from schooltool.cando.model import DocumentContainer, Document
+from schooltool.cando.skill import SkillSetContainer, SkillSet, Skill
 
 from schooltool.cando import CanDoMessage as _
 
@@ -115,17 +115,17 @@ class DocumentsTertiaryNavigationManager(
 
     @property
     def items(self):
-        views = {
-            'DocumentsView': ('documents', _('Documents')),
-            'SkillSetContainerView': ('skills', _('Skill Sets')),
-            'LayersView': ('layers', _('Layers')),
-            'NodesView': ('nodes', _('Nodes')),
-            }
+        tabs = (
+            ((DocumentContainer, Document), 'documents', _('Documents')),
+            ((SkillSetContainer, SkillSet, Skill), 'skills', _('Skill Sets')),
+            ((LayerContainer, Layer), 'layers', _('Layers')),
+            ((NodeContainer, Node), 'nodes', _('Nodes')),
+            )
         result = []
         app = ISchoolToolApplication(None)
-        for class_name, (link, title) in views.items():
+        for context_list, link, title in tabs:
             url = '%s/%s' % (absoluteURL(app, self.request), link)
-            active = class_name in str(self.view.__class__)
+            active = (self.context.__class__ in context_list)
             result.append({
                 'class': active and 'active' or None,
                 'viewlet': u'<a href="%s">%s</a>' % (url, title),
