@@ -71,6 +71,11 @@
     margin-bottom: 8px;
 }
 
+/* XXX: ugly hack! */
+.skillsets-selection-remove {
+    max-height: 100000px;
+}
+
 .skillsets-selection ul.skills {
     list-style-type: disc;
     padding-left: 16px;

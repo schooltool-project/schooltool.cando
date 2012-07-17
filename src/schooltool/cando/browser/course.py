@@ -127,6 +127,13 @@ class CourseSkillsLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
+class RemoveSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def enabled(self):
+        return bool(self.context)
+
+
 # XXX: done link in course skills view.
 
 class CourseAssignSkillSetView(flourish.page.Page):
@@ -332,6 +339,50 @@ class CourseAssignSkillsView(flourish.page.Page):
         return self.context.__parent__.title
 
 
+class CourseRemoveSkillsView(flourish.page.Page):
+
+    container_class = 'container widecontainer'
+    content_template = ViewPageTemplateFile(
+        'templates/course_remove_skills.pt')
+
+    @property
+    def title(self):
+        return self.context.__parent__.title
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        selected_skillsets = self.request.get('selected_skillsets', [])
+        if not isinstance(selected_skillsets, list):
+            selected_skillsets = [selected_skillsets]
+        skillsets = []
+        for course_skillset in self.context.values():
+            skillset = course_skillset.skillset
+            skills = []
+            for skill in skillset.values():
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                skills.append(title)
+            skillsets.append({
+                    'label': skillset.label,
+                    'title': skillset.title,
+                    'skills': skills,
+                    'id': skillset.__name__,
+                    'checked': skillset.__name__ in selected_skillsets or 'SUBMIT_BUTTON' not in self.request,
+                    })
+        self.skillsets = skillsets
+        if 'SUBMIT_BUTTON' in self.request:
+            for course_skillset in self.context.values():
+                if course_skillset.skillset.__name__ not in selected_skillsets:
+                    del self.context[course_skillset.__name__]
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
+
+
 class CourseAssignSkillSetsDialog(flourish.form.Dialog):
 
     def initDialog(self):
@@ -343,7 +394,7 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
 
     @property
     def error(self):
-        return 'SUBMIT' in self.request and \
+        return 'SUBMIT_BUTTON' in self.request and \
             'selected_skillsets' not in self.request
 
     def nextURL(self):
