@@ -72,6 +72,7 @@ class LayersView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no layers.</h3>
     ''')
 
     @Lazy
@@ -279,6 +280,7 @@ class NodesView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
     ''')
 
     @Lazy
