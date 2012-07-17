@@ -59,7 +59,7 @@ class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
-      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no skillsets.</h3>
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no skill sets.</h3>
     ''')
 
     @Lazy
