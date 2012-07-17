@@ -370,12 +370,12 @@ class CourseRemoveSkillsView(flourish.page.Page):
                     'title': skillset.title,
                     'skills': skills,
                     'id': skillset.__name__,
-                    'checked': skillset.__name__ in selected_skillsets or 'SUBMIT_BUTTON' not in self.request,
+                    'checked': skillset.__name__ in selected_skillsets,
                     })
         self.skillsets = skillsets
         if 'SUBMIT_BUTTON' in self.request:
             for course_skillset in self.context.values():
-                if course_skillset.skillset.__name__ not in selected_skillsets:
+                if course_skillset.skillset.__name__ in selected_skillsets:
                     del self.context[course_skillset.__name__]
             self.request.response.redirect(self.nextURL())
 
