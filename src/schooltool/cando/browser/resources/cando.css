@@ -107,6 +107,14 @@
     background-image: url("ui-icons_ffffff_256x240.png");
 }
 
+.color-codes .required {
+    color: #005C61;
+}
+
+.color-codes .optional {
+    color: black;
+}
+
 /* XXX: move this to the gradebook css? */
 
 .popup_menu {

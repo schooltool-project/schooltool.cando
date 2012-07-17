@@ -468,6 +468,14 @@ class ScoreSystemHelpViewlet(flourish.page.ModalFormLinkViewlet):
         return translate(title, context=self.request)
 
 
+class ColorCodesHelpViewlet(flourish.page.ModalFormLinkViewlet):
+
+    @property
+    def dialog_title(self):
+        title = _(u'Color Codes Help')
+        return translate(title, context=self.request)
+
+
 class ScoreSystemHelpView(flourish.form.Dialog):
 
     def updateDialog(self):
@@ -494,6 +502,24 @@ class ScoreSystemHelpView(flourish.form.Dialog):
                     'rating': score[1],
                     })
         return result
+
+
+class ColorCodesHelpView(flourish.form.Dialog):
+
+    def updateDialog(self):
+        # XXX: fix the width of dialog content in css
+        if self.ajax_settings['dialog'] != 'close':
+            self.ajax_settings['dialog']['width'] = 144 + 16
+
+    def initDialog(self):
+        self.ajax_settings['dialog'] = {
+            'autoOpen': True,
+            'modal': False,
+            'resizable': False,
+            'draggable': True,
+            'position': ['center','middle'],
+            'width': 'auto',
+            }
 
 
 class ProjectSkillBrowseView(flourish.page.Page):
