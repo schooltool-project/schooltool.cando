@@ -348,11 +348,28 @@
       permission="schooltool.view"
       />
 
+  <flourish:viewlet
+      name="colorcodeshelp.html"
+      after="scoresystemhelp.html"
+      title="Color Codes"
+      class=".gradebook.ColorCodesHelpViewlet"
+      manager=".gradebook.GradebookHelpLinks"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="scoresystemhelp.html"
       for="schooltool.cando.interfaces.IProjectsGradebook"
       class=".gradebook.ScoreSystemHelpView"
       template="templates/scoresystem_help.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="colorcodeshelp.html"
+      for="schooltool.cando.interfaces.IProjectsGradebook"
+      class=".gradebook.ColorCodesHelpView"
+      template="templates/colorcodes_help.pt"
       permission="schooltool.view"
       />
 
@@ -458,6 +475,14 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="colorcodeshelp.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".gradebook.ColorCodesHelpView"
+      template="templates/colorcodes_help.pt"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="gradebook-skills"
       after="calendar schedule gradebook"
@@ -465,6 +490,13 @@
       for="schooltool.course.interfaces.ISection"
       manager="schooltool.course.browser.section.SectionLinks"
       class="schooltool.skin.flourish.page.LinkViewlet"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="filldown"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
+      template="templates/filldown_dialog.pt"
       permission="schooltool.view"
       />
 

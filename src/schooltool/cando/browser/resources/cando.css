@@ -23,10 +23,6 @@
     width: 3em;
 }
 
-.grades thead th.optional > a {
-    color: black;
-}
-
 .skill-title {
     display: table-row;
     overflow: hidden;
@@ -37,7 +33,7 @@
 }
 
 .skill-title p {
-    background: #ffffff;
+    background: #F0EFEE;
     border-color: #dddddd;
     border-radius: 0 0 4px 4px;
     border-style: solid;
@@ -53,22 +49,32 @@
     width: 598px;
 }
 
-.skill-title p.required {
-    background: #6C7B7C;
-    color: #ffffff;
-    font-weight: bold;
+.skill-title p.required,
+.skill-title p.optional {
+    text-align: justify;
 }
 
-.skill-title p.optional {
-    background: #F0EFEE;
+.skill-title p.required,
+.color-codes .required,
+.grades thead th > a {
+    color: #005C61;
+}
+
+.skill-title p.optional,
+.color-codes .optional,
+.grades thead th.optional > a {
     color: black;
-    font-weight: bold;
 }
 
 .skillsets-selection {
     max-height: 550px;
     overflow: auto;
     margin-bottom: 8px;
+}
+
+/* XXX: ugly hack! */
+.skillsets-selection-remove {
+    max-height: 100000px;
 }
 
 .skillsets-selection ul.skills {
@@ -100,6 +106,10 @@
 .skillsets-selection .ui-accordion .ui-state-active .ui-icon,
 .skillsets-selection .ui-accordion .ui-state-hover .ui-icon {
     background-image: url("ui-icons_ffffff_256x240.png");
+}
+
+input[type="checkbox"].select-all {
+    display: block;
 }
 
 /* XXX: move this to the gradebook css? */

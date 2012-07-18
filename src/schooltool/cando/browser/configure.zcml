@@ -254,17 +254,34 @@
       manager="schooltool.skin.flourish.page.IPageRefineManager"
       class=".course.CourseSkillsLinks"
       for="schooltool.cando.interfaces.ICourseSkills"
-      title="Assign"
+      title="Actions"
       permission="schooltool.edit"
       view=".course.CourseSkillsView"
       />
 
   <flourish:viewlet
       name="assign-skills.html"
-      title="Skills"
+      title="Assign"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".course.CourseSkillsLinks"
       permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="remove-skills.html"
+      after="assign-skills.html"
+      title="Remove"
+      class=".course.RemoveSkillsLinkViewlet"
+      manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseRemoveSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
       />
 
   <flourish:page
@@ -297,6 +314,14 @@
       for="schooltool.cando.interfaces.ICourseSkills"
       class=".course.CourseAssignSkillsView"
       subtitle="Assign Skills"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="remove-skills.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseRemoveSkillsView"
+      subtitle="Remove Skills"
       permission="schooltool.edit"
       />
 
@@ -341,6 +366,14 @@
       subtitle="Edit Skills"
       content_template="templates/course_skills_edit.pt"
       permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseSkillSetEditView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet

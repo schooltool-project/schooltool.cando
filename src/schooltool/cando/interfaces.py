@@ -188,9 +188,13 @@ class ISectionSkills(IWorksheets):
     pass
 
 
-class IProjectsGradebook(IGradebook):
+class ICanDoGradebook(IGradebook):
     pass
 
 
-class ISkillsGradebook(IGradebook):
+class IProjectsGradebook(ICanDoGradebook):
+    pass
+
+
+class ISkillsGradebook(ICanDoGradebook):
     pass

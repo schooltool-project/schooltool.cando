@@ -1,3 +1,16 @@
+ST.cando = function () {
+    return {
+        column_select_all: function (input) {
+            var checkbox = $(input),
+                index = checkbox.parent().index(),
+                table = checkbox.closest('table'),
+                column = table.find('tbody tr').find('td:eq('+index+')'),
+                checkboxes = column.find('input[type="checkbox"]');
+            checkboxes.attr('checked', checkbox.is(':checked'));
+        }
+    };
+}();
+
 $(document).ready(function() {
     var container = $('#skill-title');
     var skill_title = container.find('p');

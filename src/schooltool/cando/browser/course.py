@@ -127,6 +127,13 @@ class CourseSkillsLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
+class RemoveSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def enabled(self):
+        return bool(self.context)
+
+
 # XXX: done link in course skills view.
 
 class CourseAssignSkillSetView(flourish.page.Page):
@@ -332,6 +339,50 @@ class CourseAssignSkillsView(flourish.page.Page):
         return self.context.__parent__.title
 
 
+class CourseRemoveSkillsView(flourish.page.Page):
+
+    container_class = 'container widecontainer'
+    content_template = ViewPageTemplateFile(
+        'templates/course_remove_skills.pt')
+
+    @property
+    def title(self):
+        return self.context.__parent__.title
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        selected_skillsets = self.request.get('selected_skillsets', [])
+        if not isinstance(selected_skillsets, list):
+            selected_skillsets = [selected_skillsets]
+        skillsets = []
+        for course_skillset in self.context.values():
+            skillset = course_skillset.skillset
+            skills = []
+            for skill in skillset.values():
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                skills.append(title)
+            skillsets.append({
+                    'label': skillset.label,
+                    'title': skillset.title,
+                    'skills': skills,
+                    'id': skillset.__name__,
+                    'checked': skillset.__name__ in selected_skillsets,
+                    })
+        self.skillsets = skillsets
+        if 'SUBMIT_BUTTON' in self.request:
+            for course_skillset in self.context.values():
+                if course_skillset.skillset.__name__ in selected_skillsets:
+                    del self.context[course_skillset.__name__]
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
+
+
 class CourseAssignSkillSetsDialog(flourish.form.Dialog):
 
     def initDialog(self):
@@ -343,7 +394,7 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
 
     @property
     def error(self):
-        return 'SUBMIT' in self.request and \
+        return 'SUBMIT_BUTTON' in self.request and \
             'selected_skillsets' not in self.request
 
     def nextURL(self):
@@ -411,6 +462,32 @@ class CourseSkillSetEditView(UseCourseTitleMixin, flourish.page.Page):
     pass
 
 
+class SelectAllCheckboxColumn(table.column.CheckboxColumn):
+
+    css_classes = 'select-all'
+    script = 'return ST.cando.column_select_all(this);'
+
+    def template(self):
+        result = [
+            '<span>%(title)s</span>',
+            '<input class="%(css_classes)s" type="checkbox" name="%(name)s"',
+            '       id="%(id)s" onclick="%(script)s" />',
+            ]
+        return ''.join(result)
+
+    def renderHeader(self, formatter):
+        title = translate(self.title, context=formatter.request,
+                          default=self.title)
+        name = self.prefix + '-select-all'
+        return self.template() % {
+            'title': title,
+            'css_classes': self.css_classes,
+            'name': name,
+            'id': name,
+            'script': self.script,
+            }
+
+
 class CourseEditSkillSetSkillsTable(table.ajax.Table):
 
     def updateFormatter(self):
@@ -429,18 +506,20 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
             name='label',
             title=_(u'Label'),
             getter=lambda i, f: i.label or '')
-        required = table.column.CheckboxColumn(
+        required = SelectAllCheckboxColumn(
             self.prefix+'.required',
             name='required',
             title=_(u"Required"),
             id_getter=lambda i: i.__name__,
             value_getter=lambda i: i.required)
-        hidden = table.column.CheckboxColumn(
+        hidden = SelectAllCheckboxColumn(
             self.prefix+'.hidden',
             name='hidden',
             title=_(u"Hidden"),
             id_getter=lambda i: i.__name__,
             value_getter=lambda i: i.retired)
+        directlyProvides(title, ISortableColumn)
+        directlyProvides(label, ISortableColumn)
         return [label, title, required, hidden]
 
     def items(self):
@@ -470,6 +549,9 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
         if 'CANCEL_BUTTON' in self.request:
             self.request.response.redirect(self.nextURL())
             return
+
+    def sortOn(self):
+        return (('label', False),)
 
 
 class CourseSkillSetSkillTable(SkillSetSkillTable):
