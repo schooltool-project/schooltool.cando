@@ -7,34 +7,6 @@
 
   <!-- Skills and skillsets -->
 
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ISkillSetContainer"
-      title="Skills"
-      />
-
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ISkillSet"
-      class=".skill.LabelBreadcrumb"
-      />
-
-  <flourish:breadcrumb
-      class=".skill.LabelBreadcrumb"
-      for="schooltool.cando.interfaces.ISkill"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      class=".skill.LabelBreadcrumb"
-      view=".skill.SkillView"
-      for="schooltool.cando.interfaces.ISkill"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      title="Skills"
-      view=".skill.SkillSetContainerView"
-      />
-
   <flourish:activeViewlet
       name="manage_school"
       manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
@@ -234,30 +206,6 @@
       />
 
   <!-- Course skills -->
-
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkills"
-      title="Skills"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      view=".course.CourseSkillsView"
-      title="Skills"
-      for="schooltool.cando.interfaces.ICourseSkills"
-      />
-
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
-      class=".course.CourseSkillSetBreadcrumb"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      for="schooltool.cando.interfaces.ICourseSkillSet"
-      view=".course.CourseSkillSetView"
-      class=".course.CourseSkillSetBreadcrumb"
-      />
 
   <flourish:viewlet
       name="manage-course-skills"
@@ -757,5 +705,6 @@
   <include file="document.zcml" />
   <include file="report.zcml" />
   <include file="gradebook.zcml" />
+  <include file="breadcrumbs.zcml" />
 
 </configure>

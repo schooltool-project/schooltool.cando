@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           i18n_domain="schooltool.cando">
+
+  <!-- Skills and skillsets -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSetContainer"
+      title="Skills"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".breadcrumbs.LabelBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      class=".breadcrumbs.LabelBreadcrumb"
+      for="schooltool.cando.interfaces.ISkill"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      class=".breadcrumbs.LabelBreadcrumb"
+      view=".skill.SkillView"
+      for="schooltool.cando.interfaces.ISkill"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      title="Skills"
+      view=".skill.SkillSetContainerView"
+      />
+
+  <!-- Course skills -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkills"
+      title="Skills"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      view=".course.CourseSkillsView"
+      title="Skills"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      class=".breadcrumbs.CourseSkillSetBreadcrumb"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view=".course.CourseSkillSetView"
+      class=".breadcrumbs.CourseSkillSetBreadcrumb"
+      />
+
+</configure>

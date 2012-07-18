@@ -48,13 +48,6 @@ from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.cando import CanDoMessage as _
 
 
-class LabelBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
-
-    @property
-    def title(self):
-        return self.context.label or self.context.title
-
-
 class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
