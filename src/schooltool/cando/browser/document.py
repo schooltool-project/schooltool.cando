@@ -48,17 +48,17 @@ from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando.browser.model import LayersTable, LayerView, LayerEditView
-from schooltool.cando.browser.model import EditParentLayersView
+from schooltool.cando.browser.model import EditChildLayersView
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import IDocumentContainer, IDocument
 from schooltool.cando.interfaces import ISkillSetContainer, ISkillSet
-from schooltool.cando.model import Layer, LayerLink
-from schooltool.cando.model import Node, NodeLink
-from schooltool.cando.model import Document
-from schooltool.cando.skill import SkillSet, Skill
+from schooltool.cando.model import LayerContainer, Layer, LayerLink
+from schooltool.cando.model import NodeContainer, Node, NodeLink
+from schooltool.cando.model import DocumentContainer, Document
+from schooltool.cando.skill import SkillSetContainer, SkillSet, Skill
 
 from schooltool.cando import CanDoMessage as _
 
@@ -80,6 +80,7 @@ class DocumentsView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no documents.</h3>
     ''')
 
     @Lazy
@@ -115,17 +116,17 @@ class DocumentsTertiaryNavigationManager(
 
     @property
     def items(self):
-        views = {
-            'DocumentsView': ('documents', _('Documents')),
-            'SkillSetContainerView': ('skills', _('Skill Sets')),
-            'LayersView': ('layers', _('Layers')),
-            'NodesView': ('nodes', _('Nodes')),
-            }
+        tabs = (
+            ((DocumentContainer, Document), 'documents', _('Documents')),
+            ((SkillSetContainer, SkillSet, Skill), 'skills', _('Skill Sets')),
+            ((LayerContainer, Layer), 'layers', _('Layers')),
+            ((NodeContainer, Node), 'nodes', _('Nodes')),
+            )
         result = []
         app = ISchoolToolApplication(None)
-        for class_name, (link, title) in views.items():
+        for context_list, link, title in tabs:
             url = '%s/%s' % (absoluteURL(app, self.request), link)
-            active = class_name in str(self.view.__class__)
+            active = (self.context.__class__ in context_list)
             result.append({
                 'class': active and 'active' or None,
                 'viewlet': u'<a href="%s">%s</a>' % (url, title),
@@ -511,10 +512,10 @@ class DocumentLayerView(LayerView, DocumentNodeMixin):
         return '%s/edit_document_layer.html%s' % (url, query_string)
 
     @property
-    def edit_parents_url(self):
+    def edit_children_url(self):
         url = absoluteURL(self.context, self.request)
         query_string = self.build_query_string()
-        return '%s/edit_document_layer_parents.html%s' % (url, query_string)
+        return '%s/edit_document_layer_children.html%s' % (url, query_string)
 
     @property
     def done_link(self):
@@ -533,7 +534,7 @@ class DocumentLayerEditView(LayerEditView, DocumentNodeMixin):
         return '%s/document.html%s' % (url, query_string)
 
 
-class EditDocumntLayerParentsView(EditParentLayersView, DocumentNodeMixin):
+class EditDocumntLayerChildrenView(EditChildLayersView, DocumentNodeMixin):
 
     def nextURL(self):
         url = absoluteURL(self.context, self.request)

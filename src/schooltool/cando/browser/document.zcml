@@ -40,38 +40,6 @@
       permission="schooltool.view"
       />
 
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".document.DocumentsTertiaryNavigationManager"
-      view=".document.DocumentsView"
-      permission="zope.Public"
-      />
-
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".document.DocumentsTertiaryNavigationManager"
-      view=".skill.SkillSetContainerView"
-      permission="zope.Public"
-      />
-
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".document.DocumentsTertiaryNavigationManager"
-      view=".model.LayersView"
-      permission="zope.Public"
-      />
-
-  <flourish:viewletManager
-      name="tertiary_navigation"
-      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
-      class=".document.DocumentsTertiaryNavigationManager"
-      view=".model.NodesView"
-      permission="zope.Public"
-      />
-
   <flourish:viewlet
       name="table"
       class=".document.DocumentsTable"
@@ -180,28 +148,28 @@
       />
 
   <flourish:page
-      name="edit_document_layer_parents.html"
+      name="edit_document_layer_children.html"
       for="schooltool.cando.interfaces.ILayer"
-      class=".document.EditDocumntLayerParentsView"
+      class=".document.EditDocumntLayerChildrenView"
       subtitle="Edit Parents"
       permission="schooltool.edit"
       />
 
   <flourish:viewlet
       name="available_table"
-      class=".model.AvailableParentLayersTable"
+      class=".model.AvailableChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".document.EditDocumntLayerParentsView"
+      view=".document.EditDocumntLayerChildrenView"
       permission="schooltool.view"
       />
 
   <flourish:viewlet
       name="current_table"
-      class=".model.RemoveParentLayersTable"
+      class=".model.RemoveChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".document.EditDocumntLayerParentsView"
+      view=".document.EditDocumntLayerChildrenView"
       permission="schooltool.view"
       />
 
@@ -362,6 +330,318 @@
       subtitle="Edit"
       content_template="templates/form.pt"
       permission="schooltool.edit"
+      />
+
+  <!-- Tertiary for Document views -->
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentsView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentAddView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.EditDocumentHierarchyView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentLayerView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentLayerEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.EditDocumntLayerChildrenView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentNodeView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentAddNodeView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentNodeAddNodeView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentNodeEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentAddSkillSetView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentNodeAddSkillSetView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentSkillSetView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentSkillSetEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentAddSkillView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentSkillView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".document.DocumentSkillEditView"
+      permission="zope.Public"
+      />
+
+  <!-- Tertiary for SkillSet views -->
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillSetContainerView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillSetAddView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillSetEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillSetView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillAddView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".skill.SkillEditView"
+      permission="zope.Public"
+      />
+
+  <!-- Tertiary for Layer views -->
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.LayersView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.FlourishLayerAddView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.LayerView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.LayerEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.EditChildLayersView"
+      permission="zope.Public"
+      />
+
+  <!-- Tertiary for Node views -->
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.NodesView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.FlourishNodeAddView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.NodeView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.NodeEditView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.EditChildNodesView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.EditNodeLayersView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".document.DocumentsTertiaryNavigationManager"
+      view=".model.EditNodeSkillSetsView"
+      permission="zope.Public"
       />
 
 </configure>

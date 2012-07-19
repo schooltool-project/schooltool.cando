@@ -554,14 +554,6 @@ class CourseEditSkillSetSkillsTable(table.ajax.Table):
         return (('label', False),)
 
 
-class CourseSkillSetBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
-
-    @property
-    def title(self):
-        ss = self.context.skillset
-        return ss.label or ss.title
-
-
 class CourseSkillSetSkillTable(SkillSetSkillTable):
 
     def sortOn(self):

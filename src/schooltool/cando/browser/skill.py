@@ -48,17 +48,11 @@ from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.cando import CanDoMessage as _
 
 
-class LabelBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
-
-    @property
-    def title(self):
-        return self.context.label or self.context.title
-
-
 class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no skill sets.</h3>
     ''')
 
     @Lazy

@@ -69,6 +69,7 @@ class ILayer(Interface):
         title=_("Title"))
 
     parents = Attribute("Parent layers")
+    children = Attribute("Child layers")
 
 
 class ILayerContained(ILayer, IContained, IAttributeAnnotatable):
@@ -97,6 +98,7 @@ class INode(Interface):
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
+    children = Attribute("Child nodes")
     skillsets = Attribute("Skillsets related to this node")
 
     def findPaths():

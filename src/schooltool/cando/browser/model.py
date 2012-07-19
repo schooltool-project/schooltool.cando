@@ -72,6 +72,7 @@ class LayersView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no layers.</h3>
     ''')
 
     @Lazy
@@ -144,8 +145,8 @@ class LayerView(flourish.form.DisplayForm):
         return absoluteURL(self.context, self.request) + '/edit.html'
 
     @property
-    def edit_parents_url(self):
-        return absoluteURL(self.context, self.request) + '/edit_parents.html'
+    def edit_children_url(self):
+        return absoluteURL(self.context, self.request) + '/edit_children.html'
 
     @property
     def parents(self):
@@ -232,24 +233,24 @@ class LayerContainerSourceMixin(object):
         return self.layers
 
 
-class AvailableParentLayersTable(LayerContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 LayersTable):
+class AvailableChildLayersTable(LayerContainerSourceMixin,
+                                RelationshipAddTableMixin,
+                                LayersTable):
     pass
 
 
-class RemoveParentLayersTable(LayerContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              LayersTable):
+class RemoveChildLayersTable(LayerContainerSourceMixin,
+                             RelationshipRemoveTableMixin,
+                             LayersTable):
     pass
 
 
-class EditParentLayersView(EditRelationships):
-    current_title = _("Current parent layers")
-    available_title = _("Available parent layers")
+class EditChildLayersView(EditRelationships):
+    current_title = _("Current child layers")
+    available_title = _("Available child layers")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         layer = self.context
@@ -279,6 +280,7 @@ class NodesView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
     ''')
 
     @Lazy
@@ -451,24 +453,24 @@ class NodeContainerSourceMixin(object):
         return self.nodes
 
 
-class AvailableParentNodesTable(NodeContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 NodesTable):
+class AvailableChildNodesTable(NodeContainerSourceMixin,
+                               RelationshipAddTableMixin,
+                               NodesTable):
     pass
 
 
-class RemoveParentNodesTable(NodeContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              NodesTable):
+class RemoveChildNodesTable(NodeContainerSourceMixin,
+                            RelationshipRemoveTableMixin,
+                            NodesTable):
     pass
 
 
-class EditParentNodesView(EditRelationships):
-    current_title = _("Current parent nodes")
-    available_title = _("Available parent nodes")
+class EditChildNodesView(EditRelationships):
+    current_title = _("Current child nodes")
+    available_title = _("Available child nodes")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         node = self.context

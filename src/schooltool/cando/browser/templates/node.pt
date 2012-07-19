@@ -90,18 +90,25 @@
   <div>
   <h3>
     <tal:block i18n:translate="">Parent nodes</tal:block>
-    <a class="modify" href="" title="Edit parents"
-       tal:attributes="href string:${context/@@absolute_url}/edit_parents.html"
-       i18n:attributes="title"
-       tal:condition="context/schooltool:can_edit">
-      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
-           alt="Edit"
-           i18n:attributes="alt" />
-    </a>
   </h3>
   <tal:block define="parents view/parents">
-    <p tal:repeat="parent parents"
-       tal:content="structure parent/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="parent parents">
+          <td>
+            <a tal:attributes="href string:${parent/@@absolute_url}"
+               tal:content="parent/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: parents" i18:translate="">
       There are none.
     </p>
@@ -110,9 +117,35 @@
 
   <h2 i18n:translate="">Child nodes</h2>
   <div>
+  <h3>
+    <tal:block i18n:translate="">Child nodes</tal:block>
+    <a class="modify" href="" title="Edit child nodes"
+       tal:attributes="href string:${context/@@absolute_url}/edit_children.html"
+       i18n:attributes="title"
+       tal:condition="context/schooltool:can_edit">
+      <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           alt="Edit"
+           i18n:attributes="alt" />
+    </a>
+  </h3>
   <tal:block define="children view/children">
-    <p tal:repeat="child children"
-       tal:content="structure child/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="child children">
+          <td>
+            <a tal:attributes="href string:${child/@@absolute_url}"
+               tal:content="child/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: children" i18:translate="">
       There are none.
     </p>
@@ -133,8 +166,23 @@
            i18n:attributes="alt" />
     </a>
     </h3>
-    <p tal:repeat="layer layers"
-       tal:content="structure layer/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="layer layers">
+          <td>
+            <a tal:attributes="href string:${layer/@@absolute_url}"
+               tal:content="layer/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: layers" i18:translate="">
       There are none.
     </p>
@@ -155,8 +203,23 @@
            i18n:attributes="alt" />
     </a>
     </h3>
-    <p tal:repeat="skillset skillsets"
-       tal:content="structure skillset/title" />
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="skillset skillsets">
+          <td>
+            <a tal:attributes="href string:${skillset/@@absolute_url}"
+               tal:content="skillset/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <p tal:condition="not: skillsets" i18:translate="">
       There are none.
     </p>
