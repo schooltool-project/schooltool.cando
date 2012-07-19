@@ -261,7 +261,7 @@
 
   <flourish:viewlet
       name="assign-skills.html"
-      title="Assign"
+      title="Assign Skills"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".course.CourseSkillsLinks"
       permission="schooltool.edit"
@@ -270,7 +270,7 @@
   <flourish:viewlet
       name="remove-skills.html"
       after="assign-skills.html"
-      title="Remove"
+      title="Remove Skills"
       class=".course.RemoveSkillsLinkViewlet"
       manager=".course.CourseSkillsLinks"
       permission="schooltool.edit"

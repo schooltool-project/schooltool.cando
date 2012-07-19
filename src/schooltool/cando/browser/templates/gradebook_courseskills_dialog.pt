@@ -1,0 +1,37 @@
+<div i18n:domain="schooltool.cando"
+     tal:define="skillsets view/skillsets">
+  <script type="text/javascript">
+    $(document).ready(function() {
+        // accordion setup
+        $( ".skillsets-selection table" ).accordion({
+            header: 'h2',
+            collapsible: true,
+            autoHeight: false
+        });
+    });
+  </script>
+  <div class="skillsets-selection">
+    <table>
+      <tbody>
+        <tr tal:repeat="skillset skillsets">
+          <tal:block define="skills skillset/skills">
+            <td>
+              <h2>
+                <tal:block condition="skillset/label">
+                  <tal:block content="skillset/label" />:
+                </tal:block>
+                <tal:block content="skillset/title" />
+              </h2>
+              <div>
+                <ul class="skills">
+                  <li tal:repeat="skill skills"
+                      tal:content="skill" />
+                </ul>
+              </div>
+            </td>
+          </tal:block>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

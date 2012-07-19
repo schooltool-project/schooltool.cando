@@ -458,6 +458,33 @@
       />
 
   <flourish:viewlet
+      name="gradebook-courseskills"
+      after="gradebook_year_navigation"
+      before="gradebook-reports-links gradebook-help"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookCourseSkillsLinks"
+      view=".gradebook.SkillsGradebookOverview"
+      title="Course Skills"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="courseskills.html"
+      title="View"
+      class=".gradebook.CourseSkillsViewlet"
+      manager=".gradebook.GradebookCourseSkillsLinks"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="courseskills.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".gradebook.CourseSkillsView"
+      template="templates/gradebook_courseskills_dialog.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="gradebook-help"
       after="gradebook_year_navigation"
       manager="schooltool.skin.flourish.page.IPageRefineManager"
