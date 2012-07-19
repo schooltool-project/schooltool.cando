@@ -20,7 +20,12 @@
 Breadcrumbs.
 """
 
+from zope.traversing.browser.absoluteurl import absoluteURL
+
+from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.skin import flourish
+
+from schooltool.cando.interfaces import IDocumentContainer
 
 from schooltool.cando import CanDoMessage as _
 
@@ -38,4 +43,20 @@ class CourseSkillSetBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
     def title(self):
         ss = self.context.skillset
         return ss.label or ss.title
+
+
+class DocumentNavBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
+
+    @property
+    def crumb_parent(self):
+        return IDocumentContainer(ISchoolToolApplication(None))
+
+    @property
+    def url(self):
+        if not self.checkPermission():
+            return False
+        app = ISchoolToolApplication(None)
+        app_url = absoluteURL(app, self.request)
+        link = '%s/%s' % (app_url, self.traversal_name)
+        return link
 

@@ -4,12 +4,46 @@
            xmlns:flourish="http://schooltool.org/flourish"
            i18n_domain="schooltool.cando">
 
-  <!-- Skills and skillsets -->
+  <!-- Containers -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.IDocumentContainer"
+      title="Skills"
+      />
 
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ISkillSetContainer"
-      title="Skills"
+      title="Skill Sets"
+      traversal_name="skills"
+      class=".breadcrumbs.DocumentNavBreadcrumbs"
       />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ILayerContainer"
+      title="Layers"
+      traversal_name="layers"
+      class=".breadcrumbs.DocumentNavBreadcrumbs"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INodeContainer"
+      title="Nodes"
+      traversal_name="nodes"
+      class=".breadcrumbs.DocumentNavBreadcrumbs"
+      />
+
+  <!-- Layers and nodes -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ILayer"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      class=".breadcrumbs.LabelBreadcrumb"
+      />
+
+  <!-- Skills and skillsets -->
 
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ISkillSet"
@@ -26,12 +60,6 @@
       class=".breadcrumbs.LabelBreadcrumb"
       view=".skill.SkillView"
       for="schooltool.cando.interfaces.ISkill"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      title="Skills"
-      view=".skill.SkillSetContainerView"
       />
 
   <!-- Course skills -->
