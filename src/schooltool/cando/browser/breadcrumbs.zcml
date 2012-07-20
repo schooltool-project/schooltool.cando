@@ -15,21 +15,21 @@
       for="schooltool.cando.interfaces.ISkillSetContainer"
       title="Skill Sets"
       traversal_name="skills"
-      class=".breadcrumbs.DocumentNavBreadcrumbs"
+      class=".breadcrumbs.DocumentNavBreadcrumb"
       />
 
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ILayerContainer"
       title="Layers"
       traversal_name="layers"
-      class=".breadcrumbs.DocumentNavBreadcrumbs"
+      class=".breadcrumbs.DocumentNavBreadcrumb"
       />
 
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.INodeContainer"
       title="Nodes"
       traversal_name="nodes"
-      class=".breadcrumbs.DocumentNavBreadcrumbs"
+      class=".breadcrumbs.DocumentNavBreadcrumb"
       />
 
   <!-- Layers and nodes -->
@@ -86,6 +86,90 @@
       for="schooltool.cando.interfaces.ICourseSkillSet"
       view=".course.CourseSkillSetView"
       class=".breadcrumbs.CourseSkillSetBreadcrumb"
+      />
+
+  <!-- Document views of document, node, layer, skillsets and skills -->
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.IDocument"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ILayer"
+      view=".document.DocumentLayerView"
+      class=".breadcrumbs.DocumentLayerBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ILayer"
+      view=".document.DocumentLayerEditView"
+      class=".breadcrumbs.DocumentLayerBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ILayer"
+      view=".document.EditDocumntLayerChildrenView"
+      class=".breadcrumbs.DocumentLayerBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      view=".document.DocumentNodeView"
+      class=".breadcrumbs.DocumentNodeBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      view=".document.DocumentAddNodeView"
+      class=".breadcrumbs.DocumentNodeBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      view=".document.DocumentNodeAddNodeView"
+      class=".breadcrumbs.DocumentNodeBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      view=".document.DocumentNodeEditView"
+      class=".breadcrumbs.DocumentNodeBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.INode"
+      view=".document.DocumentNodeAddSkillSetView"
+      class=".breadcrumbs.DocumentNodeBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSet"
+      view=".document.DocumentSkillSetView"
+      class=".breadcrumbs.DocumentSkillSetBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSet"
+      view=".document.DocumentSkillSetEditView"
+      class=".breadcrumbs.DocumentSkillSetBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkillSet"
+      view=".document.DocumentAddSkillView"
+      class=".breadcrumbs.DocumentSkillSetBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkill"
+      view=".document.DocumentSkillView"
+      class=".breadcrumbs.DocumentSkillBreadcrumb"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISkill"
+      view=".document.DocumentSkillEditView"
+      class=".breadcrumbs.DocumentSkillBreadcrumb"
       />
 
 </configure>

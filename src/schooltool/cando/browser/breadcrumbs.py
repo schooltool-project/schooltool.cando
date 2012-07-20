@@ -25,6 +25,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.skin import flourish
 
+from schooltool.cando.browser import document
 from schooltool.cando.interfaces import IDocumentContainer
 
 from schooltool.cando import CanDoMessage as _
@@ -45,7 +46,7 @@ class CourseSkillSetBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
         return ss.label or ss.title
 
 
-class DocumentNavBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
+class DocumentNavBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
 
     @property
     def crumb_parent(self):
@@ -58,5 +59,77 @@ class DocumentNavBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
         app = ISchoolToolApplication(None)
         app_url = absoluteURL(app, self.request)
         link = '%s/%s' % (app_url, self.traversal_name)
+        return link
+
+
+class DocumentLayerBreadcrumb(flourish.breadcrumbs.Breadcrumbs,
+                              document.DocumentNodeMixin):
+
+    @property
+    def crumb_parent(self):
+        return self.get_document()
+
+    @property
+    def url(self):
+        if not self.checkPermission():
+            return False
+        layer_url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string()
+        link = '%s/document.html%s' % (layer_url, query_string)
+        return link
+
+
+class DocumentNodeBreadcrumb(flourish.breadcrumbs.Breadcrumbs,
+                             document.DocumentNodeMixin):
+
+    @property
+    def crumb_parent(self):
+        parents = tuple(self.context.parents)
+        if not parents:
+            return None
+        return parents[0]
+
+    @property
+    def url(self):
+        if not self.checkPermission():
+            return False
+        node_url = absoluteURL(self.context, self.request)
+        layers = tuple(self.context.layers)
+        if not layers:
+            return False
+        query_string = self.build_query_string(layer=layers[0])
+        link = '%s/document.html%s' % (node_url, query_string)
+        return link
+
+
+class DocumentSkillSetBreadcrumb(flourish.breadcrumbs.Breadcrumbs,
+                                 document.DocumentSkillSetMixin):
+
+    @property
+    def crumb_parent(self):
+        return self.get_node()
+
+    @property
+    def url(self):
+        if not self.checkPermission():
+            return False
+        skillset_url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_previous_layer(),
+                                               node=self.get_node())
+        link = '%s/document.html%s' % (skillset_url, query_string)
+        return link
+
+
+class DocumentSkillBreadcrumb(flourish.breadcrumbs.Breadcrumbs,
+                              document.DocumentSkillMixin):
+
+    @property
+    def url(self):
+        if not self.checkPermission():
+            return False
+        skill_url = absoluteURL(self.context, self.request)
+        query_string = self.build_query_string(layer=self.get_previous_layer(),
+                                               node=self.get_node())
+        link = '%s/document.html%s' % (skill_url, query_string)
         return link
 
