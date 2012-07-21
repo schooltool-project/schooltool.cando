@@ -21,6 +21,7 @@ import zope.schema
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.interfaces import IContainer, IContained
 from zope.container.constraints import contains
+from zope.html.field import HtmlFragment
 from zope.interface import Interface, Attribute
 
 from schooltool.requirement.interfaces import IRequirement
@@ -39,7 +40,7 @@ class ISkill(IRequirement, IAttributeAnnotatable):
                                description=_("Skill is no longer used"))
     label = zope.schema.TextLine(title=_("Short label"), required=False)
 
-    description = zope.schema.Text(title=_("Full description"), required=False)
+    description = HtmlFragment(title=_("Full description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
 
@@ -56,7 +57,7 @@ class ISkillSetContainer(IContainer):
 
 class ISkillSet(IRequirement, IAttributeAnnotatable):
 
-    description = zope.schema.Text(title=_("Full description"), required=False)
+    description = HtmlFragment(title=_("Full description"), required=False)
     label = zope.schema.TextLine(title=_("Label"), required=False)
 
 
@@ -85,7 +86,7 @@ class INode(Interface):
     title = zope.schema.TextLine(
         title=_("Title"),
         required=True)
-    description = zope.schema.TextLine(
+    description = HtmlFragment(
         title=_("Description"),
         required=False,
         default=u'')
