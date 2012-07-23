@@ -527,4 +527,102 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="mygrades-skills"
+      for="schooltool.course.interfaces.ISection"
+      class=".gradebook.SectionSkillsCanDoRedirectView"
+      permission="schooltool.view"
+      />
+
+  <configure package="schooltool.gradebook.browser.gradebook">
+
+    <flourish:page
+        name="index.html"
+        for="schooltool.cando.interfaces.IMySkillsGrades"
+        title="My Skills Grades"
+        class="schooltool.cando.browser.gradebook.MySkillsGradesView"
+        content_template="templates/f_mygrades.pt"
+        permission="zope.Public"
+        />
+
+  </configure>
+
+  <flourish:viewlet
+      name="mygrades_section_navigation"
+      before="mygrades_term_navigation"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.gradebook.browser.gradebook.FlourishMyGradesSectionNavigation"
+      for="schooltool.gradebook.interfaces.IMyGrades"
+      title="Section"
+      permission="zope.Public"
+      view=".gradebook.MySkillsGradesView"
+      />
+
+  <flourish:viewlet
+      name="mygrades_term_navigation"
+      before="mygrades_year_navigation"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.gradebook.browser.gradebook.FlourishMyGradesTermNavigation"
+      for="schooltool.gradebook.interfaces.IMyGrades"
+      title="Term"
+      permission="zope.Public"
+      view=".gradebook.MySkillsGradesView"
+      />
+
+  <flourish:viewlet
+      name="mygrades_year_navigation"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.gradebook.browser.gradebook.FlourishMyGradesYearNavigation"
+      for="schooltool.gradebook.interfaces.IMyGrades"
+      title="Year"
+      permission="zope.Public"
+      view=".gradebook.MySkillsGradesView"
+      />
+
+  <flourish:viewlet
+      name="select_year"
+      class=".gradebook.MySkillsGradesYearNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishMyGradesYearNavigation"
+      view=".gradebook.MySkillsGradesView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="select_term"
+      class=".gradebook.MySkillsGradesTermNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishMyGradesTermNavigation"
+      view=".gradebook.MySkillsGradesView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="select_section"
+      class=".gradebook.MySkillsGradesSectionNavigationViewlet"
+      manager="schooltool.gradebook.browser.gradebook.FlourishMyGradesSectionNavigation"
+      view=".gradebook.MySkillsGradesView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewletManager
+      name="tertiary_navigation"
+      provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
+      class=".gradebook.MySkillsGradesTertiaryNavigationManager"
+      view=".gradebook.MySkillsGradesView"
+      permission="zope.Public"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view=".gradebook.MySkillsGradesView"
+      title=""
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view="schooltool.cando.browser.gradebook.MySkillsGradesView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="zope.Public"
+      />
+
 </configure>
