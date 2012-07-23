@@ -322,8 +322,8 @@ class SkillsetNodesTableFilter(table.ajax.TableFilter):
             items = [item for item in items
                      if searchstr in item.__name__.lower() or
                      searchstr in item.title.lower() or
-                     searchstr in getattr(item, 'label', '') or
-                     searchstr in getattr(item, 'description', '')]
+                     searchstr in getattr(item, 'label', '').lower() or
+                     searchstr in getattr(item, 'description', '').lower()]
         return items
 
 

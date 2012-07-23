@@ -24,6 +24,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts, getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
+from zope.i18n.interfaces.locales import ICollator
 from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
@@ -439,6 +440,74 @@ class NodesTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+class NodesTableFilter(table.ajax.TableFilter):
+
+    search_title = _("ID, title, label or description")
+    template = ViewPageTemplateFile('templates/nodes_table_filter.pt')
+
+    @property
+    def search_id(self):
+        return self.manager.html_id+'-search'
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+'-title'
+
+    @property
+    def search_layer_ids(self):
+        return self.manager.html_id+"-layers"
+
+    def layerContainer(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    def layers(self):
+        result = []
+        container = self.layerContainer()
+        collator = ICollator(self.request.locale)
+        items = sorted(container.items(),
+                       key=lambda (lid, layer): layer.title,
+                       cmp=collator.cmp)
+        for id, layer in items:
+            checked = not self.manager.fromPublication
+            if self.search_layer_ids in self.request:
+                layer_ids = self.request[self.search_layer_ids]
+                if not isinstance(layer_ids, list):
+                    layer_ids = [layer_ids]
+                checked = id in layer_ids
+            result.append({'id': id,
+                           'title': layer.title,
+                           'checked': checked})
+        return result
+
+
+    def filter(self, items):
+        if self.ignoreRequest:
+            return items
+        if self.search_layer_ids in self.request:
+            layer_ids = self.request[self.search_layer_ids]
+            if not isinstance(layer_ids, list):
+                layer_ids = [layer_ids]
+            layers = set()
+            for layer_id in layer_ids:
+                layer = self.layerContainer().get(layer_id)
+                if layer is not None:
+                    layers.add(layer)
+            if layers:
+                items = [item for item in items
+                         if set(list(item.layers)).intersection(layers)]
+        else:
+            return []
+        if self.search_title_id in self.request:
+            searchstr = self.request[self.search_title_id].lower()
+            items = [item for item in items
+                     if searchstr in item.__name__.lower() or
+                     searchstr in item.title.lower() or
+                     searchstr in getattr(item, 'label', '').lower() or
+                     searchstr in getattr(item, 'description', '').lower()]
+        return items
 
 
 class NodeContainerSourceMixin(object):
