@@ -25,6 +25,7 @@ from zope.location.location import LocationProxy
 from zope.publisher.interfaces import IPublishTraverse
 from zope.security import proxy
 
+from schooltool.course.interfaces import ISection
 from schooltool.gradebook.activity import ensureAtLeastOneWorksheet
 from schooltool.gradebook.gradebook import Gradebook
 from schooltool.gradebook.gradebook import getActivityScore
@@ -33,6 +34,7 @@ from schooltool.gradebook.gradebook import CURRENT_SECTION_ATTENDED_KEY
 from schooltool.requirement.interfaces import IHaveEvaluations
 from schooltool.requirement.interfaces import IScore
 
+from schooltool.cando.interfaces import IMySkillsGrades
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
@@ -143,6 +145,21 @@ class SkillsGradebook(Gradebook):
         worksheets.setCurrentWorksheet(person, worksheet)
 
 
+class MySkillsGrades(SkillsGradebook):
+
+    implements(IMySkillsGrades)
+    adapts(ICourseSkillSet)
+
+    def __init__(self, context):
+        super(MySkillsGrades, self).__init__(context)
+        # To make URL creation happy
+        self.__name__ = 'mygrades-skills'
+
+
+def getMySkillsGradesSection(gradebook):
+    return ISection(gradebook.context)
+
+
 @adapter(IHaveEvaluations, ISkill)
 @implementer(IScore)
 def getSkillScore(evaluatee, skill):
@@ -194,7 +211,10 @@ class SkillsGradebookTraverser(object):
                 gb.__setattr__('__parent__', gb.__parent__)
                 return gb
             elif name == 'mygrades':
-                pass
+                gb = IMySkillsGrades(context)
+                gb = LocationProxy(gb, self.context, name)
+                gb.__setattr__('__parent__', gb.__parent__)
+                return gb
             else:
                 return queryMultiAdapter((self.context, request), name=name)
 

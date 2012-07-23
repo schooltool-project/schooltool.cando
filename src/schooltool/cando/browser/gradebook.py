@@ -46,13 +46,16 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
 from schooltool.gradebook.browser.gradebook import GradebookTertiaryNavigationManager
+from schooltool.gradebook.browser.gradebook import MyGradesTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
+from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
 from schooltool.person.interfaces import IPerson
 from schooltool.skin import flourish
 from schooltool import table
 
+from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
@@ -456,8 +459,26 @@ class CanDoSectionNavigationViewlet(
     FlourishGradebookSectionNavigationViewlet): pass
 
 
+class GradebookCourseSkillsLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
 class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
     pass
+
+
+class CourseSkillsViewlet(flourish.page.ModalFormLinkViewlet):
+
+    @property
+    def dialog_title(self):
+        section = self.context.__parent__.__parent__.__parent__
+        courses = section.courses
+        course_title = ', '.join([course.title for course in courses])
+        course_code = ', '.join([course.government_id or ''
+                                 for course in courses])
+        title = _('${course} (${code}) Skill Sets',
+                  mapping={'course': course_title, 'code': course_code})
+        return translate(title, context=self.request)
 
 
 class ScoreSystemHelpViewlet(flourish.page.ModalFormLinkViewlet):
@@ -474,6 +495,37 @@ class ColorCodesHelpViewlet(flourish.page.ModalFormLinkViewlet):
     def dialog_title(self):
         title = _(u'Color Codes Help')
         return translate(title, context=self.request)
+
+
+class CourseSkillsView(flourish.form.Dialog):
+
+    def initDialog(self):
+        super(CourseSkillsView, self).initDialog()
+        self.ajax_settings['dialog']['modal'] = False
+        self.ajax_settings['dialog']['draggable'] = True
+        self.ajax_settings['dialog']['maxHeight'] = 640
+
+    def update(self):
+        flourish.form.Dialog.update(self)
+        skillsets = []
+        section = self.context.__parent__.__parent__.__parent__
+        for course in section.courses:
+            courseskills = ICourseSkills(course)
+            for courseskillset in courseskills.values():
+                skillset = proxy.removeSecurityProxy(courseskillset.skillset)
+                skills = []
+                for skill in courseskillset.values():
+                    title = skill.title
+                    if skill.label:
+                        title = '%s: %s' % (skill.label, title)
+                    skills.append(title)
+                skillsets.append({
+                        'label': skillset.label,
+                        'title': skillset.title,
+                        'skills': skills,
+                        'id': skillset.__name__,
+                        })
+        self.skillsets = skillsets
 
 
 class ScoreSystemHelpView(flourish.form.Dialog):
@@ -643,3 +695,72 @@ class SkillsTableFilter(table.ajax.IndexedTableFilter):
                 groups.append({'id': id,
                                'title': "%s (%s)" % (group.title, len(skills))})
         return groups
+
+
+class MySkillsGradesView(FlourishMyGradesView):
+
+    def getActivityInfo(self, activity):
+        result = super(SkillsGradebookOverview, self).getActivityInfo(
+            activity)
+        if not activity.required:
+            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
+            result['cssClass'] = cssClass
+        return result
+
+    def processColumnPreferences(self):
+        self.average_hide = True
+        self.total_hide = True
+        self.tardies_hide = True
+        self.absences_hide = True
+        self.due_date_hide = True
+        self.average_scoresystem = None
+
+    def getActivityAttrs(self, activity):
+        shortTitle, longTitle, bestScore = super(
+            SkillsGradebookOverview, self).getActivityAttrs(activity)
+        longTitle = activity.label + ': ' + longTitle
+        return shortTitle, longTitle, bestScore
+
+
+class MySkillsGradesYearNavigationViewlet(
+    CanDoYearNavigationViewlet):
+
+    isTeacher = False
+
+
+class MySkillsGradesTermNavigationViewlet(
+    CanDoTermNavigationViewlet):
+
+    isTeacher = False
+
+
+class MySkillsGradesSectionNavigationViewlet(
+    CanDoSectionNavigationViewlet):
+
+    isTeacher = False
+
+
+class MySkillsGradesTertiaryNavigationManager(
+    MyGradesTertiaryNavigationManager):
+
+    template = ViewPageTemplateFile('templates/cando_third_nav.pt')
+
+    @property
+    def items(self):
+        result = []
+        gradebook = proxy.removeSecurityProxy(self.context)
+        current = gradebook.context.__name__
+        for worksheet in gradebook.worksheets:
+            title = worksheet.title
+            if ISkillsGradebook.providedBy(self.context) and \
+               worksheet.skillset.label:
+                title = '%s: %s' % (worksheet.skillset.label, title)
+            url = '%s/mygrades' % absoluteURL(worksheet, self.request)
+            classes = worksheet.__name__ == current and ['active'] or []
+            if worksheet.deployed:
+                classes.append('deployed')
+            result.append({
+                'class': classes and ' '.join(classes) or None,
+                'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
+                })
+        return result

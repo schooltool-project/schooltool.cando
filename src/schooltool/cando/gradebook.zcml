@@ -53,4 +53,23 @@
       factory=".gradebook.getCourseSkillSetSection"
       />
 
+  <class class=".gradebook.MySkillsGrades">
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.IMySkillsGrades" />
+  </class>
+
+  <adapter
+      for=".interfaces.ICourseSkillSet"
+      provides=".interfaces.IMySkillsGrades"
+      factory=".gradebook.MySkillsGrades"
+      trusted="true"
+      />
+
+  <adapter
+      for=".interfaces.IMySkillsGrades"
+      provides="schooltool.course.interfaces.ISection"
+      factory=".gradebook.getMySkillsGradesSection"
+      />
+
 </configure>
