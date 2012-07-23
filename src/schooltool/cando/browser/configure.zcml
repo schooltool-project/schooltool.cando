@@ -577,6 +577,15 @@
       />
 
   <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".model.NodesTableFilter"
+      manager=".model.NodesTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="done"
       before="table batch"
       after="filter"
