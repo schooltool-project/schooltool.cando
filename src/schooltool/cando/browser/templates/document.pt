@@ -21,42 +21,6 @@
     </tbody>
   </table>
 
-  <tal:block condition="view/is_document">
-    <h3>
-      Layer Hierarchy
-      <a class="modify" href="" title="Edit the Document Hierarchy"
-         tal:attributes="href string:${context/@@absolute_url}/edit_hierarchy.html"
-         i18n:attributes="title"
-         tal:condition="view/can_edit">
-        <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
-             alt="Edit"
-             i18n:attributes="alt" />
-      </a>
-    </h3>
-    <tal:block condition="python: len(view.get_layer_hierarchy()) == 0">
-      <p i18n:translate="">This document has no hierarchy.</p>
-    </tal:block>
-    <tal:block condition="python: len(view.get_layer_hierarchy()) > 0">
-      <table class="data" i18n:domain="schooltool">
-        <thead>
-          <tr>
-            <th>
-              <span i18n:translate="">Title</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr tal:repeat="layer view/get_layer_hierarchy">
-            <td>
-              <a tal:attributes="href string:${layer/@@absolute_url}/document.html?document=${context/__name__}"
-                 tal:content="layer/title" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </tal:block>
-  </tal:block>
-
   <h3>
     <tal:block content="view/legend" />
   </h3>
