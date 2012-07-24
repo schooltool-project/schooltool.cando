@@ -114,6 +114,10 @@ input[type="checkbox"].select-all {
 
 /* XXX: move this to the gradebook css? */
 
+.grid .third-nav {
+    width: 20000px;
+}
+
 .popup_menu {
     max-width: 400px;
 }
