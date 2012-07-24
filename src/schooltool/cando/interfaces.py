@@ -93,9 +93,9 @@ class INode(Interface):
         default=u'')
     label = zope.schema.TextLine(
         title=_("Label"),
-        description=_("Limit to 5 characters or less."),
+        description=_("Limit to 7 characters or less."),
         required=False,
-        max_length=5,
+        max_length=7,
         default=u'')
 
     layers = Attribute("Layers within this layer")

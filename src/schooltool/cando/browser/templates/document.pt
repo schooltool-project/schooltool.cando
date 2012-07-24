@@ -28,12 +28,18 @@
     <thead>
       <tr>
         <th>
+          <span i18n:translate="">Label</span>
+        </th>
+        <th>
           <span i18n:translate="">Title</span>
         </th>
       </tr>
     </thead>
     <tbody>
       <tr tal:repeat="item items">
+        <td>
+          <span tal:content="item/obj/label" />
+        </td>
         <td>
           <a tal:attributes="href item/url"
              tal:content="item/obj/title" />
