@@ -234,6 +234,14 @@
       />
 
   <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="table"
       class=".course.CourseSkillsTable"
       for="schooltool.cando.interfaces.ICourseSkills"

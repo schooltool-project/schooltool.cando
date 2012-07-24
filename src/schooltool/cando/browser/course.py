@@ -74,6 +74,17 @@ class UseCourseTitleMixin(object):
 class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
+      <script type="text/javascript">
+        $(document).ready(function() {
+            // accordion setup
+            $( "table.courseskills-table" ).accordion({
+                header: 'h2',
+                active: false,
+                collapsible: true,
+                autoHeight: false
+            });
+        });
+      </script>
       <table class="form-fields" i18n:domain="schooltool">
         <tbody>
           <tr>
@@ -86,7 +97,9 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
           </tr>
         </tbody>
       </table>
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+      <div class="skillsets-selection skillsets-selection-courseskills">
+        <div tal:content="structure context/schooltool:content/ajax/table" />
+      </div>
       <h3>
         <a tal:attributes="href context/__parent__/@@absolute_url"
            i18n:translate="">Done</a>
@@ -98,26 +111,51 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         return self.context.__parent__.title
 
 
+def skillset_accordion_formatter(value, item, formatter):
+    skillset = item.skillset
+    cell_template = [
+        '<h2>%s</h2>',
+        '<div>',
+        '<ul class="skills">',
+        '%s',
+        '</ul>',
+        '</div>',
+        ]
+    title = skillset.title
+    if skillset.label:
+        title = '%s: %s' % (skillset.label, skillset.title)
+    skills = []
+    for skill in item.values():
+        skill_title = skill.title
+        if skill.label:
+            skill_title = '%s: %s' % (skill.label, skill.title)
+        skills.append('<li%s>%s</li>' % (not skill.required and ' class="optional"' or '', skill_title))
+    return ''.join(cell_template) % (title, ''.join(skills))
+
+
 class CourseSkillsTable(table.ajax.Table):
+
+    batch_size = 0
 
     def updateFormatter(self):
         if self._table_formatter is None:
             self.setUp(table_formatter=self.table_formatter,
                        batch_size=self.batch_size,
                        prefix=self.__name__,
-                       css_classes={'table': 'data'})
+                       css_classes={'table': 'courseskills-table'})
 
     def columns(self):
-        default = table.ajax.Table.columns(self)
+        title = zc.table.column.GetterColumn(
+            name='title',
+            title=_('Title'),
+            cell_formatter=skillset_accordion_formatter,
+            getter=lambda i, f: i.title,
+            subsort=True)
         skills = zc.table.column.GetterColumn(
             name='skills',
             title=_(u'Skills'),
             getter=lambda i, f: str(len(i)))
-        label = zc.table.column.GetterColumn(
-            name='label',
-            title=_(u'Label'),
-            getter=lambda i, f: i.skillset.label or '')
-        return [label] + default + [skills]
+        return [title, skills]
 
     def sortOn(self):
         return None

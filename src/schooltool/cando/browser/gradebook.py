@@ -264,7 +264,7 @@ class CanDoModes(flourish.page.RefineLinksViewlet):
 
 class CanDoModesViewlet(flourish.viewlet.Viewlet):
 
-    list_class = 'filter'
+    list_class = 'filter gradebook-modes'
 
     template = InlineViewPageTemplate('''
         <ul tal:attributes="class view/list_class"
@@ -459,10 +459,6 @@ class CanDoSectionNavigationViewlet(
     FlourishGradebookSectionNavigationViewlet): pass
 
 
-class GradebookCourseSkillsLinks(flourish.page.RefineLinksViewlet):
-    pass
-
-
 class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
     pass
 
@@ -472,12 +468,7 @@ class CourseSkillsViewlet(flourish.page.ModalFormLinkViewlet):
     @property
     def dialog_title(self):
         section = self.context.__parent__.__parent__.__parent__
-        courses = section.courses
-        course_title = ', '.join([course.title for course in courses])
-        course_code = ', '.join([course.government_id or ''
-                                 for course in courses])
-        title = _('${course} (${code}) Skill Sets',
-                  mapping={'course': course_title, 'code': course_code})
+        title = _('${section} Skills', mapping={'section': section.title})
         return translate(title, context=self.request)
 
 

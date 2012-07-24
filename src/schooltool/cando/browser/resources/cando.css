@@ -73,13 +73,18 @@
 }
 
 /* XXX: ugly hack! */
-.skillsets-selection-remove {
+.skillsets-selection-remove,
+.skillsets-selection-courseskills {
     max-height: 100000px;
 }
 
 .skillsets-selection ul.skills {
     list-style-type: disc;
     padding-left: 16px;
+}
+
+.skillsets-selection ul.skills li.optional {
+    font-style: italic;
 }
 
 .skillsets-selection .ui-accordion .ui-accordion-header {
@@ -94,6 +99,13 @@
     background-color: #008c93;
     border-color: #008c93;
     color: #ffffff;
+}
+
+.gradebook-modes {
+    margin-right: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #cccccc;
+    margin-bottom: 4px;
 }
 
 /* XXX: to make the default arrows in the skillset accordion black
