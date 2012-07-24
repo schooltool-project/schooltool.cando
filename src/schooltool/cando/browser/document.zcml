@@ -193,10 +193,28 @@
       />
 
   <flourish:viewlet
+      name="document-edit-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentEditLinks"
+      title="Edit"
+      permission="schooltool.edit"
+      view=".document.DocumentView"
+      />
+
+  <flourish:viewlet
       name="add_document_node.html"
       view=".document.DocumentView"
       class=".document.DocumentAddNodeLink"
       manager=".document.DocumentAddLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="edit_hierarchy.html"
+      view=".document.DocumentView"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      title="Layer Hierarchy"
+      manager=".document.DocumentEditLinks"
       permission="schooltool.edit"
       />
 

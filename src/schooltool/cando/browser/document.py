@@ -399,6 +399,10 @@ class DocumentAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentView"""
 
 
+class DocumentEditLinks(flourish.page.RefineLinksViewlet):
+    """Manager for Edit links in DocumentView"""
+
+
 class DocumentAddNodeLink(flourish.page.LinkViewlet, DocumentMixin):
 
     @property
