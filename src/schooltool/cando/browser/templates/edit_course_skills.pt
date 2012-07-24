@@ -1,0 +1,52 @@
+<tal:block i18n:domain="schooltool.cando"
+           tal:define="skillsets view/skillsets">
+  <form tal:attributes="action request/URL" method="post">
+    <table>
+      <thead>
+        <tr>
+          <th i18n:translate="">Skill</th>
+          <th>
+            <span i18n:translate="">Required</span>
+            <input class="select-all" type="checkbox" name="select_all"
+                   onclick="return ST.cando.column_select_all(this);"
+                   />
+          </th>
+          <th>
+            <span i18n:translate="">Visible</span>
+            <input class="select-all" type="checkbox" name="select_all"
+                   onclick="return ST.cando.column_select_all(this);"
+                   />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tal:block repeat="skillset skillsets">
+          <tr>
+            <th tal:content="skillset/title"
+                colspan="3" />
+          </tr>
+          <tr tal:repeat="skill skillset/skills">
+            <td tal:content="skill/title" />
+            <td>
+              <input type="checkbox"
+                     tal:attributes="name skill/required_name;
+                                     checked skill/required_checked" />
+            </td>
+            <td>
+              <input type="checkbox"
+                     tal:attributes="name skill/visible_name;
+                                     checked skill/visible_checked" />
+            </td>
+          </tr>
+        </tal:block>
+      </tbody>
+    </table>
+    <div class="buttons">
+      <input type="submit" class="button-ok" name="SUBMIT_BUTTON"
+             value="Submit" i18n:attributes="value submit-button"
+             tal:condition="skillsets" />
+      <input type="submit" class="button-cancel" name="CANCEL"
+             value="Cancel" i18n:attributes="value cancel-button" />
+    </div>
+  </form>
+</tal:block>

@@ -285,8 +285,33 @@
       />
 
   <flourish:viewlet
+      name="edit-skills.html"
+      after="remove-skills.html"
+      title="Set Required/Visible"
+      class=".course.EditSkillsLinkViewlet"
+      manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
       name="cando-resources"
       view=".course.CourseRemoveSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit-skills.html"
+      subtitle="Set Required/Visible"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.EditCourseSkillsView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.EditCourseSkillsView"
       manager="schooltool.skin.flourish.page.IPageContentManager"
       template="templates/cando_resources.pt"
       permission="schooltool.view"

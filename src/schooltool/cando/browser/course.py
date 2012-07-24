@@ -172,6 +172,13 @@ class RemoveSkillsLinkViewlet(flourish.page.LinkViewlet):
         return bool(self.context)
 
 
+class EditSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def enabled(self):
+        return bool(self.context)
+
+
 # XXX: done link in course skills view.
 
 class CourseAssignSkillSetView(flourish.page.Page):
@@ -610,3 +617,67 @@ class CourseSkillSetSkillTable(SkillSetSkillTable):
 class CourseSkillView(SkillView):
 
     can_edit = False
+
+
+class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
+
+    content_template = ViewPageTemplateFile(
+        'templates/edit_course_skills.pt')
+
+    @Lazy
+    def submitted(self):
+        return 'SUBMIT_BUTTON' in self.request
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        skillsets = []
+        required_prefix = 'required.'
+        visible_prefix = 'visible.'
+        for course_skillset_id in self.context:
+            course_skillset = self.context[course_skillset_id]
+            skillset = course_skillset.skillset
+            title = skillset.title
+            if skillset.label:
+                title = '%s: %s' % (skillset.label, title)
+            skills = []
+            for skill_id in skillset:
+                course_skill = course_skillset[skill_id]
+                skill = skillset[skill_id]
+                skill_title = skill.title
+                if skill.label:
+                    skill_title = '%s: %s' % (skill.label, skill_title)
+                skill_id = self.getId(course_skill)
+                required_name = required_prefix + skill_id
+                visible_name = visible_prefix + skill_id
+                if self.submitted:
+                    required = required_name in self.request
+                    if course_skill.required != required:
+                        course_skill.required = required
+                    hidden = not visible_name in self.request
+                    if course_skill.retired != hidden:
+                        course_skill.retired = hidden
+                skills.append({
+                        'id': skill_id,
+                        'title': skill_title,
+                        'required_checked': course_skill.required,
+                        'required_name': required_name,
+                        'visible_checked': not course_skill.retired,
+                        'visible_name': visible_name,
+                        })
+            skillsets.append({
+                    'title': title,
+                    'skills': skills,
+                    })
+        if self.submitted:
+            self.request.response.redirect(self.nextURL())
+            return
+        self.skillsets = skillsets
+
+    def getId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
