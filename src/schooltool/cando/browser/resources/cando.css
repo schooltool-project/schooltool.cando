@@ -54,16 +54,26 @@
     text-align: justify;
 }
 
+.grades thead th > a {
+    display: block;
+}
+
 .skill-title p.required,
 .color-codes .required,
 .grades thead th > a {
-    color: #005C61;
+    color: black;
 }
 
 .skill-title p.optional,
 .color-codes .optional,
 .grades thead th.optional > a {
     color: black;
+}
+
+ul.skills li.optional,
+.color-codes .optional,
+.grades thead th.optional > a {
+    background: #ACC4E4;
 }
 
 .skillsets-selection {
@@ -81,10 +91,6 @@
 .skillsets-selection ul.skills {
     list-style-type: disc;
     padding-left: 16px;
-}
-
-.skillsets-selection ul.skills li.optional {
-    font-style: italic;
 }
 
 .skillsets-selection .ui-accordion .ui-accordion-header {
