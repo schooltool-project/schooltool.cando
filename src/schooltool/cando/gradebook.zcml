@@ -72,4 +72,22 @@
       factory=".gradebook.getMySkillsGradesSection"
       />
 
+  <class class=".gradebook.CanDoStudentGradebook">
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ICanDoStudentGradebook" />
+  </class>
+
+  <adapter
+      provides=".interfaces.ICanDoStudentGradebook"
+      factory=".gradebook.CanDoStudentGradebook"
+      trusted="true"
+      />
+
+  <adapter
+      for=".interfaces.ICanDoGradebook
+           zope.publisher.interfaces.http.IHTTPRequest"
+      provides="zope.publisher.interfaces.IPublishTraverse"
+      factory=".gradebook.CanDoStudentGradebookTraverser" />
+
 </configure>

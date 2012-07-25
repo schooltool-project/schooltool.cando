@@ -43,6 +43,7 @@ from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
 from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
+from schooltool.gradebook.browser.gradebook import FlourishGradeStudent
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
 from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
@@ -788,3 +789,11 @@ class MySkillsGradesTertiaryNavigationManager(
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 })
         return result
+
+
+class CanDoGradeStudent(FlourishGradeStudent):
+
+    def updateWidgets(self, *args, **kw):
+        super(CanDoGradeStudent, self).updateWidgets(*args, **kw)
+        for widget in self.widgets.values():
+            widget.field.description = None
