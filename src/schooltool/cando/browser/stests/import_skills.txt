@@ -105,10 +105,11 @@ There is a single sample document.
 It has three layers in its heirarchy.
 
     >>> manager.query.link('Sample Doc').click()
-    >>> print manager.query_all.xpath('//table[@class="data"][1]//a').get_attribute('href')
-    http://localhost/layers/craft/document.html?document=sample
-    http://localhost/layers/branch/document.html?document=sample
-    http://localhost/layers/topic/document.html?document=sample
+    >>> manager.query.link('Layer Hierarchy').click()
+    >>> print manager.query_all.xpath('//table//a').get_attribute('href')
+    http://localhost/layers/branch
+    http://localhost/layers/craft
+    http://localhost/layers/topic
 
 There are six nodes.
 
