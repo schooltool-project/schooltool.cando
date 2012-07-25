@@ -308,7 +308,7 @@ class FlourishNodeAddView(flourish.form.AddForm):
 
     def updateWidgets(self):
         super(FlourishNodeAddView, self).updateWidgets()
-        self.widgets['label'].maxlength = 5
+        self.widgets['label'].maxlength = 7
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
     def handleAdd(self, action):
@@ -405,7 +405,7 @@ class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
 
     def updateWidgets(self):
         super(NodeEditView, self).updateWidgets()
-        self.widgets['label'].maxlength = 5
+        self.widgets['label'].maxlength = 7
 
 
 class NodesTable(table.ajax.Table):

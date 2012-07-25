@@ -44,7 +44,7 @@ ERROR_INVALID_LAYERS = _("has an invalid layer id")
 ERROR_INVALID_SKILLSET = _("has an invalid skillset id")
 ERROR_MISSING_SKILLSET_ID = _("is missing a skillset id")
 ERROR_INVALID_EQUIVALENT = _("has an invalid equivalent skill id")
-ERROR_NODE_LABEL_TOO_BIG = _("node label has more than five characters")
+ERROR_NODE_LABEL_TOO_BIG = _("node label has more than seven characters")
 
 
 def breakupIds(ids):
@@ -259,7 +259,7 @@ class NodesImporter(ImporterBase):
             if num_errors < len(self.errors):
                 continue
 
-            if len(label) > 5:
+            if len(label) > 7:
                 self.error(row, 3, ERROR_NODE_LABEL_TOO_BIG)
                 continue
 
