@@ -782,4 +782,31 @@
   <include file="gradebook.zcml" />
   <include file="breadcrumbs.zcml" />
 
+  <flourish:viewlet
+      name="courses-actions-links"
+      after="courses-add-links"
+      before="course-import-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".course.CanDoCoursesActionsLinks"
+      view="schooltool.course.browser.course.FlourishCoursesView"
+      title="Actions"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="assign-courses-skills.html"
+      title="Batch Assign Skills"
+      class=".course.BatchAssignSkillsLinkViewlet"
+      manager=".course.CanDoCoursesActionsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="assign-courses-skills.html"
+      subtitle="Assign Courses Skills"
+      for="schooltool.course.interfaces.ICourseContainer"
+      class="schooltool.cando.browser.course.CoursesSkillsAssignmentView"
+      permission="schooltool.edit"
+      />
+
 </configure>

@@ -33,16 +33,21 @@ from zc.table.interfaces import ISortableColumn
 
 from schooltool.app.browser.app import RelationshipAddTableMixin
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.course.interfaces import ICourseContainer
 from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INodeContainer
-from schooltool.cando.interfaces import ICourseSkillSet
+from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.browser.skill import SkillSetTable, SkillSetSkillTable
 from schooltool.cando.browser.skill import SkillView
+from schooltool.cando.model import URINode, URINodeLayer
 from schooltool.course.interfaces import ICourse
 from schooltool.common.inlinept import InlineViewPageTemplate
+from schooltool.relationship import getRelatedObjects
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.schoolyear.interfaces import ISchoolYear
 from schooltool.skin import flourish
 from schooltool.table.column import getResourceURL
 from schooltool import table
@@ -681,3 +686,157 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
     def getId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
+
+
+class CanDoCoursesActionsLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class CoursesSkillsAssignmentView(flourish.page.Page):
+
+    matched = []
+    not_matched = []
+    container_class = 'container widecontainer'
+    content_template = ViewPageTemplateFile(
+        'templates/courses_skills_assignment.pt')
+
+    @property
+    def course_attrs(self):
+        attrs = ['__name__', 'title', 'description',
+                 'course_id', 'government_id']
+        return [{'title': ICourse[attr].title, 'value': attr}
+                for attr in attrs]
+
+    @property
+    def node_attrs(self):
+        attrs = ['label', 'title', 'description']
+        return [{'title': INode[attr].title, 'value': attr}
+                for attr in attrs]
+
+    @property
+    def courses(self):
+        return ICourseContainer(self.context)
+
+    @property
+    def layers(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    @property
+    def nodes(self):
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app)
+
+    @property
+    def skills(self):
+        app = ISchoolToolApplication(None)
+        return ISkillSetContainer(app)
+
+    def getSkillSetID(self, skillset):
+        return skillset.__name__.split('-')[0]
+
+    def requiredSubmitted(self):
+        required = ['course_attr', 'layer', 'node_attr']
+        for attr in required:
+            if not self.request.get(attr, ''):
+                return False
+        return True
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        schoolyear = ISchoolYear(self.context)
+        return '%s/courses?schoolyear_id=%s' % (absoluteURL(app, self.request),
+                                                schoolyear.__name__)
+
+    def updateMatches(self):
+        assignments = []
+        not_assigned = []
+        course_attr = self.request['course_attr']
+        layer = self.layers[self.request['layer']]
+        node_attr = self.request['node_attr']
+        nodes = list(getRelatedObjects(layer, URINode, URINodeLayer))
+        for course in self.courses.values():
+            course_attr_value = getattr(course, course_attr, '')
+            skills = ICourseSkills(course)
+                # only use courses with no skills
+            if skills:
+                not_assigned.append({
+                        'course': course,
+                        'course_attr': course_attr_value,
+                        'reason': _('Course has skills assigned already'),
+                        })
+                continue
+            if course_attr_value:
+                assignment = {}
+                for node in nodes:
+                    node_attr_value = getattr(node, node_attr, '')
+                    if node_attr_value:
+                        if node_attr_value == course_attr_value:
+                            assignment = {
+                                    'course': course,
+                                    'course_attr': course_attr_value,
+                                    'node': node,
+                                    'node_attr': node_attr_value,
+                                    }
+                if assignment:
+                    assignments.append(assignment)
+                else:
+                    not_assigned.append({
+                            'course': course,
+                            'course_attr': course_attr_value,
+                            'reason': _("Couldn't find a matching node"),
+                            })
+            else:
+                not_assigned.append({
+                        'course': course,
+                        'course_attr': course_attr_value,
+                        'reason': _('Course attribute is empty'),
+                        })
+        self.matched = assignments
+        self.not_matched = not_assigned
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        if self.requiredSubmitted():
+            self.updateMatches()
+            if 'ASSIGN_BUTTON' in self.request:
+                for info in self.matched:
+                    course = info['course']
+                    node = info['node']
+                    skills = ICourseSkills(course)
+                    for skillset in node.skillsets:
+                        skills[skillset.__name__] = CourseSkillSet(skillset)
+                self.request.response.redirect(self.nextURL())
+                return
+            if 'SEARCH_BUTTON' in self.request:
+                self.matched = sorted(self.matched,
+                                      key=lambda x:x['course_attr'])
+                self.not_matched = sorted(self.not_matched,
+                                          key=lambda x:x['course_attr'])
+
+
+class BatchAssignSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def schoolyear(self):
+        schoolyears = ISchoolYearContainer(self.context)
+        result = schoolyears.getActiveSchoolYear()
+        if 'schoolyear_id' in self.request:
+            schoolyear_id = self.request['schoolyear_id']
+            result = schoolyears.get(schoolyear_id, result)
+        return result
+
+    @property
+    def courses(self):
+        return ICourseContainer(self.schoolyear)
+
+    @property
+    def enabled(self):
+        return bool(self.courses)
+
+    @property
+    def url(self):
+        return '%s/%s' % (absoluteURL(self.courses, self.request),
+                          'assign-courses-skills.html')
