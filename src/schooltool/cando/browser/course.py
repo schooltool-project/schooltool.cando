@@ -469,7 +469,11 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
                     title = skill.title
                     if skill.label:
                         title = '%s: %s' % (skill.label, title)
-                    skills.append(title)
+                    css_class = not skill.required and 'optional' or None
+                    skills.append({
+                            'title': title,
+                            'css_class': css_class,
+                            })
                 skillsets.append({
                         'label': skillset.label,
                         'title': skillset.title,
