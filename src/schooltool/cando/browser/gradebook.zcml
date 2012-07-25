@@ -268,14 +268,14 @@
 
   <flourish:page
       name="name_popup_menu"
-      for="schooltool.cando.interfaces.IProjectsGradebook"
-      template="templates/name_popup_menu.pt"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
+      class=".gradebook.CanDoNamePopupMenuView"
       permission="schooltool.edit"
       />
 
   <flourish:page
       name="activity_popup_menu"
-      for="schooltool.cando.interfaces.IProjectsGradebook"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.SkillPopupMenuView"
       permission="schooltool.edit"
       />
@@ -605,6 +605,12 @@
   <flourish:breadcrumb
       for="schooltool.cando.interfaces.ICourseSkillSet"
       view=".gradebook.MySkillsGradesView"
+      title=""
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view="schooltool.gradebook.browser.gradebook.FlourishStudentGradeHistory"
       title=""
       />
 

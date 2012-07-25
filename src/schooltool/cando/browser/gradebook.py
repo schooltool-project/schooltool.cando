@@ -44,6 +44,7 @@ from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
 from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
+from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
 from schooltool.gradebook.browser.gradebook import GradebookTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import MyGradesTertiaryNavigationManager
@@ -366,12 +367,44 @@ class ProjectAddView(flourish.form.AddForm):
         self.actions['cancel'].addClass('button-cancel')
 
 
+class CanDoNamePopupMenuView(FlourishNamePopupMenuView):
+
+    def options(self, worksheet):
+        options = [
+            {
+                'label': self.translate(_('Sort by')),
+                'url': '?sort_by=student',
+                },
+            ]
+        return options
+
+    def processColumnPreferences(self):
+        return
+
+
 class SkillPopupMenuView(FlourishActivityPopupMenuView):
+
+    def result(self):
+        result = {}
+        activity_id = self.request.get('activity_id')
+        worksheet = proxy.removeSecurityProxy(self.context).context
+        if activity_id is not None and activity_id in worksheet:
+            activity = worksheet[activity_id]
+            info = self.getActivityInfo(activity)
+            info.update({
+                    'canDelete': False,
+                    'moveLeft': False,
+                    'moveRight': False,
+                    })
+            result['header'] = info['longTitle']
+            result['options'] = self.options(info, worksheet)
+        return result
 
     def getActivityAttrs(self, activity):
         shortTitle, longTitle, bestScore = super(
             SkillPopupMenuView, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
+        if activity.label:
+            longTitle = '%s: %s' % (activity.label, longTitle)
         return shortTitle, longTitle, bestScore
 
 
