@@ -126,7 +126,10 @@ class DocumentsTertiaryNavigationManager(
         app = ISchoolToolApplication(None)
         for context_list, link, title in tabs:
             url = '%s/%s' % (absoluteURL(app, self.request), link)
-            active = (self.context.__class__ in context_list)
+            if 'Document' in str(self.view):
+                active = (link == 'documents')
+            else:
+                active = (self.context.__class__ in context_list)
             result.append({
                 'class': active and 'active' or None,
                 'viewlet': u'<a href="%s">%s</a>' % (url, title),
