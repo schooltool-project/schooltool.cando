@@ -50,6 +50,7 @@ $(document).ready(function() {
     if (third_nav.children().length > 0) {
         var scrollTo = tab_width * (active_tab.index());
         third_nav_container.scrollTo(scrollTo, 0, {axis: 'x'});
+        $('#navbar-list-worksheets').removeClass('navbar-arrow-inactive');
     }
     third_nav.on('click', 'li', function(e) {
         if ($('#worksheets-list').length < 1) {

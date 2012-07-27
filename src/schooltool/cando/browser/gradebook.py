@@ -43,7 +43,9 @@ from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
 from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
+from schooltool.gradebook.browser.gradebook import FlourishGradeStudent
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
+from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
 from schooltool.gradebook.browser.gradebook import GradebookTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import MyGradesTertiaryNavigationManager
@@ -264,7 +266,7 @@ class CanDoModes(flourish.page.RefineLinksViewlet):
 
 class CanDoModesViewlet(flourish.viewlet.Viewlet):
 
-    list_class = 'filter'
+    list_class = 'filter gradebook-modes'
 
     template = InlineViewPageTemplate('''
         <ul tal:attributes="class view/list_class"
@@ -366,12 +368,44 @@ class ProjectAddView(flourish.form.AddForm):
         self.actions['cancel'].addClass('button-cancel')
 
 
+class CanDoNamePopupMenuView(FlourishNamePopupMenuView):
+
+    def options(self, worksheet):
+        options = [
+            {
+                'label': self.translate(_('Sort by')),
+                'url': '?sort_by=student',
+                },
+            ]
+        return options
+
+    def processColumnPreferences(self):
+        return
+
+
 class SkillPopupMenuView(FlourishActivityPopupMenuView):
+
+    def result(self):
+        result = {}
+        activity_id = self.request.get('activity_id')
+        worksheet = proxy.removeSecurityProxy(self.context).context
+        if activity_id is not None and activity_id in worksheet:
+            activity = worksheet[activity_id]
+            info = self.getActivityInfo(activity)
+            info.update({
+                    'canDelete': False,
+                    'moveLeft': False,
+                    'moveRight': False,
+                    })
+            result['header'] = info['longTitle']
+            result['options'] = self.options(info, worksheet)
+        return result
 
     def getActivityAttrs(self, activity):
         shortTitle, longTitle, bestScore = super(
             SkillPopupMenuView, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
+        if activity.label:
+            longTitle = '%s: %s' % (activity.label, longTitle)
         return shortTitle, longTitle, bestScore
 
 
@@ -459,10 +493,6 @@ class CanDoSectionNavigationViewlet(
     FlourishGradebookSectionNavigationViewlet): pass
 
 
-class GradebookCourseSkillsLinks(flourish.page.RefineLinksViewlet):
-    pass
-
-
 class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
     pass
 
@@ -472,12 +502,7 @@ class CourseSkillsViewlet(flourish.page.ModalFormLinkViewlet):
     @property
     def dialog_title(self):
         section = self.context.__parent__.__parent__.__parent__
-        courses = section.courses
-        course_title = ', '.join([course.title for course in courses])
-        course_code = ', '.join([course.government_id or ''
-                                 for course in courses])
-        title = _('${course} (${code}) Skill Sets',
-                  mapping={'course': course_title, 'code': course_code})
+        title = _('${section} Skills', mapping={'section': section.title})
         return translate(title, context=self.request)
 
 
@@ -518,7 +543,11 @@ class CourseSkillsView(flourish.form.Dialog):
                     title = skill.title
                     if skill.label:
                         title = '%s: %s' % (skill.label, title)
-                    skills.append(title)
+                    css_class = not skill.required and 'optional' or None
+                    skills.append({
+                            'title': title,
+                            'css_class': css_class,
+                            })
                 skillsets.append({
                         'label': skillset.label,
                         'title': skillset.title,
@@ -764,3 +793,11 @@ class MySkillsGradesTertiaryNavigationManager(
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 })
         return result
+
+
+class CanDoGradeStudent(FlourishGradeStudent):
+
+    def updateWidgets(self, *args, **kw):
+        super(CanDoGradeStudent, self).updateWidgets(*args, **kw)
+        for widget in self.widgets.values():
+            widget.field.description = None

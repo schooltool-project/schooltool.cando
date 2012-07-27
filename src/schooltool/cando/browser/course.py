@@ -33,16 +33,21 @@ from zc.table.interfaces import ISortableColumn
 
 from schooltool.app.browser.app import RelationshipAddTableMixin
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.course.interfaces import ICourseContainer
 from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INodeContainer
-from schooltool.cando.interfaces import ICourseSkillSet
+from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.browser.skill import SkillSetTable, SkillSetSkillTable
 from schooltool.cando.browser.skill import SkillView
+from schooltool.cando.model import URINode, URINodeLayer
 from schooltool.course.interfaces import ICourse
 from schooltool.common.inlinept import InlineViewPageTemplate
+from schooltool.relationship import getRelatedObjects
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.schoolyear.interfaces import ISchoolYear
 from schooltool.skin import flourish
 from schooltool.table.column import getResourceURL
 from schooltool import table
@@ -74,6 +79,17 @@ class UseCourseTitleMixin(object):
 class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
+      <script type="text/javascript">
+        $(document).ready(function() {
+            // accordion setup
+            $( "table.courseskills-table" ).accordion({
+                header: 'h2',
+                active: false,
+                collapsible: true,
+                autoHeight: false
+            });
+        });
+      </script>
       <table class="form-fields" i18n:domain="schooltool">
         <tbody>
           <tr>
@@ -86,7 +102,9 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
           </tr>
         </tbody>
       </table>
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+      <div class="skillsets-selection skillsets-selection-courseskills">
+        <div tal:content="structure context/schooltool:content/ajax/table" />
+      </div>
       <h3>
         <a tal:attributes="href context/__parent__/@@absolute_url"
            i18n:translate="">Done</a>
@@ -98,26 +116,51 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         return self.context.__parent__.title
 
 
+def skillset_accordion_formatter(value, item, formatter):
+    skillset = item.skillset
+    cell_template = [
+        '<h2>%s</h2>',
+        '<div>',
+        '<ul class="skills">',
+        '%s',
+        '</ul>',
+        '</div>',
+        ]
+    title = skillset.title
+    if skillset.label:
+        title = '%s: %s' % (skillset.label, skillset.title)
+    skills = []
+    for skill in item.values():
+        skill_title = skill.title
+        if skill.label:
+            skill_title = '%s: %s' % (skill.label, skill.title)
+        skills.append('<li%s>%s</li>' % (not skill.required and ' class="optional"' or '', skill_title))
+    return ''.join(cell_template) % (title, ''.join(skills))
+
+
 class CourseSkillsTable(table.ajax.Table):
+
+    batch_size = 0
 
     def updateFormatter(self):
         if self._table_formatter is None:
             self.setUp(table_formatter=self.table_formatter,
                        batch_size=self.batch_size,
                        prefix=self.__name__,
-                       css_classes={'table': 'data'})
+                       css_classes={'table': 'courseskills-table'})
 
     def columns(self):
-        default = table.ajax.Table.columns(self)
+        title = zc.table.column.GetterColumn(
+            name='title',
+            title=_('Title'),
+            cell_formatter=skillset_accordion_formatter,
+            getter=lambda i, f: i.title,
+            subsort=True)
         skills = zc.table.column.GetterColumn(
             name='skills',
             title=_(u'Skills'),
             getter=lambda i, f: str(len(i)))
-        label = zc.table.column.GetterColumn(
-            name='label',
-            title=_(u'Label'),
-            getter=lambda i, f: i.skillset.label or '')
-        return [label] + default + [skills]
+        return [title, skills]
 
     def sortOn(self):
         return None
@@ -128,6 +171,13 @@ class CourseSkillsLinks(flourish.page.RefineLinksViewlet):
 
 
 class RemoveSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def enabled(self):
+        return bool(self.context)
+
+
+class EditSkillsLinkViewlet(flourish.page.LinkViewlet):
 
     @property
     def enabled(self):
@@ -361,10 +411,15 @@ class CourseRemoveSkillsView(flourish.page.Page):
             skillset = course_skillset.skillset
             skills = []
             for skill in skillset.values():
+                course_skill = course_skillset[skill.__name__]
                 title = skill.title
                 if skill.label:
                     title = '%s: %s' % (skill.label, title)
-                skills.append(title)
+                css_class = not course_skill.required and 'optional' or None
+                skills.append({
+                        'title': title,
+                        'css_class': css_class,
+                        })
             skillsets.append({
                     'label': skillset.label,
                     'title': skillset.title,
@@ -419,7 +474,11 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
                     title = skill.title
                     if skill.label:
                         title = '%s: %s' % (skill.label, title)
-                    skills.append(title)
+                    css_class = not skill.required and 'optional' or None
+                    skills.append({
+                            'title': title,
+                            'css_class': css_class,
+                            })
                 skillsets.append({
                         'label': skillset.label,
                         'title': skillset.title,
@@ -572,3 +631,221 @@ class CourseSkillSetSkillTable(SkillSetSkillTable):
 class CourseSkillView(SkillView):
 
     can_edit = False
+
+
+class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
+
+    content_template = ViewPageTemplateFile(
+        'templates/edit_course_skills.pt')
+
+    @Lazy
+    def submitted(self):
+        return 'SUBMIT_BUTTON' in self.request
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request)
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        skillsets = []
+        required_prefix = 'required.'
+        visible_prefix = 'visible.'
+        for course_skillset_id in self.context:
+            course_skillset = self.context[course_skillset_id]
+            skillset = course_skillset.skillset
+            title = skillset.title
+            if skillset.label:
+                title = '%s: %s' % (skillset.label, title)
+            skills = []
+            for skill_id in skillset:
+                course_skill = course_skillset[skill_id]
+                skill = skillset[skill_id]
+                skill_title = skill.title
+                if skill.label:
+                    skill_title = '%s: %s' % (skill.label, skill_title)
+                skill_id = self.getId(course_skill)
+                required_name = required_prefix + skill_id
+                visible_name = visible_prefix + skill_id
+                if self.submitted:
+                    required = required_name in self.request
+                    if course_skill.required != required:
+                        course_skill.required = required
+                    hidden = not visible_name in self.request
+                    if course_skill.retired != hidden:
+                        course_skill.retired = hidden
+                skills.append({
+                        'id': skill_id,
+                        'title': skill_title,
+                        'required_checked': course_skill.required,
+                        'required_name': required_name,
+                        'visible_checked': not course_skill.retired,
+                        'visible_name': visible_name,
+                        })
+            skillsets.append({
+                    'title': title,
+                    'skills': skills,
+                    })
+        if self.submitted:
+            self.request.response.redirect(self.nextURL())
+            return
+        self.skillsets = skillsets
+
+    def getId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
+
+
+class CanDoCoursesActionsLinks(flourish.page.RefineLinksViewlet):
+    pass
+
+
+class CoursesSkillsAssignmentView(flourish.page.Page):
+
+    matched = []
+    not_matched = []
+    container_class = 'container widecontainer'
+    content_template = ViewPageTemplateFile(
+        'templates/courses_skills_assignment.pt')
+
+    @property
+    def course_attrs(self):
+        attrs = ['__name__', 'title', 'description',
+                 'course_id', 'government_id']
+        return [{'title': ICourse[attr].title, 'value': attr}
+                for attr in attrs]
+
+    @property
+    def node_attrs(self):
+        attrs = ['label', 'title', 'description']
+        return [{'title': INode[attr].title, 'value': attr}
+                for attr in attrs]
+
+    @property
+    def courses(self):
+        return ICourseContainer(self.context)
+
+    @property
+    def layers(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    @property
+    def nodes(self):
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app)
+
+    @property
+    def skills(self):
+        app = ISchoolToolApplication(None)
+        return ISkillSetContainer(app)
+
+    def getSkillSetID(self, skillset):
+        return skillset.__name__.split('-')[0]
+
+    def requiredSubmitted(self):
+        required = ['course_attr', 'layer', 'node_attr']
+        for attr in required:
+            if not self.request.get(attr, ''):
+                return False
+        return True
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        schoolyear = ISchoolYear(self.context)
+        return '%s/courses?schoolyear_id=%s' % (absoluteURL(app, self.request),
+                                                schoolyear.__name__)
+
+    def updateMatches(self):
+        assignments = []
+        not_assigned = []
+        course_attr = self.request['course_attr']
+        layer = self.layers[self.request['layer']]
+        node_attr = self.request['node_attr']
+        nodes = list(getRelatedObjects(layer, URINode, URINodeLayer))
+        for course in self.courses.values():
+            course_attr_value = getattr(course, course_attr, '')
+            skills = ICourseSkills(course)
+                # only use courses with no skills
+            if skills:
+                not_assigned.append({
+                        'course': course,
+                        'course_attr': course_attr_value,
+                        'reason': _('Course has skills assigned already'),
+                        })
+                continue
+            if course_attr_value:
+                assignment = {}
+                for node in nodes:
+                    node_attr_value = getattr(node, node_attr, '')
+                    if node_attr_value:
+                        if node_attr_value == course_attr_value:
+                            assignment = {
+                                    'course': course,
+                                    'course_attr': course_attr_value,
+                                    'node': node,
+                                    'node_attr': node_attr_value,
+                                    }
+                if assignment:
+                    assignments.append(assignment)
+                else:
+                    not_assigned.append({
+                            'course': course,
+                            'course_attr': course_attr_value,
+                            'reason': _("Couldn't find a matching node"),
+                            })
+            else:
+                not_assigned.append({
+                        'course': course,
+                        'course_attr': course_attr_value,
+                        'reason': _('Course attribute is empty'),
+                        })
+        self.matched = assignments
+        self.not_matched = not_assigned
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        if self.requiredSubmitted():
+            self.updateMatches()
+            if 'ASSIGN_BUTTON' in self.request:
+                for info in self.matched:
+                    course = info['course']
+                    node = info['node']
+                    skills = ICourseSkills(course)
+                    for skillset in node.skillsets:
+                        skills[skillset.__name__] = CourseSkillSet(skillset)
+                self.request.response.redirect(self.nextURL())
+                return
+            if 'SEARCH_BUTTON' in self.request:
+                self.matched = sorted(self.matched,
+                                      key=lambda x:x['course_attr'])
+                self.not_matched = sorted(self.not_matched,
+                                          key=lambda x:x['course_attr'])
+
+
+class BatchAssignSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def schoolyear(self):
+        schoolyears = ISchoolYearContainer(self.context)
+        result = schoolyears.getActiveSchoolYear()
+        if 'schoolyear_id' in self.request:
+            schoolyear_id = self.request['schoolyear_id']
+            result = schoolyears.get(schoolyear_id, result)
+        return result
+
+    @property
+    def courses(self):
+        return ICourseContainer(self.schoolyear)
+
+    @property
+    def enabled(self):
+        return bool(self.courses)
+
+    @property
+    def url(self):
+        return '%s/%s' % (absoluteURL(self.courses, self.request),
+                          'assign-courses-skills.html')

@@ -28,6 +28,7 @@ from schooltool.requirement.interfaces import IRequirement
 from schooltool.gradebook.interfaces import IWorksheets, IWorksheet
 from schooltool.gradebook.interfaces import IGradebook
 from schooltool.gradebook.interfaces import IMyGrades
+from schooltool.gradebook.interfaces import IStudentGradebook
 from schooltool.cando import CanDoMessage as _
 
 
@@ -203,4 +204,8 @@ class ISkillsGradebook(ICanDoGradebook):
 
 
 class IMySkillsGrades(IMyGrades):
+    pass
+
+
+class ICanDoStudentGradebook(IStudentGradebook):
     pass

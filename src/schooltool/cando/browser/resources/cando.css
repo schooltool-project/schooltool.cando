@@ -54,16 +54,26 @@
     text-align: justify;
 }
 
+.grades thead th > a {
+    display: block;
+}
+
 .skill-title p.required,
 .color-codes .required,
 .grades thead th > a {
-    color: #005C61;
+    color: black;
 }
 
 .skill-title p.optional,
 .color-codes .optional,
 .grades thead th.optional > a {
     color: black;
+}
+
+ul.skills li.optional,
+.color-codes .optional,
+.grades thead th.optional > a {
+    background: #ACC4E4;
 }
 
 .skillsets-selection {
@@ -73,7 +83,8 @@
 }
 
 /* XXX: ugly hack! */
-.skillsets-selection-remove {
+.skillsets-selection-remove,
+.skillsets-selection-courseskills {
     max-height: 100000px;
 }
 
@@ -96,6 +107,13 @@
     color: #ffffff;
 }
 
+.gradebook-modes {
+    margin-right: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #cccccc;
+    margin-bottom: 4px;
+}
+
 /* XXX: to make the default arrows in the skillset accordion black
         find a better way to do it */
 
@@ -113,6 +131,10 @@ input[type="checkbox"].select-all {
 }
 
 /* XXX: move this to the gradebook css? */
+
+.grid .third-nav {
+    width: 20000px;
+}
 
 .popup_menu {
     max-width: 400px;

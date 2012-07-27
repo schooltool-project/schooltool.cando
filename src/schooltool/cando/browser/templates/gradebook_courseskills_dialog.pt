@@ -25,7 +25,9 @@
               <div>
                 <ul class="skills">
                   <li tal:repeat="skill skills"
-                      tal:content="skill" />
+                      tal:attributes="class skill/css_class">
+                    <tal:block tal:content="skill/title" />
+                  </li>
                 </ul>
               </div>
             </td>
