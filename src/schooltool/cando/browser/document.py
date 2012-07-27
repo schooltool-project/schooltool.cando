@@ -118,9 +118,8 @@ class DocumentsTertiaryNavigationManager(
     def items(self):
         tabs = (
             ((DocumentContainer, Document), 'documents', _('Documents')),
-            ((SkillSetContainer, SkillSet, Skill), 'skills', _('Skill Sets')),
             ((LayerContainer, Layer), 'layers', _('Layers')),
-            ((NodeContainer, Node), 'nodes', _('Nodes')),
+            ((NodeContainer, Node), 'nodes', _('Search')),
             )
         result = []
         app = ISchoolToolApplication(None)

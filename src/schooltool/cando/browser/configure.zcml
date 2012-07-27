@@ -564,6 +564,7 @@
       name="index.html"
       for="schooltool.cando.interfaces.INodeContainer"
       title="Nodes Container"
+      subtitle="Search"
       class=".model.NodesView"
       permission="schooltool.view"
       />
