@@ -53,6 +53,7 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
+from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
 from schooltool.skin import flourish
 from schooltool import table
@@ -163,7 +164,35 @@ class SectionSkillsCanDoRedirectView(flourish.page.Page):
         return "Redirecting..."
 
 
-class ProjectsGradebookOverview(FlourishGradebookOverview):
+class CanDoGradebookOverviewBase(object):
+
+    def getActivityInfo(self, activity):
+        result = super(
+            CanDoGradebookOverviewBase, self).getActivityInfo(activity)
+        if not activity.required:
+            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
+            result['cssClass'] = cssClass
+        return result
+
+    def processColumnPreferences(self):
+        self.average_hide = True
+        self.total_hide = True
+        self.tardies_hide = True
+        self.absences_hide = True
+        self.due_date_hide = True
+        self.average_scoresystem = None
+
+    def getActivityAttrs(self, activity):
+        result = super(
+            CanDoGradebookOverviewBase, self).getActivityAttrs(activity)
+        shortTitle, longTitle, bestScore = result
+        if activity.label:
+            longTitle = '%s: %s' % (activity.label, longTitle)
+        return shortTitle, longTitle, bestScore
+
+
+class ProjectsGradebookOverview(CanDoGradebookOverviewBase,
+                                FlourishGradebookOverview):
 
     labels_row_header = _('Skill')
     teacher_gradebook_view_name = 'gradebook-projects'
@@ -176,30 +205,9 @@ class ProjectsGradebookOverview(FlourishGradebookOverview):
         else:
             return _('Enter Skills')
 
-    def getActivityInfo(self, activity):
-        result = super(ProjectsGradebookOverview, self).getActivityInfo(
-            activity)
-        if not activity.required:
-            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
-            result['cssClass'] = cssClass
-        return result
 
-    def processColumnPreferences(self):
-        self.average_hide = True
-        self.total_hide = True
-        self.tardies_hide = True
-        self.absences_hide = True
-        self.due_date_hide = True
-        self.average_scoresystem = None
-
-    def getActivityAttrs(self, activity):
-        shortTitle, longTitle, bestScore = super(
-            ProjectsGradebookOverview, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
-        return shortTitle, longTitle, bestScore
-
-
-class SkillsGradebookOverview(FlourishGradebookOverview):
+class SkillsGradebookOverview(CanDoGradebookOverviewBase,
+                              FlourishGradebookOverview):
 
     labels_row_header = _('Skill')
     teacher_gradebook_view_name = 'gradebook-skills'
@@ -211,28 +219,6 @@ class SkillsGradebookOverview(FlourishGradebookOverview):
             return _('No Visible Skill Sets')
         else:
             return _('Enter Skills')
-
-    def getActivityInfo(self, activity):
-        result = super(SkillsGradebookOverview, self).getActivityInfo(
-            activity)
-        if not activity.required:
-            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
-            result['cssClass'] = cssClass
-        return result
-
-    def processColumnPreferences(self):
-        self.average_hide = True
-        self.total_hide = True
-        self.tardies_hide = True
-        self.absences_hide = True
-        self.due_date_hide = True
-        self.average_scoresystem = None
-
-    def getActivityAttrs(self, activity):
-        shortTitle, longTitle, bestScore = super(
-            SkillsGradebookOverview, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
-        return shortTitle, longTitle, bestScore
 
 
 class ProjectsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
@@ -801,3 +787,8 @@ class CanDoGradeStudent(FlourishGradeStudent):
         super(CanDoGradeStudent, self).updateWidgets(*args, **kw)
         for widget in self.widgets.values():
             widget.field.description = None
+
+
+class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
+
+    pass

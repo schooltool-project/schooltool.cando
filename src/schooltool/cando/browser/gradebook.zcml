@@ -239,6 +239,13 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="export.xls"
+      for="schooltool.cando.interfaces.ISectionSkills"
+      class="schooltool.gradebook.browser.activity.WorksheetsExportView"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="cando-resources"
       view="schooltool.cando.browser.gradebook.ProjectsGradebookOverview"
@@ -450,14 +457,6 @@
       />
 
   <flourish:viewlet
-      name="gradebook-reports-links"
-      manager="schooltool.skin.flourish.page.IPageRefineManager"
-      class="schooltool.skin.flourish.page.DisabledViewlet"
-      view=".gradebook.SkillsGradebookOverview"
-      permission="schooltool.edit"
-      />
-
-  <flourish:viewlet
       name="courseskills.html"
       after="*"
       title="Skills Pop-up"
@@ -477,7 +476,7 @@
 
   <flourish:viewlet
       name="gradebook-help"
-      after="gradebook_year_navigation"
+      after="gradebook-reports-links"
       manager="schooltool.skin.flourish.page.IPageRefineManager"
       class=".gradebook.GradebookHelpLinks"
       view=".gradebook.SkillsGradebookOverview"
@@ -634,5 +633,12 @@
         />
 
   </configure>
+
+  <flourish:page
+      name="gradebook.pdf"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
+      class=".gradebook.CanDoGradebookPDFView"
+      permission="schooltool.edit"
+      />
 
 </configure>
