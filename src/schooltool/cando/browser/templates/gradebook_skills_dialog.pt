@@ -5,30 +5,34 @@
         // accordion setup
         $( ".skillsets-selection table" ).accordion({
             header: 'h2',
+            active: '.active',
             collapsible: true,
             autoHeight: false
         });
     });
   </script>
-  <div class="skillsets-selection">
+  <div class="skillsets-selection" tal:condition="skillsets">
     <table>
       <tbody>
         <tr tal:repeat="skillset skillsets">
           <tal:block define="skills skillset/skills">
             <td>
-              <h2>
-                <tal:block condition="skillset/label">
+              <h2 tal:attributes="class skillset/css_class">
+                <tal:block condition="skillset/label|nothing">
                   <tal:block content="skillset/label" />:
                 </tal:block>
                 <tal:block content="skillset/title" />
               </h2>
               <div>
-                <ul class="skills">
+                <ul class="skills" tal:condition="skills">
                   <li tal:repeat="skill skills"
                       tal:attributes="class skill/css_class">
                     <tal:block tal:content="skill/title" />
                   </li>
                 </ul>
+                <p i18n:translate="" tal:condition="not:skills">
+                  There are no skills.
+                </p>
               </div>
             </td>
           </tal:block>
@@ -36,4 +40,7 @@
       </tbody>
     </table>
   </div>
+  <h3 i18n:translate="" tal:condition="not:skillsets">
+    There are no skills.
+  </h3>
 </div>

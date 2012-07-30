@@ -31,6 +31,7 @@ from zope.intid.interfaces import IIntIds
 from zope.location.location import LocationProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
+from zope.proxy import sameProxiedObjects
 import zc.table.column
 from zc.table.interfaces import ISortableColumn
 
@@ -483,12 +484,16 @@ class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
-class CourseSkillsViewlet(flourish.page.ModalFormLinkViewlet):
+class GradebookSkillsViewlet(flourish.page.ModalFormLinkViewlet):
 
     @property
     def dialog_title(self):
         section = self.context.__parent__.__parent__.__parent__
-        title = _('${section} Skills', mapping={'section': section.title})
+        if ISkillsGradebook.providedBy(self.context):
+            title = _('${section} Skills', mapping={'section': section.title})
+        else:
+            title = _('${section} Project Skills',
+                      mapping={'section': section.title})
         return translate(title, context=self.request)
 
 
@@ -508,39 +513,43 @@ class ColorCodesHelpViewlet(flourish.page.ModalFormLinkViewlet):
         return translate(title, context=self.request)
 
 
-class CourseSkillsView(flourish.form.Dialog):
+class GradebookSkillsView(flourish.form.Dialog):
 
     def initDialog(self):
-        super(CourseSkillsView, self).initDialog()
+        super(GradebookSkillsView, self).initDialog()
         self.ajax_settings['dialog']['modal'] = False
         self.ajax_settings['dialog']['draggable'] = True
         self.ajax_settings['dialog']['maxHeight'] = 640
 
     def update(self):
         flourish.form.Dialog.update(self)
+        worksheets = self.context.__parent__.__parent__
         skillsets = []
-        section = self.context.__parent__.__parent__.__parent__
-        for course in section.courses:
-            courseskills = ICourseSkills(course)
-            for courseskillset in courseskills.values():
-                skillset = proxy.removeSecurityProxy(courseskillset.skillset)
-                skills = []
-                for skill in courseskillset.values():
-                    title = skill.title
-                    if skill.label:
-                        title = '%s: %s' % (skill.label, title)
-                    css_class = not skill.required and 'optional' or None
-                    skills.append({
-                            'title': title,
-                            'css_class': css_class,
-                            })
-                skillsets.append({
-                        'label': skillset.label,
-                        'title': skillset.title,
-                        'skills': skills,
-                        'id': skillset.__name__,
+        for worksheet in worksheets.values():
+            skills = []
+            for skill in worksheet.values():
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                css_class = not skill.required and 'optional' or None
+                skills.append({
+                        'title': title,
+                        'css_class': css_class,
                         })
+            is_active = sameProxiedObjects(worksheet, self.context.__parent__)
+            css_class = is_active and 'active' or None
+            skillsets.append({
+                    'css_class': css_class,
+                    'label': self.getWorksheetLabel(worksheet),
+                    'title': worksheet.title,
+                    'skills': skills,
+                    })
         self.skillsets = skillsets
+
+    def getWorksheetLabel(self, worksheet):
+        if ISkillsGradebook.providedBy(self.context):
+            skillset = proxy.removeSecurityProxy(worksheet).skillset
+            return skillset.label
 
 
 class ScoreSystemHelpView(flourish.form.Dialog):
