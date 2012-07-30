@@ -29,6 +29,7 @@ from zope.i18n.interfaces.locales import ICollator
 from zope.interface import directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.location.location import LocationProxy
+from zope.traversing.api import getName
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
 from zope.proxy import sameProxiedObjects
@@ -44,7 +45,6 @@ from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
 from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
-from schooltool.gradebook.browser.gradebook import FlourishGradeStudent
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
 from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
@@ -56,6 +56,7 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavig
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
 from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
+from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.skin import flourish
 from schooltool import table
 
@@ -789,12 +790,83 @@ class MySkillsGradesTertiaryNavigationManager(
         return result
 
 
-class CanDoGradeStudent(FlourishGradeStudent):
+class CanDoGradeStudent(flourish.page.Page):
 
-    def updateWidgets(self, *args, **kw):
-        super(CanDoGradeStudent, self).updateWidgets(*args, **kw)
-        for widget in self.widgets.values():
-            widget.field.description = None
+    content_template = ViewPageTemplateFile('templates/grade_student.pt')
+    activities_header = _('Skill')
+    grades_header = _('Score')
+    container_class = 'container widecontainer'
+
+    @property
+    def subtitle(self):
+        return self.context.student.title
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        evaluator = getName(IPerson(self.request.principal))
+        skillsets = []
+        worksheets = self.context.__parent__.__parent__.__parent__
+        student = proxy.removeSecurityProxy(self.context.student)
+        gradebook = self.context.gradebook
+        if ISkillsGradebook.providedBy(gradebook):
+            gradebook_adapter = ISkillsGradebook
+        else:
+            gradebook_adapter = IProjectsGradebook
+        for worksheet in worksheets.values():
+            gradebook = gradebook_adapter(worksheet)
+            skills = []
+            for skill in gradebook.activities:
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                css_class = not skill.required and 'optional' or None
+                cell_name = self.getId(skill)
+                if cell_name in self.request:
+                    value = self.request[cell_name]
+                    try:
+                        if value is None or value == '':
+                            score = gradebook.getScore(student, skill)
+                            if score:
+                                gradebook.removeEvaluation(student, skill,
+                                                           evaluator=evaluator)
+                        else:
+                            score_value = skill.scoresystem.fromUnicode(value)
+                            gradebook.evaluate(student, skill, score_value,
+                                               evaluator)
+                    except ScoreValidationError:
+                        pass
+                score = gradebook.getScore(student, skill)
+                grade = None
+                if score:
+                    grade = score.value
+                skills.append({
+                        'name': cell_name,
+                        'title': title,
+                        'grade': grade,
+                        'css_class': css_class,
+                        })
+            skillsets.append({
+                    'form_url': '%s/gradebook' % absoluteURL(worksheet,
+                                                             self.request),
+                    'label': self.getWorksheetLabel(worksheet),
+                    'title': worksheet.title,
+                    'skills': sorted(skills, key=lambda x:x['title']),
+                    })
+        self.skillsets = skillsets
+            
+    def getWorksheetLabel(self, worksheet):
+        if ISkillsGradebook.providedBy(self.context):
+            skillset = proxy.removeSecurityProxy(worksheet).skillset
+            return skillset.label
+        
+    def getId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
+
+    def nextURL(self):
+        return absoluteURL(self.context.__parent__, self.request)
 
 
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):

@@ -583,18 +583,13 @@
       permission="zope.Public"
       />
 
-  <configure package="schooltool.gradebook.browser">
-
-    <flourish:page
-        name="index.html"
-        for="schooltool.cando.interfaces.ICanDoStudentGradebook"
-        title="Score"
-        content_template="templates/f_grade_student.pt"
-        class="schooltool.cando.browser.gradebook.CanDoGradeStudent"
-        permission="schooltool.edit"
-        />
-
-  </configure>
+  <flourish:page
+      name="index.html"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      title="Score"
+      class="schooltool.cando.browser.gradebook.CanDoGradeStudent"
+      permission="schooltool.edit"
+      />
 
   <flourish:page
       name="gradebook.pdf"
