@@ -331,7 +331,7 @@
       after="gradebook-reports-links"
       manager="schooltool.skin.flourish.page.IPageRefineManager"
       class=".gradebook.GradebookHelpLinks"
-      view=".gradebook.ProjectsGradebookOverview"
+      view=".gradebook.CanDoGradebookOverviewBase"
       title="Help"
       permission="schooltool.view"
       />
@@ -355,7 +355,7 @@
 
   <flourish:page
       name="scoresystemhelp.html"
-      for="schooltool.cando.interfaces.IProjectsGradebook"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.ScoreSystemHelpView"
       template="templates/scoresystem_help.pt"
       permission="schooltool.view"
@@ -363,7 +363,7 @@
 
   <flourish:page
       name="colorcodeshelp.html"
-      for="schooltool.cando.interfaces.IProjectsGradebook"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.ColorCodesHelpView"
       template="templates/colorcodes_help.pt"
       permission="schooltool.view"
@@ -459,32 +459,6 @@
       for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.GradebookSkillsView"
       template="templates/gradebook_skills_dialog.pt"
-      permission="schooltool.view"
-      />
-
-  <flourish:viewlet
-      name="gradebook-help"
-      after="gradebook-reports-links"
-      manager="schooltool.skin.flourish.page.IPageRefineManager"
-      class=".gradebook.GradebookHelpLinks"
-      view=".gradebook.SkillsGradebookOverview"
-      title="Help"
-      permission="schooltool.view"
-      />
-
-  <flourish:page
-      name="scoresystemhelp.html"
-      for="schooltool.cando.interfaces.ISkillsGradebook"
-      class=".gradebook.ScoreSystemHelpView"
-      template="templates/scoresystem_help.pt"
-      permission="schooltool.view"
-      />
-
-  <flourish:page
-      name="colorcodeshelp.html"
-      for="schooltool.cando.interfaces.ISkillsGradebook"
-      class=".gradebook.ColorCodesHelpView"
-      template="templates/colorcodes_help.pt"
       permission="schooltool.view"
       />
 

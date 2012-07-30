@@ -59,7 +59,6 @@ from schooltool.person.interfaces import IPerson
 from schooltool.skin import flourish
 from schooltool import table
 
-from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
