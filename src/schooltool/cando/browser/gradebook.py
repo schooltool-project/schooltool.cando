@@ -29,8 +29,10 @@ from zope.i18n.interfaces.locales import ICollator
 from zope.interface import directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.location.location import LocationProxy
+from zope.traversing.api import getName
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
+from zope.proxy import sameProxiedObjects
 import zc.table.column
 from zc.table.interfaces import ISortableColumn
 
@@ -43,7 +45,6 @@ from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
 from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
-from schooltool.gradebook.browser.gradebook import FlourishGradeStudent
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
 from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
@@ -53,11 +54,12 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
+from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
+from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.skin import flourish
 from schooltool import table
 
-from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
@@ -163,7 +165,35 @@ class SectionSkillsCanDoRedirectView(flourish.page.Page):
         return "Redirecting..."
 
 
-class ProjectsGradebookOverview(FlourishGradebookOverview):
+class CanDoGradebookOverviewBase(object):
+
+    def getActivityInfo(self, activity):
+        result = super(
+            CanDoGradebookOverviewBase, self).getActivityInfo(activity)
+        if not activity.required:
+            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
+            result['cssClass'] = cssClass
+        return result
+
+    def processColumnPreferences(self):
+        self.average_hide = True
+        self.total_hide = True
+        self.tardies_hide = True
+        self.absences_hide = True
+        self.due_date_hide = True
+        self.average_scoresystem = None
+
+    def getActivityAttrs(self, activity):
+        result = super(
+            CanDoGradebookOverviewBase, self).getActivityAttrs(activity)
+        shortTitle, longTitle, bestScore = result
+        if activity.label:
+            longTitle = '%s: %s' % (activity.label, longTitle)
+        return shortTitle, longTitle, bestScore
+
+
+class ProjectsGradebookOverview(CanDoGradebookOverviewBase,
+                                FlourishGradebookOverview):
 
     labels_row_header = _('Skill')
     teacher_gradebook_view_name = 'gradebook-projects'
@@ -176,30 +206,9 @@ class ProjectsGradebookOverview(FlourishGradebookOverview):
         else:
             return _('Enter Skills')
 
-    def getActivityInfo(self, activity):
-        result = super(ProjectsGradebookOverview, self).getActivityInfo(
-            activity)
-        if not activity.required:
-            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
-            result['cssClass'] = cssClass
-        return result
 
-    def processColumnPreferences(self):
-        self.average_hide = True
-        self.total_hide = True
-        self.tardies_hide = True
-        self.absences_hide = True
-        self.due_date_hide = True
-        self.average_scoresystem = None
-
-    def getActivityAttrs(self, activity):
-        shortTitle, longTitle, bestScore = super(
-            ProjectsGradebookOverview, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
-        return shortTitle, longTitle, bestScore
-
-
-class SkillsGradebookOverview(FlourishGradebookOverview):
+class SkillsGradebookOverview(CanDoGradebookOverviewBase,
+                              FlourishGradebookOverview):
 
     labels_row_header = _('Skill')
     teacher_gradebook_view_name = 'gradebook-skills'
@@ -211,28 +220,6 @@ class SkillsGradebookOverview(FlourishGradebookOverview):
             return _('No Visible Skill Sets')
         else:
             return _('Enter Skills')
-
-    def getActivityInfo(self, activity):
-        result = super(SkillsGradebookOverview, self).getActivityInfo(
-            activity)
-        if not activity.required:
-            cssClass = ' '.join(filter(None, [result['cssClass'], 'optional']))
-            result['cssClass'] = cssClass
-        return result
-
-    def processColumnPreferences(self):
-        self.average_hide = True
-        self.total_hide = True
-        self.tardies_hide = True
-        self.absences_hide = True
-        self.due_date_hide = True
-        self.average_scoresystem = None
-
-    def getActivityAttrs(self, activity):
-        shortTitle, longTitle, bestScore = super(
-            SkillsGradebookOverview, self).getActivityAttrs(activity)
-        longTitle = activity.label + ': ' + longTitle
-        return shortTitle, longTitle, bestScore
 
 
 class ProjectsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
@@ -497,12 +484,16 @@ class GradebookHelpLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
-class CourseSkillsViewlet(flourish.page.ModalFormLinkViewlet):
+class GradebookSkillsViewlet(flourish.page.ModalFormLinkViewlet):
 
     @property
     def dialog_title(self):
         section = self.context.__parent__.__parent__.__parent__
-        title = _('${section} Skills', mapping={'section': section.title})
+        if ISkillsGradebook.providedBy(self.context):
+            title = _('${section} Skills', mapping={'section': section.title})
+        else:
+            title = _('${section} Project Skills',
+                      mapping={'section': section.title})
         return translate(title, context=self.request)
 
 
@@ -522,39 +513,43 @@ class ColorCodesHelpViewlet(flourish.page.ModalFormLinkViewlet):
         return translate(title, context=self.request)
 
 
-class CourseSkillsView(flourish.form.Dialog):
+class GradebookSkillsView(flourish.form.Dialog):
 
     def initDialog(self):
-        super(CourseSkillsView, self).initDialog()
+        super(GradebookSkillsView, self).initDialog()
         self.ajax_settings['dialog']['modal'] = False
         self.ajax_settings['dialog']['draggable'] = True
         self.ajax_settings['dialog']['maxHeight'] = 640
 
     def update(self):
         flourish.form.Dialog.update(self)
+        worksheets = self.context.__parent__.__parent__
         skillsets = []
-        section = self.context.__parent__.__parent__.__parent__
-        for course in section.courses:
-            courseskills = ICourseSkills(course)
-            for courseskillset in courseskills.values():
-                skillset = proxy.removeSecurityProxy(courseskillset.skillset)
-                skills = []
-                for skill in courseskillset.values():
-                    title = skill.title
-                    if skill.label:
-                        title = '%s: %s' % (skill.label, title)
-                    css_class = not skill.required and 'optional' or None
-                    skills.append({
-                            'title': title,
-                            'css_class': css_class,
-                            })
-                skillsets.append({
-                        'label': skillset.label,
-                        'title': skillset.title,
-                        'skills': skills,
-                        'id': skillset.__name__,
+        for worksheet in worksheets.values():
+            skills = []
+            for skill in worksheet.values():
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                css_class = not skill.required and 'optional' or None
+                skills.append({
+                        'title': title,
+                        'css_class': css_class,
                         })
+            is_active = sameProxiedObjects(worksheet, self.context.__parent__)
+            css_class = is_active and 'active' or None
+            skillsets.append({
+                    'css_class': css_class,
+                    'label': self.getWorksheetLabel(worksheet),
+                    'title': worksheet.title,
+                    'skills': skills,
+                    })
         self.skillsets = skillsets
+
+    def getWorksheetLabel(self, worksheet):
+        if ISkillsGradebook.providedBy(self.context):
+            skillset = proxy.removeSecurityProxy(worksheet).skillset
+            return skillset.label
 
 
 class ScoreSystemHelpView(flourish.form.Dialog):
@@ -795,9 +790,85 @@ class MySkillsGradesTertiaryNavigationManager(
         return result
 
 
-class CanDoGradeStudent(FlourishGradeStudent):
+class CanDoGradeStudent(flourish.page.Page):
 
-    def updateWidgets(self, *args, **kw):
-        super(CanDoGradeStudent, self).updateWidgets(*args, **kw)
-        for widget in self.widgets.values():
-            widget.field.description = None
+    content_template = ViewPageTemplateFile('templates/grade_student.pt')
+    activities_header = _('Skill')
+    grades_header = _('Score')
+    container_class = 'container widecontainer'
+
+    @property
+    def subtitle(self):
+        return self.context.student.title
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        evaluator = getName(IPerson(self.request.principal))
+        skillsets = []
+        worksheets = self.context.__parent__.__parent__.__parent__
+        student = proxy.removeSecurityProxy(self.context.student)
+        gradebook = self.context.gradebook
+        if ISkillsGradebook.providedBy(gradebook):
+            gradebook_adapter = ISkillsGradebook
+        else:
+            gradebook_adapter = IProjectsGradebook
+        for worksheet in worksheets.values():
+            gradebook = gradebook_adapter(worksheet)
+            skills = []
+            for skill in gradebook.activities:
+                title = skill.title
+                if skill.label:
+                    title = '%s: %s' % (skill.label, title)
+                css_class = not skill.required and 'optional' or None
+                cell_name = self.getId(skill)
+                if cell_name in self.request:
+                    value = self.request[cell_name]
+                    try:
+                        if value is None or value == '':
+                            score = gradebook.getScore(student, skill)
+                            if score:
+                                gradebook.removeEvaluation(student, skill,
+                                                           evaluator=evaluator)
+                        else:
+                            score_value = skill.scoresystem.fromUnicode(value)
+                            gradebook.evaluate(student, skill, score_value,
+                                               evaluator)
+                    except ScoreValidationError:
+                        pass
+                score = gradebook.getScore(student, skill)
+                grade = None
+                if score:
+                    grade = score.value
+                skills.append({
+                        'name': cell_name,
+                        'title': title,
+                        'grade': grade,
+                        'css_class': css_class,
+                        })
+            skillsets.append({
+                    'form_url': '%s/gradebook' % absoluteURL(worksheet,
+                                                             self.request),
+                    'label': self.getWorksheetLabel(worksheet),
+                    'title': worksheet.title,
+                    'skills': sorted(skills, key=lambda x:x['title']),
+                    })
+        self.skillsets = skillsets
+            
+    def getWorksheetLabel(self, worksheet):
+        if ISkillsGradebook.providedBy(self.context):
+            skillset = proxy.removeSecurityProxy(worksheet).skillset
+            return skillset.label
+        
+    def getId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
+
+    def nextURL(self):
+        return absoluteURL(self.context.__parent__, self.request)
+
+
+class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
+
+    pass

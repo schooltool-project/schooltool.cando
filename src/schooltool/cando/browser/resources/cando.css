@@ -130,6 +130,55 @@ input[type="checkbox"].select-all {
     display: block;
 }
 
+.grade-student {
+    border-collapse: collapse;
+    margin-top: 0;
+    table-layout: fixed;
+}
+
+.grade-student th, .grade-student td {
+    vertical-align: middle;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+.grade-student td {
+    min-height: 2.2em;
+}
+
+.grade-student input[type="text"] {
+    width: 100%;
+    border: none;
+    font-size: 1em;
+}
+
+.grade-student .student-score {
+    border-left: 1px solid #cccccc;
+    width: 4em;
+}
+
+.grade-student td.student-score {
+    padding: 0;
+}
+
+.grade-student input[type="text"]:focus {
+    background-color: #bdd7f0;
+}
+
+.grade-student input[type="text"].valid {
+    background: #009499;
+    color: #ffffff;
+}
+
+.grade-student input[type="text"].error {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.grade-student input[type="text"].extracredit {
+    background: #f6db5a;
+}
+
 /* XXX: move this to the gradebook css? */
 
 .grid .third-nav {
