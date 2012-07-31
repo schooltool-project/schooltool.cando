@@ -12,11 +12,24 @@ ST.cando = function () {
 }();
 
 function isScorable(td) {
-    return true;
+    var columnHeader = findColumnHeader(td);
+    if (columnHeader.length > 0 && columnHeader.hasClass('scorable')) {
+        return true;
+    } else {
+        return td.hasClass('student-score');
+    }
 }
 
 function cellInputName(td) {
-    return td.attr('id');
+    var columnHeader = findColumnHeader(td);
+    var rowHeader = findRowHeader(td);
+    if (columnHeader.length > 0 && rowHeader.length > 0) {
+        return [columnHeader.attr('id'), '_', rowHeader.attr('id')].join('');
+    } else {
+        if (td.hasClass('student-score')) {
+            return td.attr('id');
+        }
+    }
 }
 
 $(document).ready(function() {
