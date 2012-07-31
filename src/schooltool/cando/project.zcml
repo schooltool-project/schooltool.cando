@@ -73,4 +73,93 @@
       adapter="schooltool.cando.interfaces.IProjects"
       />
 
+  <!-- External Activities -->
+  <adapter
+      for=".interfaces.IProject"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivityProjectTotal"
+      name="projecttotal"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivityProjectTotal">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+  <adapter
+      for=".interfaces.IProject"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivityProjectPercentPassed"
+      name="projectpercentpassed"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivityProjectPercentPassed">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+  <adapter
+      for="schooltool.course.interfaces.ISection"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivitySectionTotal"
+      name="sectiontotal"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivitySectionTotal">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+  <adapter
+      for="schooltool.course.interfaces.ISection"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivitySectionPercentPassed"
+      name="sectionpercentpassed"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivitySectionPercentPassed">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+
+  <!-- External Activities Adapter -->
+  <adapter
+      for="schooltool.course.interfaces.ISection"
+      provides="schooltool.gradebook.interfaces.IExternalActivities"
+      factory=".project.CanDoExternalActivities"
+      name="cando.external_activities"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivities">
+    <require
+        permission="schooltool.view"
+        attributes="title source getExternalActivities getExternalActivity"
+        />
+  </class>
+
 </configure>
