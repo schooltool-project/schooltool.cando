@@ -73,4 +73,57 @@
       adapter="schooltool.cando.interfaces.IProjects"
       />
 
+  <!-- External Activities -->
+  <adapter
+      for=".interfaces.IProject"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivityTotal"
+      name="total"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivityTotal">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+  <adapter
+      for=".interfaces.IProject"
+      provides="schooltool.gradebook.interfaces.IExternalActivity"
+      factory=".project.CanDoExternalActivityPercentComplete"
+      name="percentcomplete"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivityPercentComplete">
+    <require
+        permission="schooltool.view"
+        attributes="source external_activity_id title description getGrade
+                    __eq__"
+        />
+    <require
+        permission="schooltool.edit"
+        set_schema="schooltool.gradebook.interfaces.IExternalActivity"
+        />
+  </class>
+
+  <!-- External Activities Adapter -->
+  <adapter
+      for="schooltool.course.interfaces.ISection"
+      provides="schooltool.gradebook.interfaces.IExternalActivities"
+      factory=".project.CanDoExternalActivities"
+      name="cando.external_activities"
+      trusted="true"
+      />
+  <class class=".project.CanDoExternalActivities">
+    <require
+        permission="schooltool.view"
+        attributes="title source getExternalActivities getExternalActivity"
+        />
+  </class>
+
 </configure>
