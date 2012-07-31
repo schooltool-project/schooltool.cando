@@ -40,6 +40,7 @@ from schooltool.gradebook.interfaces import IExternalActivity
 from schooltool.gradebook.interfaces import IExternalActivities
 from schooltool.cando.interfaces import IProjects, IProject, IProjectsGradebook
 from schooltool.cando.interfaces import ICourseProjects, ICourseProject
+from schooltool.cando.interfaces import ISectionSkills, ISkillsGradebook
 from schooltool.cando.skill import SkillSet
 from schooltool.course.interfaces import ISection, ICourse
 
@@ -177,7 +178,7 @@ def getSectionFromProjects(projects):
     return section
 
 
-class CanDoExternalActivityBase(object):
+class CanDoExternalActivityProject(object):
 
     implements(IExternalActivity)
     adapts(IProject)
@@ -199,7 +200,7 @@ class CanDoExternalActivityBase(object):
                self.external_activity_id == other.external_activity_id
 
 
-class CanDoExternalActivityTotal(CanDoExternalActivityBase):
+class CanDoExternalActivityProjectTotal(CanDoExternalActivityProject):
 
     @property
     def title(self):
@@ -210,39 +211,106 @@ class CanDoExternalActivityTotal(CanDoExternalActivityBase):
     def getGrade(self, student):
         numComps = totalPoints = 0
         for competency in self.project.values():
+            numComps += 1
             ev = self.gradebook.getScore(student, competency)
             if ev is None or ev.value == UNSCORED:
                 continue
             value = ev.scoreSystem.getNumericalValue(ev.value)
-            numComps += 1
             totalPoints += value
-        numCompsTimes3 = numComps * 3
         if numComps:
-            return Decimal(totalPoints) / Decimal(numCompsTimes3)
+            return Decimal(totalPoints) / Decimal(numComps)
         return None
 
 
-class CanDoExternalActivityPercentComplete(CanDoExternalActivityBase):
+class CanDoExternalActivityProjectPercentPassed(CanDoExternalActivityProject):
 
     @property
     def title(self):
-        msg = _('${project} percent complete',
+        msg = _('${project} percent passed',
             mapping={'project': self.project.title})
         return translate(msg)
 
     def getGrade(self, student):
-        numComps = totalComplete = 0
+        numComps = totalPassed = 0
         for competency in self.project.values():
-            if not competency.required:
-                continue
             numComps += 1
             ev = self.gradebook.getScore(student, competency)
             if ev is None or ev.value == UNSCORED:
                 continue
             if ev.scoreSystem.isPassingScore(ev.value):
-                totalComplete += 1
+                totalPassed += 1
         if numComps:
-            return Decimal(totalComplete) / Decimal(numComps)
+            return Decimal(totalPassed) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivitySection(object):
+
+    implements(IExternalActivity)
+    adapts(ISection)
+
+    def __init__(self, context):
+        self.section = context
+        self.courses = ', '.join([c.title for c in self.section.courses])
+        self.__parent__ = context
+        self.source = ""
+        self.external_activity_id = ""
+
+    @property
+    def description(self):
+        return self.section.description
+
+    def __eq__(self, other):
+        return IExternalActivity.providedBy(other) and \
+               self.source == other.source and \
+               self.external_activity_id == other.external_activity_id
+
+
+class CanDoExternalActivitySectionTotal(CanDoExternalActivitySection):
+
+    @property
+    def title(self):
+        msg = _('${course} total points',
+            mapping={'course': self.courses})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPoints = 0
+        for skillset in ISectionSkills(self.section).values():
+            gradebook = ISkillsGradebook(skillset)
+            for competency in skillset.values():
+                numComps += 1
+                ev = gradebook.getScore(student, competency)
+                if ev is None or ev.value == UNSCORED:
+                    continue
+                value = ev.scoreSystem.getNumericalValue(ev.value)
+                totalPoints += value
+        if numComps:
+            return Decimal(totalPoints) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivitySectionPercentPassed(CanDoExternalActivitySection):
+
+    @property
+    def title(self):
+        msg = _('${course} percent passed',
+            mapping={'course': self.courses})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPassed = 0
+        for skillset in ISectionSkills(self.section).values():
+            gradebook = ISkillsGradebook(skillset)
+            for competency in skillset.values():
+                numComps += 1
+                ev = gradebook.getScore(student, competency)
+                if ev is None or ev.value == UNSCORED:
+                    continue
+                if ev.scoreSystem.isPassingScore(ev.value):
+                    totalPassed += 1
+        if numComps:
+            return Decimal(totalPassed) / Decimal(numComps)
         return None
 
 
@@ -265,25 +333,31 @@ class CanDoExternalActivities(object):
             for name, activity in getAdapters([project], IExternalActivity):
                 external_activity = activity
                 external_activity.source = self.source
-                project_external_id = '%s_%s' % (name, intids.getId(project))
-                external_activity.external_activity_id = project_external_id
+                external_id = '%s_%s' % (name, intids.getId(project))
+                external_activity.external_activity_id = external_id
                 result.append(external_activity)
+        for name, activity in getAdapters([self.context], IExternalActivity):
+            external_activity = activity
+            external_activity.source = self.source
+            external_id = '%s_%s' % (name, intids.getId(self.context))
+            external_activity.external_activity_id = external_id
+            result.append(external_activity)
         return result
 
     def getExternalActivity(self, external_activity_id):
         parts = external_activity_id.split('_')
         if len(parts) != 2:
             return None
-        name, project_intid = parts
+        name, context_intid = parts
         try:
-            project_intid = int(project_intid)
+            context_intid = int(context_intid)
         except (ValueError,):
             return None
 
-        project = getUtility(IIntIds).queryObject(project_intid)
-        if project is None:
+        context = getUtility(IIntIds).queryObject(context_intid)
+        if context is None:
             return None
-        activity = queryAdapter(project, IExternalActivity, name=name)
+        activity = queryAdapter(context, IExternalActivity, name=name)
         if activity is None:
             return None
 
