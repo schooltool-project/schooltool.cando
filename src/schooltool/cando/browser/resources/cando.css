@@ -72,6 +72,7 @@
 
 ul.skills li.optional,
 .color-codes .optional,
+.grade-student .optional,
 .grades thead th.optional > a {
     background: #ACC4E4;
 }
@@ -177,6 +178,18 @@ input[type="checkbox"].select-all {
 
 .grade-student input[type="text"].extracredit {
     background: #f6db5a;
+}
+
+.student-scr .date {
+    width: 6em;
+}
+
+.student-scr .rating {
+    width: 6em;
+}
+
+.student-scr .flag {
+    text-align: center;
 }
 
 /* XXX: move this to the gradebook css? */

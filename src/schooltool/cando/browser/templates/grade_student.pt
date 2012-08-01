@@ -1,13 +1,6 @@
 <tal:block replace="resource_library:schooltool.cando.flourish" />
 <div i18n:domain="schooltool.cando" tal:define="skillsets view/skillsets">
   <form method="post" tal:attributes="action string:${context/@@absolute_url}">
-    <div class="buttons">
-      <input type="submit" class="button-ok" name="SUBMIT_BUTTON" value="Save"
-             title="Shortcut: Alt-S" accesskey="S"
-             i18n:attributes="value; title; accesskey" />
-      <input type="submit" class="button-cancel" name="CANCEL" value="Cancel"
-             i18n:attributes="value;" />
-    </div>
     <table class="grade-student" id="grade-student">
       <thead>
         <tr>
@@ -27,8 +20,12 @@
           </tr>
           <tr tal:repeat="skill skillset/skills"
               tal:attributes="class skillset/form_url">
-            <td tal:attributes="class skill/css_class"
-                tal:content="skill/title" />
+            <td tal:attributes="class skill/css_class">
+              <tal:block condition="skill/label|nothing">
+                <tal:block content="skill/label" />:
+              </tal:block>
+              <tal:block content="skill/title" />
+            </td>
             <td class="student-score" tal:content="skill/grade"
                 tal:attributes="id skill/name" />
           </tr>

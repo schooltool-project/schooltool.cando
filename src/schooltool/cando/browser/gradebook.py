@@ -20,6 +20,8 @@
 CanDo view components.
 """
 
+import pytz
+
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.catalog.interfaces import ICatalog
 from zope.component import getUtility
@@ -39,6 +41,7 @@ from zc.table.interfaces import ISortableColumn
 from z3c.form import form, field, button
 
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.app.interfaces import IApplicationPreferences
 from schooltool.app.catalog import buildQueryString
 from schooltool.course.interfaces import ISection
 from schooltool.common.inlinept import InheritTemplate
@@ -48,6 +51,7 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookStartup
 from schooltool.gradebook.browser.gradebook import GradebookStartupNavLink
 from schooltool.gradebook.browser.gradebook import FlourishNamePopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
+from schooltool.gradebook.browser.gradebook import FlourishStudentPopupMenuView
 from schooltool.gradebook.browser.gradebook import GradebookTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import MyGradesTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigationViewlet
@@ -394,6 +398,19 @@ class SkillPopupMenuView(FlourishActivityPopupMenuView):
         if activity.label:
             longTitle = '%s: %s' % (activity.label, longTitle)
         return shortTitle, longTitle, bestScore
+
+
+class StudentPopupMenuView(FlourishStudentPopupMenuView):
+
+    def getStudentCompetencyReportURL(self, student):
+        gradebook_url = absoluteURL(self.context, self.request)
+        return '%s/%s/student_competency_report.html' % (gradebook_url,
+                                                         student.username)
+
+    def options(self, student):
+        default = super(StudentPopupMenuView, self).options(student)
+        default[-1]['url'] = self.getStudentCompetencyReportURL(student)
+        return default
 
 
 class SkillEditView(flourish.form.Form, form.EditForm):
@@ -801,10 +818,18 @@ class CanDoGradeStudent(flourish.page.Page):
     def subtitle(self):
         return self.context.student.title
 
+    @property
+    def timezone(self):
+        app = ISchoolToolApplication(None)
+        prefs = IApplicationPreferences(app)
+        timezone_name = prefs.timezone
+        return pytz.timezone(timezone_name)
+
     def update(self):
         if 'CANCEL' in self.request:
             self.request.response.redirect(self.nextURL())
             return
+        timezone = self.timezone
         evaluator = getName(IPerson(self.request.principal))
         skillsets = []
         worksheets = self.context.__parent__.__parent__.__parent__
@@ -819,9 +844,8 @@ class CanDoGradeStudent(flourish.page.Page):
             skills = []
             for skill in gradebook.activities:
                 title = skill.title
-                if skill.label:
-                    title = '%s: %s' % (skill.label, title)
                 css_class = not skill.required and 'optional' or None
+                skill_flag = skill.required and _('Yes') or _('No')
                 cell_name = self.getId(skill)
                 if cell_name in self.request:
                     value = self.request[cell_name]
@@ -839,12 +863,23 @@ class CanDoGradeStudent(flourish.page.Page):
                         pass
                 score = gradebook.getScore(student, skill)
                 grade = None
+                date = None
                 if score:
                     grade = score.value
+                    time_utc = pytz.utc.localize(score.time)
+                    time = time_utc.astimezone(timezone)
+                    date = time.date()
+                scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
+                scores = dict([(s[2], s[1]) for s in scoresystem.scores])
+                rating = scores.get(scoresystem.scoresDict().get(grade), '-')
                 skills.append({
+                        'label': skill.label,
                         'name': cell_name,
                         'title': title,
                         'grade': grade,
+                        'flag': skill_flag,
+                        'date': date,
+                        'rating': rating,
                         'css_class': css_class,
                         })
             skillsets.append({
@@ -852,15 +887,18 @@ class CanDoGradeStudent(flourish.page.Page):
                                                              self.request),
                     'label': self.getWorksheetLabel(worksheet),
                     'title': worksheet.title,
-                    'skills': sorted(skills, key=lambda x:x['title']),
+                    'skills': sorted(skills, key=lambda x:x['label']),
                     })
+        if 'SUBMIT_BUTTON' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
         self.skillsets = skillsets
-            
+
     def getWorksheetLabel(self, worksheet):
         if ISkillsGradebook.providedBy(self.context):
             skillset = proxy.removeSecurityProxy(worksheet).skillset
             return skillset.label
-        
+
     def getId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
@@ -872,3 +910,9 @@ class CanDoGradeStudent(flourish.page.Page):
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
 
     pass
+
+
+class StudentCompetencyRecordView(CanDoGradeStudent):
+
+    content_template = ViewPageTemplateFile(
+        'templates/student_competency_record.pt')
