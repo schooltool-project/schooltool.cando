@@ -154,8 +154,8 @@ SkillScoreSystem = GlobalDiscreteValuesScoreSystem(
     [('4', u'Expert', Decimal(4), Decimal(90)),
      ('3', u'Competent', Decimal(3), Decimal(70)),
      ('2', u'Practicing', Decimal(2), Decimal(50)),
-     ('1', u'Exposed', Decimal(1), Decimal(30)),
-     ('0', u'No evidence', Decimal(0), Decimal(0))],
+     ('1', u'Beginning', Decimal(1), Decimal(30)),
+     ('0', u'Uninformed', Decimal(0), Decimal(0))],
      '4', '3')
 
 

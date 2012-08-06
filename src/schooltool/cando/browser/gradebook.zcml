@@ -277,6 +277,13 @@
       />
 
   <flourish:page
+      name="student_popup_menu"
+      for="schooltool.cando.interfaces.ICanDoGradebook"
+      class=".gradebook.StudentPopupMenuView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
       name="edit.html"
       for="schooltool.cando.interfaces.ISkill"
       title="CanDo"
@@ -355,7 +362,7 @@
 
   <flourish:page
       name="scoresystemhelp.html"
-      for="schooltool.cando.interfaces.ICanDoGradebook"
+      for="*"
       class=".gradebook.ScoreSystemHelpView"
       template="templates/scoresystem_help.pt"
       permission="schooltool.view"
@@ -363,7 +370,7 @@
 
   <flourish:page
       name="colorcodeshelp.html"
-      for="schooltool.cando.interfaces.ICanDoGradebook"
+      for="*"
       class=".gradebook.ColorCodesHelpView"
       template="templates/colorcodes_help.pt"
       permission="schooltool.view"
@@ -591,11 +598,45 @@
       permission="schooltool.edit"
       />
 
+  <flourish:viewlet
+      name="gradebook-help"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view="schooltool.cando.browser.gradebook.CanDoGradeStudent"
+      title="Help"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="gradebook.pdf"
       for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.CanDoGradebookPDFView"
       permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="student_competency_report.html"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      title="Student Competency Record"
+      class="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="gradebook-help"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      title="Help"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="colorcodeshelp.html"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      manager=".gradebook.GradebookHelpLinks"
+      permission="schooltool.view"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
       />
 
 </configure>
