@@ -5,3 +5,6 @@
 ./parts/
 ./python/
 ./src/schooltool.cando.egg-info/
+./src/schooltool/cando/locales/??
+./src/schooltool/cando/locales/??_??
+./dist
