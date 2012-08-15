@@ -1,5 +1,4 @@
 recursive-include src *.zcml
-recursive-include src *.zcml_tmpl
 recursive-include src *.js
 recursive-include src *.pt
 recursive-include src *.css
@@ -9,13 +8,7 @@ recursive-include src *.mo
 recursive-include src *.txt
 recursive-include src *.png
 recursive-include src *.gif
-recursive-include src *.ico
-recursive-include src *.ini_tmpl
-recursive-include src *.conf
-recursive-include src *.conf_tmpl
 recursive-include src *.xml
-recursive-include src *.fs
-recursive-include src *.ics
 recursive-include src *.xls
 include version.txt
 include version.txt.in
