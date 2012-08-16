@@ -29,9 +29,7 @@ There should be no errors so we should be back at the School tab view:
 
 Let's check the data.  There is one skillset called Carpentry.
 
-    >>> manager.query.link('School').click()
-    >>> manager.query.link('Skills').click()
-    >>> manager.query.link('Skill Sets').click()
+    >>> manager.open('http://localhost/skills')
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/skills/carpentry
 
@@ -113,9 +111,7 @@ It has three layers in its heirarchy.
 
 There are six nodes.
 
-    >>> manager.query.link('School').click()
-    >>> manager.query.link('Skills').click()
-    >>> manager.query.link('Nodes').click()
+    >>> manager.open('http://localhost/nodes')
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/nodes/carpentry
     http://localhost/nodes/conventional
