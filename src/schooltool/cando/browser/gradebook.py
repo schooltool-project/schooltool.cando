@@ -73,8 +73,6 @@ from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.gradebook import ensureAtLeastOneProject
-from schooltool.cando.gradebook import getCurrentSectionTaught
-from schooltool.cando.gradebook import getCurrentSectionAttended
 from schooltool.cando.project import Project
 from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
@@ -90,27 +88,6 @@ class CanDoStartupView(FlourishGradebookStartup):
 
     teacher_gradebook_view_name = 'gradebook-skills'
     student_gradebook_view_name = 'mygrades-skills'
-
-    def update(self):
-        self.person = IPerson(self.request.principal)
-        if not self.sectionsTaught and not self.sectionsAttended:
-            self.noSections = True
-        if self.sectionsTaught:
-            section = getCurrentSectionTaught(self.person)
-            if section is None or section.__parent__ is None:
-                section = self.sectionsTaught[0]
-            self.gradebookURL = '%s/%s' % (absoluteURL(section, self.request),
-                                           self.teacher_gradebook_view_name)
-            if not self.sectionsAttended:
-                self.request.response.redirect(self.gradebookURL)
-        if self.sectionsAttended:
-            section = getCurrentSectionAttended(self.person)
-            if section is None or section.__parent__ is None:
-                section = self.sectionsAttended[0]
-            self.mygradesURL = '%s/%s' % (absoluteURL(section, self.request),
-                                          self.student_gradebook_view_name)
-            if not self.sectionsTaught:
-                self.request.response.redirect(self.mygradesURL)
 
 
 class SectionProjectsCanDoRedirectView(flourish.page.Page):
