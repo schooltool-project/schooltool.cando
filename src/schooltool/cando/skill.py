@@ -18,12 +18,14 @@
 #
 from decimal import Decimal
 
+from zope.annotation.interfaces import IAnnotations
 from zope.catalog.text import TextIndex
 from zope.index.text.interfaces import ISearchableText
 from zope.interface import implements, implementer
 from zope.component import adapter, adapts
 from zope.container.btree import BTreeContainer
 from zope.container.interfaces import INameChooser
+from zope.security.proxy import removeSecurityProxy
 
 from schooltool.app.app import InitBase, StartUpBase
 from schooltool.app.catalog import AttributeCatalog
@@ -35,6 +37,8 @@ from schooltool.requirement.interfaces import IScoreSystemContainer
 from schooltool.requirement.requirement import Requirement
 from schooltool.requirement.scoresystem import CustomScoreSystem
 from schooltool.requirement.scoresystem import GlobalDiscreteValuesScoreSystem
+
+DEFAULT_SCORESYSTEM_KEY = 'schooltool.cando.defaultscoresystem'
 
 
 URISkill = URIObject(
@@ -66,14 +70,17 @@ class Skill(Requirement):
     description = u''
     required = False
     retired = False
+    scoresystem = None
 
     equivalent = RelationshipProperty(URIEquivalent, URISkill, URISkill)
 
-    def __init__(self, title, required=False, external_id=u'', label=u''):
+    def __init__(self, title, required=False, external_id=u'', label=u'',
+                 scoresystem=None):
         Requirement.__init__(self, title)
         self.required = required
         self.external_id = external_id
         self.label = label
+        self.scoresystem = scoresystem
 
     def findAllEquivalent(self):
         """Find indirectly equivalent skills."""
@@ -100,10 +107,6 @@ class Skill(Requirement):
         if len(desc) > 40:
             desc = desc[:17]+'...'+desc[-20:]
         return '<Skill %r>' % unicode(desc)
-
-    @property
-    def scoresystem(self):
-        return querySkillScoreSystem()
 
 
 class SkillSetContainer(BTreeContainer):
@@ -178,6 +181,32 @@ def querySkillScoreSystem():
     ssc = IScoreSystemContainer(app)
     ss = ssc.get(SkillScoreSystem.__name__, None)
     return ss
+
+
+def getDefaultSkillScoreSystem(person):
+    default_ss = querySkillScoreSystem()
+    if default_ss is None:
+        ssc = IScoreSystemContainer(ISchoolToolApplication(None))
+        if len(ssc) > 0:
+            default_ss = ssc.values()[0]
+        else::
+            return None
+
+    default = default_ss.__name__.encode('punycode')
+    if person is None:
+        return default
+    ann = IAnnotations(removeSecurityProxy(person))
+    if DEFAULT_SCORESYSTEM_KEY not in ann:
+        return default
+    return ann[DEFAULT_SCORESYSTEM_KEY]
+
+
+def setDefaultSkillScoreSystem(person, scoresystem):
+    if person is None:
+        return
+    person = removeSecurityProxy(person)
+    ann = IAnnotations(person)
+    ann[DEFAULT_SCORESYSTEM_KEY] = scoresystem
 
 
 class SkillCatalog(AttributeCatalog):

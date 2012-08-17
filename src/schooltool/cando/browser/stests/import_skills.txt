@@ -47,6 +47,7 @@ It has three skills.
 
     >>> manager.query.link('Pounding').click()
     >>> print_attrs()
+    Scoresystem: Pass/Fail
     Full description:
     Short label:
     Required: Yes
@@ -55,6 +56,7 @@ It has three skills.
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Hammering').click()
     >>> print_attrs()
+    Scoresystem: Extended Letter Grade
     Full description: This is hammering.
     Short label: Label
     Required: No
@@ -63,6 +65,7 @@ It has three skills.
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Whacking').click()
     >>> print_attrs()
+    Scoresystem: Letter Grade
     Full description: Whacking desc.
     Short label:
     Required: No
