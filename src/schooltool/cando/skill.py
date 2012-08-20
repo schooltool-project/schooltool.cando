@@ -189,7 +189,7 @@ def getDefaultSkillScoreSystem(person):
         ssc = IScoreSystemContainer(ISchoolToolApplication(None))
         if len(ssc) > 0:
             default_ss = ssc.values()[0]
-        else::
+        else:
             return None
 
     default = default_ss.__name__.encode('punycode')
