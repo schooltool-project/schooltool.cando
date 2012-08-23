@@ -45,6 +45,7 @@ ERROR_INVALID_SKILLSET = _("has an invalid skillset id")
 ERROR_MISSING_SKILLSET_ID = _("is missing a skillset id")
 ERROR_INVALID_EQUIVALENT = _("has an invalid equivalent skill id")
 ERROR_NODE_LABEL_TOO_BIG = _("node label has more than seven characters")
+ERROR_INVALID_NODE = _("has an invalid node id")
 
 
 def breakupIds(ids):
@@ -363,6 +364,57 @@ class CourseSkillsImporter(ImporterBase):
                 course_skills[part] = CourseSkillSet(skillsets[part])
 
 
+class CourseNodesImporter(ImporterBase):
+
+    sheet_name = 'CourseNodes'
+
+    def process(self):
+        sh = self.sheet
+        nodes = INodeContainer(self.context)
+        schoolyears = ISchoolYearContainer(self.context)
+        year = None
+
+        for row in range(1, sh.nrows):
+            if (sh.cell_value(rowx=row, colx=0) == '' and
+                sh.cell_value(rowx=row, colx=1) == ''):
+                break
+
+            num_errors = len(self.errors)
+            year_id = self.getTextFromCell(sh, row, 0)
+            course_id = self.getRequiredTextFromCell(sh, row, 1)
+            course_node_ids = self.getTextFromCell(sh, row, 2)
+            if num_errors < len(self.errors):
+                continue
+
+            if year_id:
+                if year_id not in schoolyears:
+                    self.error(row, 0, ERROR_INVALID_SCHOOL_YEAR)
+                    year = None
+                else:
+                    year = schoolyears[year_id]
+                    courses = ICourseContainer(year)
+            elif year is None:
+                self.error(row, 0, ERROR_MISSING_YEAR_ID)
+            if year is None:
+                continue
+
+            if course_id not in courses:
+                self.error(row, 1, ERROR_INVALID_COURSE_ID)
+                continue
+            course = courses[course_id]
+
+            course_skills = ICourseSkills(course)
+            for key in list(course_skills):
+                del course_skills[key]
+            for part in breakupIds(course_node_ids):
+                if part not in nodes:
+                    self.error(row, 2, ERROR_INVALID_NODE)
+                    break
+                node = nodes[part]
+                for skillset in node.skillsets:
+                    course_skills[skillset.__name__] = CourseSkillSet(skillset)
+
+
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
 
     def nextURL(self):
@@ -378,5 +430,6 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
             DocumentsImporter,
             NodesImporter,
             CourseSkillsImporter,
+            CourseNodesImporter,
             ]
 
