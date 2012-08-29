@@ -6,6 +6,7 @@ CHANGES
 ------------------
 
 - added CourseNodes sheet to skills importer
+- Skills Document table views need cyclic relationship check (https://launchpad.net/bugs/1030865)
 
 
 0.1 (2012-08-08)

@@ -29,6 +29,7 @@ from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
@@ -51,6 +52,7 @@ from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
+from schooltool.cando.model import _expand_nodes
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
@@ -237,7 +239,12 @@ class LayerContainerSourceMixin(object):
 class AvailableChildLayersTable(LayerContainerSourceMixin,
                                 RelationshipAddTableMixin,
                                 LayersTable):
-    pass
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
 
 
 class RemoveChildLayersTable(LayerContainerSourceMixin,
@@ -482,7 +489,6 @@ class NodesTableFilter(table.ajax.TableFilter):
                            'checked': checked})
         return result
 
-
     def filter(self, items):
         if self.ignoreRequest:
             return items
@@ -499,7 +505,7 @@ class NodesTableFilter(table.ajax.TableFilter):
                 items = [item for item in items
                          if set(list(item.layers)).intersection(layers)]
         else:
-            return []
+            return items
         if self.search_title_id in self.request:
             searchstr = self.request[self.search_title_id].lower()
             items = [item for item in items
@@ -525,7 +531,12 @@ class NodeContainerSourceMixin(object):
 class AvailableChildNodesTable(NodeContainerSourceMixin,
                                RelationshipAddTableMixin,
                                NodesTable):
-    pass
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
 
 
 class RemoveChildNodesTable(NodeContainerSourceMixin,
