@@ -87,7 +87,7 @@
   </div>
 
   <h2 i18n:translate="">Parent nodes</h2>
-  <div>
+  <div id="parents">
   <h3>
     <tal:block i18n:translate="">Parent nodes</tal:block>
   </h3>
@@ -116,7 +116,7 @@
   </div>
 
   <h2 i18n:translate="">Child nodes</h2>
-  <div>
+  <div id="children">
   <h3>
     <tal:block i18n:translate="">Child nodes</tal:block>
     <a class="modify" href="" title="Edit child nodes"
@@ -153,7 +153,7 @@
   </div>
 
   <h2 i18n:translate="">Layers</h2>
-  <div>
+  <div id="layers">
   <tal:block define="layers context/layers">
     <h3 i18n:translate="">
       Layers
@@ -190,7 +190,7 @@
   </div>
 
   <h2 i18n:translate="">SkillSets</h2>
-  <div>
+  <div id="skillsets">
   <tal:block define="skillsets context/skillsets">
     <h3 i18n:translate="">
       SkillSets

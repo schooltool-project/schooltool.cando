@@ -53,6 +53,46 @@ def registerSeleniumSetup():
         lambda: schooltool.testing.selenium.registerBrowserUI(
             'import_global_skills', importGlobalSkills))
 
+    def addSkillSet(browser, title):
+        browser.open('http://localhost/skills')
+        browser.query.link('Skill Set').click()
+        browser.query.name('form.widgets.title').type(title)
+        page = browser.query.tag('html')
+        browser.query.button('Submit').click()
+        browser.wait(lambda: page.expired)
+
+    registry.register('SeleniumHelpers',
+        lambda: schooltool.testing.selenium.registerBrowserUI(
+            'skillset.add', addSkillSet))
+
+    def addLayer(browser, title):
+        browser.query.link('School').click()
+        browser.query.link('Skills').click()
+        browser.query.link('Layers').click()
+        browser.query.link('Layer').click()
+        browser.query.name('form.widgets.title').type(title)
+        page = browser.query.tag('html')
+        browser.query.button('Submit').click()
+        browser.wait(lambda: page.expired)
+
+    registry.register('SeleniumHelpers',
+        lambda: schooltool.testing.selenium.registerBrowserUI(
+            'layer.add', addLayer))
+
+    def addNode(browser, title):
+        browser.query.link('School').click()
+        browser.query.link('Skills').click()
+        browser.query.link('Search').click()
+        browser.query.link('Node').click()
+        browser.query.name('form.widgets.title').type(title)
+        page = browser.query.tag('html')
+        browser.query.button('Submit').click()
+        browser.wait(lambda: page.expired)
+
+    registry.register('SeleniumHelpers',
+        lambda: schooltool.testing.selenium.registerBrowserUI(
+            'node.add', addNode))
+
 registerSeleniumSetup()
 del registerSeleniumSetup
 
