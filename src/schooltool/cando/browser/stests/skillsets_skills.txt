@@ -1,0 +1,129 @@
+Tests for the skillset and skill views
+======================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll define a helper function for printing the form fields of skillsets and
+skills.
+
+    >>> def print_attrs():
+    ...     print 'Title: %s' % manager.query.css('.body h3').text
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.xpath('td[1]').text
+    ...         value = row.query.xpath('td[2]').text
+    ...         print '%s: %s' % (label, value)
+
+Let's start by going to the skillsets container view.  We see there are no
+skillsets yet.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Skill Sets').click()
+    >>> print manager.query_all.css('h3')[1].text
+    There are no skill sets.
+
+We'll add a skillset for Basic Algebra skills using the ui helper.  Now we
+see it in the container view.
+
+    >>> manager.ui.skillset.add('Basic Algebra', label='BA')
+    >>> print manager.query_all.css('.data a').text
+    Basic Algebra
+
+Clicking on the link takes us to the view for that skillset.  We see the
+attributes that we specified.  We also see that there are no skills yet.
+
+    >>> manager.query.link('Basic Algebra').click()
+    >>> print_attrs()
+    Title: Basic Algebra
+    Full description: 
+    Label: BA
+    >>> print manager.query_all.css('.data tbody')
+    <tbody> </tbody>
+
+We'll edit its attributes and see them change in the view.  Then we'll change
+the title back.
+
+    >>> manager.query.xpath('//a[@title="Edit this skill set"]').click()
+    >>> manager.query.name('form.widgets.title').clear()
+    >>> manager.query.name('form.widgets.title').type('Basic Algebra changed')
+    >>> manager.query.name('form.widgets.label').clear()
+    >>> manager.query.name('form.widgets.label').type('02')
+    >>> page = manager.query.tag('html')
+    >>> manager.query.button('Submit').click()
+    >>> manager.wait(lambda: page.expired)
+    >>> print_attrs()
+    Title: Basic Algebra changed
+    Full description:
+    Label: 02
+
+    >>> manager.query.xpath('//a[@title="Edit this skill set"]').click()
+    >>> manager.query.name('form.widgets.title').clear()
+    >>> manager.query.name('form.widgets.title').type('Basic Algebra')
+    >>> page = manager.query.tag('html')
+    >>> manager.query.button('Submit').click()
+    >>> manager.wait(lambda: page.expired)
+    >>> print_attrs()
+    Title: Basic Algebra
+    Full description:
+    Label: 02
+
+Let's add a couple skills for Algebra.  We then see them appear in the list
+of skills for Basic Algebra.
+
+    >>> manager.ui.skill.add('Basic Algebra', 'Solve for one variable')
+    >>> manager.ui.skill.add('Basic Algebra', 'Solve for multiple variables',
+    ...                      label='L2', external_id='ext', required=False)
+    >>> print manager.query_all.css('.data a').text
+    Solve for multiple variables
+    Solve for one variable
+
+We'll look at the skills and see their attributes.
+
+    >>> manager.query.link('Solve for one variable').click()
+    >>> print_attrs()
+    Title: Solve for one variable
+    Full description: 
+    Short label: 01
+    Required: Yes
+    External ID: 
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Solve for multiple variables').click()
+    >>> print_attrs()
+    Title: Solve for multiple variables
+    Full description: 
+    Short label: L2
+    Required: No
+    External ID: ext
+
+We can edit the attributes of one of the skills and see them change in the view.
+
+    >>> manager.query.xpath('//a[@title="Edit this skill"]').click()
+    >>> manager.query.name('form.widgets.title').clear()
+    >>> manager.query.name('form.widgets.title').type('Solve for more than one variable')
+    >>> manager.query.name('form.widgets.label').clear()
+    >>> manager.query.name('form.widgets.label').type('02')
+    >>> manager.query.id('form-widgets-required-0').click()
+    >>> manager.query.name('form.widgets.external_id').clear()
+    >>> manager.query.name('form.widgets.external_id').type('ext2')
+    >>> page = manager.query.tag('html')
+    >>> manager.query.button('Submit').click()
+    >>> manager.wait(lambda: page.expired)
+    >>> print_attrs()
+    Title: Solve for more than one variable
+    Full description: 
+    Short label: 02
+    Required: Yes
+    External ID: ext2
+
+When we return to the skillset view, we see the change in the list.
+
+    >>> manager.query.link('Done').click()
+    >>> print manager.query_all.css('.data a').text
+    Solve for more than one variable
+    Solve for one variable
+

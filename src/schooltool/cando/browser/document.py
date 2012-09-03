@@ -119,6 +119,7 @@ class DocumentsTertiaryNavigationManager(
         tabs = (
             ((DocumentContainer, Document), 'documents', _('Documents')),
             ((LayerContainer, Layer), 'layers', _('Layers')),
+            ((SkillSetContainer, SkillSet, Skill), 'skills', _('Skill Sets')),
             ((NodeContainer, Node), 'nodes', _('Search')),
             )
         result = []
