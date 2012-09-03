@@ -53,10 +53,14 @@ def registerSeleniumSetup():
         lambda: schooltool.testing.selenium.registerBrowserUI(
             'import_global_skills', importGlobalSkills))
 
-    def addSkillSet(browser, title):
-        browser.open('http://localhost/skills')
+    def addSkillSet(browser, title, label=None):
+        browser.query.link('School').click()
+        browser.query.link('Skills').click()
+        browser.query.link('Skill Sets').click()
         browser.query.link('Skill Set').click()
         browser.query.name('form.widgets.title').type(title)
+        if label is not None:
+            browser.query.name('form.widgets.label').type(label)
         page = browser.query.tag('html')
         browser.query.button('Submit').click()
         browser.wait(lambda: page.expired)
@@ -64,6 +68,30 @@ def registerSeleniumSetup():
     registry.register('SeleniumHelpers',
         lambda: schooltool.testing.selenium.registerBrowserUI(
             'skillset.add', addSkillSet))
+
+    def addSkill(browser, skillset, title, label=None, required=True,
+                 external_id=None):
+        browser.query.link('School').click()
+        browser.query.link('Skills').click()
+        browser.query.link('Skill Sets').click()
+        browser.query.link(skillset).click()
+        browser.query.link('Skill').click()
+        browser.query.name('form.widgets.title').type(title)
+        if label is not None:
+            browser.query.name('form.widgets.label').type(label)
+        if required:
+            browser.query.id('form-widgets-required-0').click()
+        else:
+            browser.query.id('form-widgets-required-1').click()
+        if external_id is not None:
+            browser.query.name('form.widgets.external_id').type(external_id)
+        page = browser.query.tag('html')
+        browser.query.button('Submit').click()
+        browser.wait(lambda: page.expired)
+
+    registry.register('SeleniumHelpers',
+        lambda: schooltool.testing.selenium.registerBrowserUI(
+            'skill.add', addSkill))
 
     def addLayer(browser, title):
         browser.query.link('School').click()
