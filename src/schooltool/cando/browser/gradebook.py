@@ -217,6 +217,17 @@ class SkillsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
         return '../gradebook-skills'
 
 
+class StudentGradebookBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
+
+    @property
+    def title(self):
+        return self.context.student.title
+
+    @property
+    def url(self):
+        return ''
+
+
 class CanDoProjectsAddLinks(flourish.page.RefineLinksViewlet):
 
     pass
@@ -792,8 +803,13 @@ class CanDoGradeStudent(flourish.page.Page):
     container_class = 'container widecontainer'
 
     @property
-    def subtitle(self):
+    def title(self):
         return self.context.student.title
+
+    @property
+    def subtitle(self):
+        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
+        return gradebook.section.title
 
     @property
     def timezone(self):
