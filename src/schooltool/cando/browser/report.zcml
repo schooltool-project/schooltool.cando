@@ -10,6 +10,7 @@
   <report:reportLink
        name="global_skills_export"
        for="schooltool.app.interfaces.ISchoolToolApplication"
+       view="schooltool.app.browser.app.ManageSchool"
        layer="schooltool.skin.flourish.IFlourishLayer"
        permission="schooltool.edit"
        group="School"
