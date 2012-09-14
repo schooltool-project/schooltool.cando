@@ -24,7 +24,7 @@ Let's start with the course_nodes.xls file.
     >>> manager.query.button('Submit').click()
     >>> manager.wait(lambda: page.expired)
 
-    >>> manager.ui.import_global_skills(filename)
+    >>> manager.ui.skill.import_xls(filename)
 
 Let's check the data.  Our course will have the two skillsets assigned to it
 that were indicated in the 'building' node.
@@ -49,7 +49,7 @@ skillset to the course.
     >>> manager.query.button('Submit').click()
     >>> manager.wait(lambda: page.expired)
 
-    >>> manager.ui.import_global_skills(filename)
+    >>> manager.ui.skill.import_xls(filename)
 
 Now when we check the data, the course only has the carpentry skillset.
 
