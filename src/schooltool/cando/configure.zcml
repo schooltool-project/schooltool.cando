@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<configure xmlns="http://namespaces.zope.org/zope">
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:i18n="http://namespaces.zope.org/i18n">
 
   <include file="security.zcml" />
 
@@ -10,6 +11,8 @@
   <include file="gradebook.zcml" />
 
   <include package=".browser" />
+
+  <i18n:registerTranslations directory="locales" />
 
 </configure>
 

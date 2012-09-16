@@ -42,8 +42,6 @@ def registerSeleniumSetup():
         browser.query.link('School').click()
         browser.query.link('Import Skill Data').click()
         if filename:
-            import pkg_resources
-            elem = browser.query.name('xlsfile')
             browser.query.name('xlsfile').type(filename)
         page = browser.query.tag('html')
         browser.query.button('Submit').click()
@@ -51,7 +49,7 @@ def registerSeleniumSetup():
 
     registry.register('SeleniumHelpers',
         lambda: schooltool.testing.selenium.registerBrowserUI(
-            'import_global_skills', importGlobalSkills))
+            'skill.import_xls', importGlobalSkills))
 
     def addSkillSet(browser, title, label=None):
         browser.query.link('School').click()
@@ -107,12 +105,14 @@ def registerSeleniumSetup():
         lambda: schooltool.testing.selenium.registerBrowserUI(
             'layer.add', addLayer))
 
-    def addNode(browser, title):
+    def addNode(browser, title, label=None):
         browser.query.link('School').click()
         browser.query.link('Skills').click()
         browser.query.link('Search').click()
         browser.query.link('Node').click()
         browser.query.name('form.widgets.title').type(title)
+        if label is not None:
+            browser.query.name('form.widgets.label').type(label)
         page = browser.query.tag('html')
         browser.query.button('Submit').click()
         browser.wait(lambda: page.expired)
@@ -123,4 +123,3 @@ def registerSeleniumSetup():
 
 registerSeleniumSetup()
 del registerSeleniumSetup
-
