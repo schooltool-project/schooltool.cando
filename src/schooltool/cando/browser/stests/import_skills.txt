@@ -105,8 +105,8 @@ It has three layers in its heirarchy.
     >>> manager.query.link('Sample Doc').click()
     >>> manager.query.link('Layer Hierarchy').click()
     >>> print manager.query_all.xpath('//table//a').get_attribute('href')
-    http://localhost/layers/branch
     http://localhost/layers/craft
+    http://localhost/layers/branch
     http://localhost/layers/topic
 
 There are six nodes.

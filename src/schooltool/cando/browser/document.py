@@ -478,7 +478,7 @@ class EditDocumentHierarchyView(EditRelationships):
     available_title = _("Available layers")
 
     def getCollection(self):
-        return self.context.hierarchy
+        return self.context.getOrderedHierarchy()
 
     def getAvailableItemsContainer(self):
         return ILayerContainer(ISchoolToolApplication(None))
@@ -496,6 +496,9 @@ class LayerContainerSourceMixin(object):
     @property
     def source(self):
         return ILayerContainer(ISchoolToolApplication(None))
+
+    def sortOn(self):
+        return []
 
 
 class AvailableLayersTable(LayerContainerSourceMixin,
