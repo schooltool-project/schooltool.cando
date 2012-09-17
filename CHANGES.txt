@@ -6,6 +6,7 @@ CHANGES
 ------------------
 
 - edit document hierarchy view now sorts by hierarchy order
+- nodes table filter now orders layer checkboxes by hierarchy order
 
 
 0.2 (2012-09-13)
