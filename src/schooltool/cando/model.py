@@ -475,6 +475,30 @@ def removingLayerDoesntViolateModel(event):
             child_nodes=child_nodes_in_model)
 
 
+def getOrderedByHierarchy(layers):
+    layers = list(layers)
+    result = []
+    for index, layer in enumerate(layers):
+        for parent in layer.parents:
+            if parent in layers:
+                break
+        else:
+            result.append(layer)
+            layers.pop(index)
+            break
+    if not result:
+        return result
+    while layers:
+        for index, layer in enumerate(layers):
+            if result[-1] in layer.parents:
+                result.append(layer)
+                layers.pop(index)
+                break
+        else:
+            break
+    return result
+
+
 class DocumentContainer(BTreeContainer):
     """Container of documents."""
     implements(interfaces.IDocumentContainer)
@@ -487,27 +511,7 @@ class Document(Node):
                                      URILayer)
 
     def getOrderedHierarchy(self):
-        layers = list(self.hierarchy)
-        result = []
-        for index, layer in enumerate(layers):
-            for parent in layer.parents:
-                if parent in layers:
-                    break
-            else:
-                result.append(layer)
-                layers.pop(index)
-                break
-        if not result:
-            return result
-        while layers:
-            for index, layer in enumerate(layers):
-                if result[-1] in layer.parents:
-                    result.append(layer)
-                    layers.pop(index)
-                    break
-            else:
-                break
-        return result
+        return getOrderedByHierarchy(self.hierarchy)
 
     def __repr__(self):
         return '<%s %r %s>' % (self.__class__.__name__, self.title,

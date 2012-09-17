@@ -52,7 +52,7 @@ from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
-from schooltool.cando.model import _expand_nodes
+from schooltool.cando.model import _expand_nodes, getOrderedByHierarchy
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
@@ -472,11 +472,8 @@ class NodesTableFilter(table.ajax.TableFilter):
 
     def layers(self):
         result = []
-        container = self.layerContainer()
-        collator = ICollator(self.request.locale)
-        items = sorted(container.items(),
-                       key=lambda (lid, layer): layer.title,
-                       cmp=collator.cmp)
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        items = [(l.__name__, l) for l in layers]
         for id, layer in items:
             checked = not self.manager.fromPublication
             if self.search_layer_ids in self.request:
