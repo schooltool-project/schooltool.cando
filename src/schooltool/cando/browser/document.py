@@ -558,7 +558,8 @@ class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
 
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     @property
     def subtitle(self):
@@ -615,7 +616,8 @@ class DocumentAddNodeBase(flourish.form.AddForm):
 
     template = InheritTemplate(flourish.page.Page.template)
     label = None
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     @property
     def subtitle(self):
@@ -631,6 +633,10 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         super(DocumentAddNodeBase, self).updateActions()
         self.actions['add'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def updateWidgets(self):
+        super(DocumentAddNodeBase, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
     def handleAdd(self, action):
@@ -684,7 +690,7 @@ class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
 class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
                            DocumentNodeMixin):
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Change information')
 
@@ -708,6 +714,10 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
         super(DocumentNodeEditView, self).updateActions()
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def updateWidgets(self):
+        super(DocumentNodeEditView, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
 
     def nextURL(self):
         return absoluteURL(self.context, self.request) + '/document.html'
