@@ -7,34 +7,6 @@
 
   <!-- Skills and skillsets -->
 
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ISkillSetContainer"
-      title="Skills"
-      />
-
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ISkillSet"
-      class=".skill.LabelBreadcrumb"
-      />
-
-  <flourish:breadcrumb
-      class=".skill.LabelBreadcrumb"
-      for="schooltool.cando.interfaces.ISkill"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      class=".skill.LabelBreadcrumb"
-      view=".skill.SkillView"
-      for="schooltool.cando.interfaces.ISkill"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      title="Skills"
-      view=".skill.SkillSetContainerView"
-      />
-
   <flourish:activeViewlet
       name="manage_school"
       manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
@@ -70,7 +42,7 @@
       for="schooltool.cando.interfaces.ISkillSetContainer"
       class=".skill.SkillSetContainerView"
       permission="schooltool.view"
-      title="Skills"
+      title="Skill Sets"
       />
 
   <flourish:viewlet
@@ -78,6 +50,14 @@
       class=".skill.SkillSetTable"
       for="schooltool.cando.interfaces.ISkillSetContainer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      manager=".skill.SkillSetTable"
+      class=".skill.SkillSetTableFilter"
+      render="template"
       permission="schooltool.view"
       />
 
@@ -123,15 +103,6 @@
       factory=".skill.SkillSetContainerAbsoluteURLAdapter"
       provides="zope.interface.Interface"
       name="absolute_url"/>
-
-  <flourish:viewlet
-      name="manage-skills-overview"
-      after="manage-courses-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".skill.ManageSkillsOverview"
-      />
 
   <flourish:viewlet
       name="skillset_container"
@@ -236,30 +207,6 @@
 
   <!-- Course skills -->
 
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkills"
-      title="Skills"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      view=".course.CourseSkillsView"
-      title="Skills"
-      for="schooltool.cando.interfaces.ICourseSkills"
-      />
-
-  <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
-      class=".course.CourseSkillSetBreadcrumb"
-      />
-
-  <flourish:page_breadcrumbs
-      show_page_title="false"
-      for="schooltool.cando.interfaces.ICourseSkillSet"
-      view=".course.CourseSkillSetView"
-      class=".course.CourseSkillSetBreadcrumb"
-      />
-
   <flourish:viewlet
       name="manage-course-skills"
       after="manage-course-worksheets"
@@ -287,6 +234,14 @@
       />
 
   <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="table"
       class=".course.CourseSkillsTable"
       for="schooltool.cando.interfaces.ICourseSkills"
@@ -307,16 +262,66 @@
       manager="schooltool.skin.flourish.page.IPageRefineManager"
       class=".course.CourseSkillsLinks"
       for="schooltool.cando.interfaces.ICourseSkills"
-      title="Assign"
+      title="Actions"
       permission="schooltool.edit"
       view=".course.CourseSkillsView"
       />
 
   <flourish:viewlet
-      name="assign.html"
-      title="Skill Set"
+      name="assign-skills.html"
+      title="Assign Skills"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="remove-skills.html"
+      after="assign-skills.html"
+      title="Remove Skills"
+      class=".course.RemoveSkillsLinkViewlet"
+      manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="edit-skills.html"
+      after="remove-skills.html"
+      title="Set Required/Visible"
+      class=".course.EditSkillsLinkViewlet"
+      manager=".course.CourseSkillsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseRemoveSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit-skills.html"
+      subtitle="Set Required/Visible"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.EditCourseSkillsView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.EditCourseSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="assign-skillsets.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseAssignSkillSetsDialog"
+      template="templates/course_assign_skillsets_dialog.pt"
       permission="schooltool.edit"
       />
 
@@ -338,6 +343,47 @@
       />
 
   <flourish:page
+      name="assign-skills.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseAssignSkillsView"
+      subtitle="Assign Skills"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="remove-skills.html"
+      for="schooltool.cando.interfaces.ICourseSkills"
+      class=".course.CourseRemoveSkillsView"
+      subtitle="Remove Skills"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="nodes_table"
+      class=".course.SkillsetNodesTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".course.CourseAssignSkillsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".course.SkillsetNodesTableFilter"
+      manager=".course.SkillsetNodesTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseAssignSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ICourseSkillSet"
       class=".course.CourseSkillSetView"
@@ -353,6 +399,14 @@
       subtitle="Edit Skills"
       content_template="templates/course_skills_edit.pt"
       permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".course.CourseSkillSetEditView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet
@@ -420,15 +474,6 @@
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       name="layers"
       adapter="schooltool.cando.interfaces.ILayerContainer"
-      />
-
-  <flourish:viewlet
-      name="manage-layers-overview"
-      after="manage-skills-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".model.ManageLayersOverview"
       />
 
   <flourish:page
@@ -505,28 +550,28 @@
       />
 
   <flourish:page
-      name="edit_parents.html"
+      name="edit_children.html"
       for="schooltool.cando.interfaces.ILayer"
-      class=".model.EditParentLayersView"
-      subtitle="Edit Parents"
+      class=".model.EditChildLayersView"
+      subtitle="Edit Children"
       permission="schooltool.edit"
       />
 
   <flourish:viewlet
       name="available_table"
-      class=".model.AvailableParentLayersTable"
+      class=".model.AvailableChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentLayersView"
+      view=".model.EditChildLayersView"
       permission="schooltool.view"
       />
 
   <flourish:viewlet
       name="current_table"
-      class=".model.RemoveParentLayersTable"
+      class=".model.RemoveChildLayersTable"
       for="schooltool.cando.interfaces.ILayer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentLayersView"
+      view=".model.EditChildLayersView"
       permission="schooltool.view"
       />
 
@@ -548,19 +593,11 @@
       adapter="schooltool.cando.interfaces.INodeContainer"
       />
 
-  <flourish:viewlet
-      name="manage-nodes-overview"
-      after="manage-layers-overview"
-      view="schooltool.app.browser.app.ManageSchool"
-      permission="schooltool.edit"
-      manager="schooltool.skin.flourish.page.IPageContentManager"
-      class=".model.ManageNodesOverview"
-      />
-
   <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.INodeContainer"
       title="Nodes Container"
+      subtitle="Search"
       class=".model.NodesView"
       permission="schooltool.view"
       />
@@ -570,6 +607,15 @@
       class=".model.NodesTable"
       for="schooltool.cando.interfaces.INodeContainer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".model.NodesTableFilter"
+      manager=".model.NodesTable"
+      render="template"
       permission="schooltool.view"
       />
 
@@ -631,28 +677,80 @@
       />
 
   <flourish:page
-      name="edit_parents.html"
+      name="edit_children.html"
       for="schooltool.cando.interfaces.INode"
-      class=".model.EditParentNodesView"
-      subtitle="Edit Parents"
+      class=".model.EditChildNodesView"
+      subtitle="Edit Children"
       permission="schooltool.edit"
       />
 
   <flourish:viewlet
       name="available_table"
-      class=".model.AvailableParentNodesTable"
+      class=".model.AvailableChildNodesTable"
       for="schooltool.cando.interfaces.INode"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentNodesView"
+      view=".model.EditChildNodesView"
       permission="schooltool.view"
       />
 
   <flourish:viewlet
       name="current_table"
-      class=".model.RemoveParentNodesTable"
+      class=".model.RemoveChildNodesTable"
       for="schooltool.cando.interfaces.INode"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
-      view=".model.EditParentNodesView"
+      view=".model.EditChildNodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_layers.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditNodeLayersView"
+      subtitle="Edit Layers"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableNodeLayersTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeLayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveNodeLayersTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeLayersView"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="edit_skillsets.html"
+      for="schooltool.cando.interfaces.INode"
+      class=".model.EditNodeSkillSetsView"
+      subtitle="Edit SkillSets"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="available_table"
+      class=".model.AvailableNodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeSkillSetsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="current_table"
+      class=".model.RemoveNodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.EditNodeSkillSetsView"
       permission="schooltool.view"
       />
 
@@ -683,5 +781,33 @@
   <include file="document.zcml" />
   <include file="report.zcml" />
   <include file="gradebook.zcml" />
+  <include file="breadcrumbs.zcml" />
+
+  <flourish:viewlet
+      name="courses-actions-links"
+      after="courses-add-links"
+      before="course-import-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".course.CanDoCoursesActionsLinks"
+      view="schooltool.course.browser.course.FlourishCoursesView"
+      title="Actions"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="assign-courses-skills.html"
+      title="Batch Assign Skills"
+      class=".course.BatchAssignSkillsLinkViewlet"
+      manager=".course.CanDoCoursesActionsLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="assign-courses-skills.html"
+      subtitle="Assign Courses Skills"
+      for="schooltool.course.interfaces.ICourseContainer"
+      class="schooltool.cando.browser.course.CoursesSkillsAssignmentView"
+      permission="schooltool.edit"
+      />
 
 </configure>

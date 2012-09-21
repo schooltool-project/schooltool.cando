@@ -21,9 +21,10 @@ Skill views.
 """
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
-from zope.interface import implements, directlyProvides
+from zope.interface import implements
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -47,18 +48,16 @@ from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.cando import CanDoMessage as _
 
 
-class LabelBreadcrumb(flourish.breadcrumbs.Breadcrumbs):
-
-    @property
-    def title(self):
-        return self.context.label or self.context.title
-
-
 class SkillSetContainerView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+      <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no skill sets.</h3>
     ''')
+
+    @Lazy
+    def container(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
 
 
 class SkillSetTable(table.ajax.Table):
@@ -83,6 +82,23 @@ class SkillSetTable(table.ajax.Table):
         return [label] + default + [skills]
 
 
+class SkillSetTableFilter(table.ajax.TableFilter, table.table.FilterWidget):
+
+    title = _("Title, description or label")
+
+    def filter(self, results):
+        if self.ignoreRequest:
+            return results
+        if 'SEARCH' in self.request:
+            searchstr = self.request['SEARCH'].lower()
+            results = [item for item in results
+                       if searchstr in item.title.lower() or
+                       (item.label and searchstr in item.label.lower()) or
+                       (item.description and
+                        searchstr in item.description.lower())]
+        return results
+
+
 class SkillSetContainerAbsoluteURLAdapter(BrowserView):
     adapts(ISkillSetContainer, IBrowserRequest)
     implements(IAbsoluteURL)
@@ -93,27 +109,6 @@ class SkillSetContainerAbsoluteURLAdapter(BrowserView):
         return url + '/skills'
 
     __call__ = __str__
-
-
-class ManageSkillsOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_skills_overview.pt')
-
-    @property
-    def skillsets(self):
-        app = ISchoolToolApplication(None)
-        skillsets = ISkillSetContainer(app)
-        return skillsets
-
-    @property
-    def total_skillsets(self):
-        return len(self.skillsets)
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
 
 
 class SkillSetContainerLinks(flourish.page.RefineLinksViewlet):
@@ -130,7 +125,7 @@ class SkillSetAddView(flourish.form.AddForm):
     legend = _('Skill set')
 
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     def updateActions(self):
         super(SkillSetAddView, self).updateActions()
@@ -166,12 +161,12 @@ class SkillSetAddView(flourish.form.AddForm):
 class SkillSetView(flourish.form.DisplayForm):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('label', 'external_id')
+    fields = fields.select('description', 'label')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Skill set')
 
@@ -205,24 +200,15 @@ class SkillSetSkillTable(table.ajax.Table):
                        css_classes={'table': 'data'})
 
     def sortOn(self):
-        return (("required", True), ("title", False))
+        return (("title", False),)
 
     def columns(self):
         default = table.ajax.Table.columns(self)
-        required = zc.table.column.GetterColumn(
-            name='required',
-            title=_(u'Required'),
-            getter=lambda i, f: i.required and _('required') or _('optional'))
-        directlyProvides(required, zc.table.interfaces.ISortableColumn)
-        external_id = zc.table.column.GetterColumn(
-            name='external_id',
-            title=_(u'External ID'),
-            getter=lambda i, f: i.external_id or '')
         label = zc.table.column.GetterColumn(
             name='label',
             title=_(u'Label'),
             getter=lambda i, f: i.label or '')
-        return [required, external_id, label] + default
+        return [label] + default
 
 
 class SkillSetLinks(flourish.page.RefineLinksViewlet):

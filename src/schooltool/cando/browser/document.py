@@ -48,17 +48,17 @@ from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando.browser.model import LayersTable, LayerView, LayerEditView
-from schooltool.cando.browser.model import EditParentLayersView
+from schooltool.cando.browser.model import EditChildLayersView
 from schooltool.cando.browser.skill import SkillAddView, SkillView
 from schooltool.cando.browser.skill import SkillSetEditView, SkillEditView
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import IDocumentContainer, IDocument
 from schooltool.cando.interfaces import ISkillSetContainer, ISkillSet
-from schooltool.cando.model import Layer, LayerLink
-from schooltool.cando.model import Node, NodeLink
-from schooltool.cando.model import Document
-from schooltool.cando.skill import SkillSet, Skill
+from schooltool.cando.model import LayerContainer, Layer, LayerLink
+from schooltool.cando.model import NodeContainer, Node, NodeLink
+from schooltool.cando.model import DocumentContainer, Document
+from schooltool.cando.skill import SkillSetContainer, SkillSet, Skill
 
 from schooltool.cando import CanDoMessage as _
 
@@ -80,6 +80,7 @@ class DocumentsView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no documents.</h3>
     ''')
 
     @Lazy
@@ -99,6 +100,41 @@ class DocumentsTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+class DocumentsTertiaryNavigationManager(
+    flourish.page.TertiaryNavigationManager):
+
+    template = InlineViewPageTemplate("""
+        <ul tal:attributes="class view/list_class">
+          <li tal:repeat="item view/items"
+              tal:attributes="class item/class"
+              tal:content="structure item/viewlet">
+          </li>
+        </ul>
+    """)
+
+    @property
+    def items(self):
+        tabs = (
+            ((DocumentContainer, Document), 'documents', _('Documents')),
+            ((LayerContainer, Layer), 'layers', _('Layers')),
+            ((SkillSetContainer, SkillSet, Skill), 'skills', _('Skill Sets')),
+            ((NodeContainer, Node), 'nodes', _('Search')),
+            )
+        result = []
+        app = ISchoolToolApplication(None)
+        for context_list, link, title in tabs:
+            url = '%s/%s' % (absoluteURL(app, self.request), link)
+            if 'Document' in str(self.view):
+                active = (link == 'documents')
+            else:
+                active = (self.context.__class__ in context_list)
+            result.append({
+                'class': active and 'active' or None,
+                'viewlet': u'<a href="%s">%s</a>' % (url, title),
+                })
+        return result
 
 
 class DocumentsAddLinks(flourish.page.RefineLinksViewlet):
@@ -366,6 +402,10 @@ class DocumentAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentView"""
 
 
+class DocumentEditLinks(flourish.page.RefineLinksViewlet):
+    """Manager for Edit links in DocumentView"""
+
+
 class DocumentAddNodeLink(flourish.page.LinkViewlet, DocumentMixin):
 
     @property
@@ -438,7 +478,7 @@ class EditDocumentHierarchyView(EditRelationships):
     available_title = _("Available layers")
 
     def getCollection(self):
-        return self.context.hierarchy
+        return self.context.getOrderedHierarchy()
 
     def getAvailableItemsContainer(self):
         return ILayerContainer(ISchoolToolApplication(None))
@@ -456,6 +496,9 @@ class LayerContainerSourceMixin(object):
     @property
     def source(self):
         return ILayerContainer(ISchoolToolApplication(None))
+
+    def sortOn(self):
+        return []
 
 
 class AvailableLayersTable(LayerContainerSourceMixin,
@@ -479,10 +522,10 @@ class DocumentLayerView(LayerView, DocumentNodeMixin):
         return '%s/edit_document_layer.html%s' % (url, query_string)
 
     @property
-    def edit_parents_url(self):
+    def edit_children_url(self):
         url = absoluteURL(self.context, self.request)
         query_string = self.build_query_string()
-        return '%s/edit_document_layer_parents.html%s' % (url, query_string)
+        return '%s/edit_document_layer_children.html%s' % (url, query_string)
 
     @property
     def done_link(self):
@@ -501,7 +544,7 @@ class DocumentLayerEditView(LayerEditView, DocumentNodeMixin):
         return '%s/document.html%s' % (url, query_string)
 
 
-class EditDocumntLayerParentsView(EditParentLayersView, DocumentNodeMixin):
+class EditDocumntLayerChildrenView(EditChildLayersView, DocumentNodeMixin):
 
     def nextURL(self):
         url = absoluteURL(self.context, self.request)
@@ -515,7 +558,8 @@ class DocumentNodeView(flourish.form.DisplayForm, DocumentNodeMixin):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
 
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     @property
     def subtitle(self):
@@ -572,7 +616,8 @@ class DocumentAddNodeBase(flourish.form.AddForm):
 
     template = InheritTemplate(flourish.page.Page.template)
     label = None
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     @property
     def subtitle(self):
@@ -588,6 +633,10 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         super(DocumentAddNodeBase, self).updateActions()
         self.actions['add'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def updateWidgets(self):
+        super(DocumentAddNodeBase, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
     def handleAdd(self, action):
@@ -641,7 +690,7 @@ class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
 class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
                            DocumentNodeMixin):
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Change information')
 
@@ -666,6 +715,10 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
+    def updateWidgets(self):
+        super(DocumentNodeEditView, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
+
     def nextURL(self):
         return absoluteURL(self.context, self.request) + '/document.html'
 
@@ -680,7 +733,7 @@ class DocumentAddSkillSetBase(flourish.form.AddForm):
     _skillset = None
     label = None
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'label', 'external_id')
+    fields = fields.select('title', 'description', 'label')
 
     @property
     def legend(self):
@@ -748,7 +801,7 @@ class DocumentNodeAddSkillSetView(DocumentAddSkillSetBase, DocumentNodeMixin):
 class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('label', 'external_id')
+    fields = fields.select('description', 'label')
 
     @property
     def subtitle(self):

@@ -1,59 +1,202 @@
 .grid .third-nav-container,
 .grid a.navbar-arrow {
-    top: 90px;
+    top: 36px;
+}
+
+.grid .third-nav-container {
+    left: 208px;
+    width: 724px;
+    border-radius: 4px 0px 0px 0px;
+}
+
+.grid .third-nav li a {
+    width: 724px;
+    text-align: left;
+    padding: 8px 4px;
 }
 
 .grid > .body > .container {
-    margin-top: 86px;
+    margin-top: 32px;
 }
 
 .grades thead th, .grades tbody td {
     width: 3em;
 }
 
+.skill-title {
+    display: table-row;
+    overflow: hidden;
+    position: absolute;
+    right: 92px;
+    top: 2px;
+    z-index: 1;
+}
+
+.skill-title p {
+    background: #F0EFEE;
+    border-color: #dddddd;
+    border-radius: 0 0 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    color: black;
+    display: table-cell;
+    font-size: 11px;
+    margin: 0px;
+    opacity: 0.9;
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    width: 598px;
+}
+
+.skill-title p.required,
+.skill-title p.optional {
+    text-align: justify;
+}
+
+.grades thead th > a {
+    display: block;
+}
+
+.skill-title p.required,
+.color-codes .required,
+.grades thead th > a {
+    color: black;
+}
+
+.skill-title p.optional,
+.color-codes .optional,
 .grades thead th.optional > a {
     color: black;
 }
 
-.skill-title {
-    display: table-row;
-    left: 208px;
-    overflow: hidden;
-    position: absolute;
+ul.skills li.optional,
+.color-codes .optional,
+.grade-student .optional,
+.grades thead th.optional > a {
+    background: #ACC4E4;
 }
 
-.skill-title p {
-    background: #ffffff;
-    border-color: #6C7B7C;
-    border-style: solid;
-    border-width: 2px;
-    color: black;
-    display: table-cell;
-    height: 42px;
-    margin: 0px;
-    text-align: center;
-    vertical-align: middle;
-    width: 748px;
+.skillsets-selection {
+    max-height: 550px;
+    overflow: auto;
+    margin-bottom: 8px;
 }
 
-.skill-title p.required {
-    background: #6C7B7C;
-    border-color: white;
+/* XXX: ugly hack! */
+.skillsets-selection-remove,
+.skillsets-selection-courseskills {
+    max-height: 100000px;
+}
+
+.skillsets-selection ul.skills {
+    list-style-type: disc;
+    padding-left: 16px;
+}
+
+.skillsets-selection .ui-accordion .ui-accordion-header {
+    font-weight: normal;
+    color: #333333;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.skillsets-selection .ui-accordion .ui-state-active,
+.skillsets-selection .ui-accordion .ui-state-hover {
+    background-color: #008c93;
+    border-color: #008c93;
     color: #ffffff;
-    font-weight: bold;
 }
 
-.skill-title p.optional {
-    background: #F0EFEE;
-    border-color: gray;
-    color: black;
+.gradebook-modes {
+    margin-right: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #cccccc;
+    margin-bottom: 4px;
 }
 
-.worksheets-list {
-    top: 122px;
+/* XXX: to make the default arrows in the skillset accordion black
+        find a better way to do it */
+
+.skillsets-selection .ui-accordion .ui-state-default .ui-icon {
+    background-image: url("ui-icons_222222_256x240.png");
+}
+
+.skillsets-selection .ui-accordion .ui-state-active .ui-icon,
+.skillsets-selection .ui-accordion .ui-state-hover .ui-icon {
+    background-image: url("ui-icons_ffffff_256x240.png");
+}
+
+input[type="checkbox"].select-all {
+    display: block;
+}
+
+.grade-student {
+    border-collapse: collapse;
+    margin-top: 0;
+    table-layout: fixed;
+}
+
+.grade-student th, .grade-student td {
+    vertical-align: middle;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+.grade-student td {
+    min-height: 2.2em;
+}
+
+.grade-student input[type="text"] {
+    width: 100%;
+    border: none;
+    font-size: 1em;
+}
+
+.grade-student .student-score {
+    border-left: 1px solid #cccccc;
+    width: 4em;
+}
+
+.grade-student td.student-score {
+    padding: 0;
+}
+
+.grade-student input[type="text"]:focus {
+    background-color: #bdd7f0;
+}
+
+.grade-student input[type="text"].valid {
+    background: #009499;
+    color: #ffffff;
+}
+
+.grade-student input[type="text"].error {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.grade-student input[type="text"].extracredit {
+    background: #f6db5a;
+}
+
+.student-scr .date {
+    width: 6em;
+}
+
+.student-scr .rating {
+    width: 6em;
+}
+
+.student-scr .flag {
+    text-align: center;
 }
 
 /* XXX: move this to the gradebook css? */
+
+.grid .third-nav {
+    width: 20000px;
+}
 
 .popup_menu {
     max-width: 400px;
@@ -61,4 +204,10 @@
 
 .popup_menu li.header {
     white-space: normal;
+}
+
+.worksheets-list {
+    top: 68px;
+    max-width: 752px;
+    width: 752px;
 }

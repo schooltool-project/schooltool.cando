@@ -20,19 +20,26 @@
 
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts, adapter, queryMultiAdapter
+from zope.component import getMultiAdapter
 from zope.interface import implements, implementer
 from zope.location.location import LocationProxy
 from zope.publisher.interfaces import IPublishTraverse
 from zope.security import proxy
 
+from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.basicperson.interfaces import IBasicPerson
+from schooltool.course.interfaces import ISection
 from schooltool.gradebook.activity import ensureAtLeastOneWorksheet
 from schooltool.gradebook.gradebook import Gradebook
+from schooltool.gradebook.gradebook import StudentGradebook
 from schooltool.gradebook.gradebook import getActivityScore
 from schooltool.gradebook.gradebook import CURRENT_SECTION_TAUGHT_KEY
 from schooltool.gradebook.gradebook import CURRENT_SECTION_ATTENDED_KEY
 from schooltool.requirement.interfaces import IHaveEvaluations
 from schooltool.requirement.interfaces import IScore
 
+from schooltool.cando.interfaces import ICanDoGradebook
+from schooltool.cando.interfaces import IMySkillsGrades
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
@@ -40,6 +47,7 @@ from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ICourseSkillSet
 from schooltool.cando.interfaces import ISkill
+from schooltool.cando.interfaces import ICanDoStudentGradebook
 from schooltool.cando.project import Project
 from schooltool.cando import CanDoMessage as _
 
@@ -143,6 +151,21 @@ class SkillsGradebook(Gradebook):
         worksheets.setCurrentWorksheet(person, worksheet)
 
 
+class MySkillsGrades(SkillsGradebook):
+
+    implements(IMySkillsGrades)
+    adapts(ICourseSkillSet)
+
+    def __init__(self, context):
+        super(MySkillsGrades, self).__init__(context)
+        # To make URL creation happy
+        self.__name__ = 'mygrades-skills'
+
+
+def getMySkillsGradesSection(gradebook):
+    return ISection(gradebook.context)
+
+
 @adapter(IHaveEvaluations, ISkill)
 @implementer(IScore)
 def getSkillScore(evaluatee, skill):
@@ -194,10 +217,50 @@ class SkillsGradebookTraverser(object):
                 gb.__setattr__('__parent__', gb.__parent__)
                 return gb
             elif name == 'mygrades':
-                pass
+                gb = IMySkillsGrades(context)
+                gb = LocationProxy(gb, self.context, name)
+                gb.__setattr__('__parent__', gb.__parent__)
+                return gb
             else:
                 return queryMultiAdapter((self.context, request), name=name)
 
 
 def getCourseSkillSetSection(worksheet):
     return worksheet.__parent__.__parent__
+
+
+class CanDoStudentGradebook(StudentGradebook):
+
+    implements(ICanDoStudentGradebook)
+    adapts(IBasicPerson, ICanDoGradebook)
+
+    def __init__(self, *args, **kw):
+        super(CanDoStudentGradebook, self).__init__(*args, **kw)
+        self.__parent__ = self.gradebook.__parent__
+
+
+class CanDoStudentGradebookTraverser(object):
+
+    implements(IPublishTraverse)
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def publishTraverse(self, request, name):
+        app = ISchoolToolApplication(None)
+        context = proxy.removeSecurityProxy(self.context)
+
+        try:
+            student = app['persons'][name]
+        except KeyError:
+            return queryMultiAdapter((self.context, request), name=name)
+
+        try:
+            gb = getMultiAdapter((student, context), ICanDoStudentGradebook)
+        except ValueError:
+            return queryMultiAdapter((self.context, request), name=name)
+
+        # location looks like http://host/path/to/gradebook/studentsUsername
+        gb = LocationProxy(gb, self.context, name)
+        return gb

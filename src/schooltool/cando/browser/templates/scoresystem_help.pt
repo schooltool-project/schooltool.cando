@@ -1,0 +1,16 @@
+<div i18n:domain="schooltool.cando">
+  <table>
+    <thead>
+      <tr>
+        <th i18n:translate="">Score</th>
+        <th i18n:translate="">Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="item view/items">
+        <td tal:content="item/score" />
+        <td tal:content="item/rating" />
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -24,14 +24,17 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts, getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.i18n.interfaces.locales import ICollator
+from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
 import zc.table.column
+from zc.table.interfaces import ISortableColumn
 import z3c.form.form
 import z3c.form.button
 import z3c.form.field
@@ -43,15 +46,17 @@ from schooltool.app.browser.app import RelationshipRemoveTableMixin
 from schooltool.app.browser.app import EditRelationships
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.browser.app import ContentTitle
+from schooltool.cando.browser.skill import SkillSetTable
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
+from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
+from schooltool.cando.model import _expand_nodes, getOrderedByHierarchy
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando import CanDoMessage as _
-
 
 
 class LayerContainerAbsoluteURLAdapter(BrowserView):
@@ -70,26 +75,12 @@ class LayersView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no layers.</h3>
     ''')
 
     @Lazy
     def container(self):
         return ILayerContainer(ISchoolToolApplication(None))
-
-
-class ManageLayersOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_layers_overview.pt')
-
-    @property
-    def layers(self):
-        return ILayerContainer(ISchoolToolApplication(None))
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
 
 
 class LayersAddLinks(flourish.page.RefineLinksViewlet):
@@ -157,8 +148,8 @@ class LayerView(flourish.form.DisplayForm):
         return absoluteURL(self.context, self.request) + '/edit.html'
 
     @property
-    def edit_parents_url(self):
-        return absoluteURL(self.context, self.request) + '/edit_parents.html'
+    def edit_children_url(self):
+        return absoluteURL(self.context, self.request) + '/edit_children.html'
 
     @property
     def parents(self):
@@ -245,24 +236,29 @@ class LayerContainerSourceMixin(object):
         return self.layers
 
 
-class AvailableParentLayersTable(LayerContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 LayersTable):
+class AvailableChildLayersTable(LayerContainerSourceMixin,
+                                RelationshipAddTableMixin,
+                                LayersTable):
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
+
+
+class RemoveChildLayersTable(LayerContainerSourceMixin,
+                             RelationshipRemoveTableMixin,
+                             LayersTable):
     pass
 
 
-class RemoveParentLayersTable(LayerContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              LayersTable):
-    pass
-
-
-class EditParentLayersView(EditRelationships):
-    current_title = _("Current parent layers")
-    available_title = _("Available parent layers")
+class EditChildLayersView(EditRelationships):
+    current_title = _("Current child layers")
+    available_title = _("Available child layers")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         layer = self.context
@@ -292,26 +288,12 @@ class NodesView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
     ''')
 
     @Lazy
     def container(self):
         return INodeContainer(ISchoolToolApplication(None))
-
-
-class ManageNodesOverview(flourish.page.Content):
-
-    body_template = ViewPageTemplateFile(
-        'templates/manage_nodes_overview.pt')
-
-    @property
-    def nodes(self):
-        return INodeContainer(ISchoolToolApplication(None))
-
-    @property
-    def enabled(self):
-        schoolyears = ISchoolYearContainer(self.context)
-        return schoolyears.getActiveSchoolYear() is not None
 
 
 class NodesAddLinks(flourish.page.RefineLinksViewlet):
@@ -323,12 +305,17 @@ class FlourishNodeAddView(flourish.form.AddForm):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
     legend = _('Node Information')
-    fields = z3c.form.field.Fields(INode).select('title', 'description')
+    fields = z3c.form.field.Fields(INode).select('title', 'description',
+                                                 'label')
 
     def updateActions(self):
         super(FlourishNodeAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def updateWidgets(self):
+        super(FlourishNodeAddView, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
     def handleAdd(self, action):
@@ -370,7 +357,7 @@ class NodeView(flourish.form.DisplayForm):
     legend = _('Node')
 
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     @property
     def can_edit(self):
@@ -394,13 +381,15 @@ class NodeView(flourish.form.DisplayForm):
 
 class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(INode)
-    fields = fields.select('title', 'description')
+    fields = fields.select('title', 'description', 'label')
 
     legend = _('Node')
 
     def applyChanges(self, data):
         if data['description'] is None:
             data['description'] = u''
+        if data['label'] is None:
+            data['label'] = u''
         super(NodeEditView, self).applyChanges(data)
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='apply')
@@ -421,6 +410,10 @@ class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
+    def updateWidgets(self):
+        super(NodeEditView, self).updateWidgets()
+        self.widgets['label'].maxlength = 7
+
 
 class NodesTable(table.ajax.Table):
 
@@ -429,28 +422,24 @@ class NodesTable(table.ajax.Table):
             return sorted(NodeLink.query(child=node),
                           key=lambda n: n.__name__)
 
-        default = table.ajax.Table.columns(self)
-        description = zc.table.column.GetterColumn(
-            name='description',
-            title=_(u"Description"),
-            getter=lambda i, f: i.description
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title=_(u"Label"),
+            getter=lambda i, f: i.label or ''
             )
-        parents = zc.table.column.GetterColumn(
-            name='parents',
-            title=_(u'Parents'),
-            getter=lambda i, f: u', '.join([n.title for n in get_parents(i)])
-            )
+        title = zc.table.column.GetterColumn(
+            name='title',
+            title=_(u"Title"),
+            cell_formatter=table.ajax.url_cell_formatter,
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
         layers = zc.table.column.GetterColumn(
             name='layers',
             title=_(u'Layers'),
             getter=lambda i, f: u', '.join([l.title for l in i.layers])
             )
-        skillsets = zc.table.column.GetterColumn(
-            name='skillsets',
-            title=_(u'SkillSets'),
-            getter=lambda i, f: u', '.join([s.title for s in i.skillsets])
-            )
-        return default + [description, parents, layers, skillsets]
+        return [label, title, layers]
 
     def updateFormatter(self):
         if self._table_formatter is None:
@@ -458,6 +447,70 @@ class NodesTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+class NodesTableFilter(table.ajax.TableFilter):
+
+    search_title = _("ID, title, label or description")
+    template = ViewPageTemplateFile('templates/nodes_table_filter.pt')
+
+    @property
+    def search_id(self):
+        return self.manager.html_id+'-search'
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+'-title'
+
+    @property
+    def search_layer_ids(self):
+        return self.manager.html_id+"-layers"
+
+    def layerContainer(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    def layers(self):
+        result = []
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        items = [(l.__name__, l) for l in layers]
+        for id, layer in items:
+            checked = not self.manager.fromPublication
+            if self.search_layer_ids in self.request:
+                layer_ids = self.request[self.search_layer_ids]
+                if not isinstance(layer_ids, list):
+                    layer_ids = [layer_ids]
+                checked = id in layer_ids
+            result.append({'id': id,
+                           'title': layer.title,
+                           'checked': checked})
+        return result
+
+    def filter(self, items):
+        if self.ignoreRequest:
+            return items
+        if self.search_layer_ids in self.request:
+            layer_ids = self.request[self.search_layer_ids]
+            if not isinstance(layer_ids, list):
+                layer_ids = [layer_ids]
+            layers = set()
+            for layer_id in layer_ids:
+                layer = self.layerContainer().get(layer_id)
+                if layer is not None:
+                    layers.add(layer)
+            if layers:
+                items = [item for item in items
+                         if set(list(item.layers)).intersection(layers)]
+        else:
+            return items
+        if self.search_title_id in self.request:
+            searchstr = self.request[self.search_title_id].lower()
+            items = [item for item in items
+                     if searchstr in item.__name__.lower() or
+                     searchstr in item.title.lower() or
+                     searchstr in getattr(item, 'label', '').lower() or
+                     searchstr in getattr(item, 'description', '').lower()]
+        return items
 
 
 class NodeContainerSourceMixin(object):
@@ -472,28 +525,107 @@ class NodeContainerSourceMixin(object):
         return self.nodes
 
 
-class AvailableParentNodesTable(NodeContainerSourceMixin,
-                                 RelationshipAddTableMixin,
-                                 NodesTable):
+class AvailableChildNodesTable(NodeContainerSourceMixin,
+                               RelationshipAddTableMixin,
+                               NodesTable):
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
+
+
+class RemoveChildNodesTable(NodeContainerSourceMixin,
+                            RelationshipRemoveTableMixin,
+                            NodesTable):
     pass
 
 
-class RemoveParentNodesTable(NodeContainerSourceMixin,
-                              RelationshipRemoveTableMixin,
-                              NodesTable):
-    pass
-
-
-class EditParentNodesView(EditRelationships):
-    current_title = _("Current parent nodes")
-    available_title = _("Available parent nodes")
+class EditChildNodesView(EditRelationships):
+    current_title = _("Current child nodes")
+    available_title = _("Available child nodes")
 
     def getCollection(self):
-        return self.context.parents
+        return self.context.children
 
     def getAvailableItemsContainer(self):
         node = self.context
         return INodeContainer(node.__parent__)
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class LayerContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+
+class AvailableNodeLayersTable(LayerContainerSourceMixin,
+                               RelationshipAddTableMixin,
+                               LayersTable):
+    pass
+
+
+class RemoveNodeLayersTable(LayerContainerSourceMixin,
+                            RelationshipRemoveTableMixin,
+                            LayersTable):
+    pass
+
+
+class EditNodeLayersView(EditRelationships):
+    current_title = _("Current node layers")
+    available_title = _("Available node layers")
+
+    def getCollection(self):
+        return self.context.layers
+
+    def getAvailableItemsContainer(self):
+        return ILayerContainer(ISchoolToolApplication(None))
+
+    def getAvailableItems(self):
+        """Return a sequence of items that can be selected."""
+        container = self.getAvailableItemsContainer()
+        selected_items = set(self.getSelectedItems())
+        return [p for p in container.values()
+                if p not in selected_items]
+
+
+class SkillSetContainerSourceMixin(object):
+
+    @property
+    def source(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
+
+
+class AvailableNodeSkillSetsTable(SkillSetContainerSourceMixin,
+                                  RelationshipAddTableMixin,
+                                  SkillSetTable):
+    pass
+
+
+class RemoveNodeSkillSetsTable(SkillSetContainerSourceMixin,
+                               RelationshipRemoveTableMixin,
+                               SkillSetTable):
+    pass
+
+
+class EditNodeSkillSetsView(EditRelationships):
+    current_title = _("Current node skillsets")
+    available_title = _("Available node skillsets")
+
+    def getCollection(self):
+        return self.context.skillsets
+
+    def getAvailableItemsContainer(self):
+        return ISkillSetContainer(ISchoolToolApplication(None))
 
     def getAvailableItems(self):
         """Return a sequence of items that can be selected."""

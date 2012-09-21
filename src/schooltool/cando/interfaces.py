@@ -21,11 +21,14 @@ import zope.schema
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.interfaces import IContainer, IContained
 from zope.container.constraints import contains
+from zope.html.field import HtmlFragment
 from zope.interface import Interface, Attribute
 
 from schooltool.requirement.interfaces import IRequirement
 from schooltool.gradebook.interfaces import IWorksheets, IWorksheet
 from schooltool.gradebook.interfaces import IGradebook
+from schooltool.gradebook.interfaces import IMyGrades
+from schooltool.gradebook.interfaces import IStudentGradebook
 from schooltool.cando import CanDoMessage as _
 
 
@@ -39,7 +42,7 @@ class ISkill(IRequirement, IAttributeAnnotatable):
                                description=_("Skill is no longer used"))
     label = zope.schema.TextLine(title=_("Short label"), required=False)
 
-    description = zope.schema.Text(title=_("Full description"), required=False)
+    description = HtmlFragment(title=_("Full description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
 
@@ -56,10 +59,8 @@ class ISkillSetContainer(IContainer):
 
 class ISkillSet(IRequirement, IAttributeAnnotatable):
 
-    external_id = zope.schema.TextLine(title=_("External ID"),
-                                       required=False)
-
-    label = zope.schema.TextLine(title=_("Short label"), required=False)
+    description = HtmlFragment(title=_("Full description"), required=False)
+    label = zope.schema.TextLine(title=_("Label"), required=False)
 
 
 class ILayerContainer(IContainer):
@@ -71,6 +72,7 @@ class ILayer(Interface):
         title=_("Title"))
 
     parents = Attribute("Parent layers")
+    children = Attribute("Child layers")
 
 
 class ILayerContained(ILayer, IContained, IAttributeAnnotatable):
@@ -86,13 +88,20 @@ class INode(Interface):
     title = zope.schema.TextLine(
         title=_("Title"),
         required=True)
-    description = zope.schema.TextLine(
+    description = HtmlFragment(
         title=_("Description"),
         required=False,
+        default=u'')
+    label = zope.schema.TextLine(
+        title=_("Label"),
+        description=_("Limit to 7 characters or less."),
+        required=False,
+        max_length=7,
         default=u'')
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
+    children = Attribute("Child nodes")
     skillsets = Attribute("Skillsets related to this node")
 
     def findPaths():
@@ -182,9 +191,21 @@ class ISectionSkills(IWorksheets):
     pass
 
 
-class IProjectsGradebook(IGradebook):
+class ICanDoGradebook(IGradebook):
     pass
 
 
-class ISkillsGradebook(IGradebook):
+class IProjectsGradebook(ICanDoGradebook):
+    pass
+
+
+class ISkillsGradebook(ICanDoGradebook):
+    pass
+
+
+class IMySkillsGrades(IMyGrades):
+    pass
+
+
+class ICanDoStudentGradebook(IStudentGradebook):
     pass

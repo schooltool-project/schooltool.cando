@@ -1,0 +1,62 @@
+Tests for the course skills xls imports
+=======================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We have two import files that we will test here, course_nodes.xls and
+course_skills.xls.  Both files will have both the year and course sheets as
+well as the skills sheets, so we will send each file through both the core
+importer as well as the cando skills importer.
+
+Let's start with the course_nodes.xls file.
+
+    >>> import os
+    >>> dirname = os.path.abspath(os.path.dirname(__file__))
+    >>> filename = os.path.join(dirname, 'course_nodes.xls')
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Import XLS').click()
+    >>> manager.query.name('xlsfile').type(filename)
+    >>> page = manager.query.tag('html')
+    >>> manager.query.button('Submit').click()
+    >>> manager.wait(lambda: page.expired)
+
+    >>> manager.ui.skill.import_xls(filename)
+
+Let's check the data.  Our course will have the two skillsets assigned to it
+that were indicated in the 'building' node.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Art').click()
+    >>> manager.query.link('Skills').click()
+    >>> print manager.query_all.css('.courseskills-table td h2').text
+    Carpentry
+    Electrical
+
+Now we'll import the course_skills.xls worksheet that only links the carpentry
+skillset to the course.
+
+    >>> filename = os.path.join(dirname, 'course_skills.xls')
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Import XLS').click()
+    >>> manager.query.name('xlsfile').type(filename)
+    >>> page = manager.query.tag('html')
+    >>> manager.query.button('Submit').click()
+    >>> manager.wait(lambda: page.expired)
+
+    >>> manager.ui.skill.import_xls(filename)
+
+Now when we check the data, the course only has the carpentry skillset.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Art').click()
+    >>> manager.query.link('Skills').click()
+    >>> print manager.query_all.css('.courseskills-table td h2').text
+    Carpentry
+

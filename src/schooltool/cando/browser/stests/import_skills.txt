@@ -6,73 +6,158 @@ Log in as manager:
     >>> manager = browsers.manager
     >>> manager.ui.login('manager', 'schooltool')
 
-We'll define a helper function for printing the form fields of skillsets and
-skills.
+We'll define a helper function for printing the form fields of any object.
 
-    >>> def printFormFields():
-    ...     fields = []
-    ...     for row in manager.query_all.xpath('//table[@class="form-fields"]//tr'):
-    ...         fields.append(row.query.css('label span').text)
-    ...         elems = row.query_all.css('.selected-option').text
-    ...         if elems:
-    ...             fields.append(elems[0])
-    ...         else:
-    ...             fields.append(row.query.css('.widget span').text)
-    ...     while fields:
-    ...         print '%-20s%s' % (fields.pop(0) + ':', fields.pop(0))
+    >>> def print_attrs():
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.xpath('td[1]').text
+    ...         value = row.query.xpath('td[2]').text
+    ...         print '%s: %s' % (label, value)
 
-A school year is needed for importing skillsets and skills:
-
-    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
-
-Let's import a file containing the SkillSets and Skills sheets:
+Let's import a file containing all the skill object types:
 
     >>> import os
     >>> dirname = os.path.abspath(os.path.dirname(__file__))
-    >>> filename = os.path.join(dirname, 'sample_global_data.xls')
-    >>> manager.ui.import_global_skills(filename)
+    >>> filename = os.path.join(dirname, 'sample_data.xls')
+    >>> manager.ui.skill.import_xls(filename)
 
-There should be no errors:
+There should be no errors so we should be back at the School tab view:
 
-    >>> print manager.query_all.css('.status div').text
+    >>> manager.url
+    u'http://localhost/manage'
 
-Let's check the data.  Ther is one skillset called Carpentry.
+Let's check the data.  There is one skillset called Carpentry.
 
-    >>> manager.query.link('School').click()
-    >>> manager.query.link('Skills').click()
+    >>> manager.open('http://localhost/skills')
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/skills/carpentry
 
     >>> manager.query.link('Carpentry').click()
-    >>> printFormFields()
-    Short label:        Carp label
-    External ID:        ext_carp
+    >>> print_attrs()
+    Full description: ext_carp
+    Label: Carp label
+
+It has three skills.
 
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/skills/carpentry/pounding
     http://localhost/skills/carpentry/hammering
+    http://localhost/skills/carpentry/pounding
     http://localhost/skills/carpentry/whacking
 
     >>> manager.query.link('Pounding').click()
-    >>> printFormFields()
+    >>> print_attrs()
     Full description:
     Short label:
-    Required:           Yes
-    External ID:        ext_123
+    Required: Yes
+    External ID: ext_123
 
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Hammering').click()
-    >>> printFormFields()
-    Full description:   This is hammering.
-    Short label:        Label
-    Required:           No
+    >>> print_attrs()
+    Full description: This is hammering.
+    Short label: Label
+    Required: No
     External ID:
 
     >>> manager.query.link('Done').click()
     >>> manager.query.link('Whacking').click()
-    >>> printFormFields()
-    Full description:   Whacking desc.
+    >>> print_attrs()
+    Full description: Whacking desc.
     Short label:
-    Required:           No
+    Required: No
     External ID:
+
+There are three layers.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Layers').click()
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/layers/branch
+    http://localhost/layers/craft
+    http://localhost/layers/topic
+
+    >>> manager.query.link('Branch').click()
+    >>> print_attrs()
+    Title: Branch
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Topic').click()
+    >>> print_attrs()
+    Title: Topic
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Craft').click()
+    >>> print_attrs()
+    Title: Craft
+
+There is a single sample document.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Documents').click()
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/documents/sample
+
+It has three layers in its heirarchy.
+
+    >>> manager.query.link('Sample Doc').click()
+    >>> manager.query.link('Layer Hierarchy').click()
+    >>> print manager.query_all.xpath('//table//a').get_attribute('href')
+    http://localhost/layers/craft
+    http://localhost/layers/branch
+    http://localhost/layers/topic
+
+There are six nodes.
+
+    >>> manager.open('http://localhost/nodes')
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/nodes/carpentry
+    http://localhost/nodes/conventional
+    http://localhost/nodes/creative
+    http://localhost/nodes/hammering
+    http://localhost/nodes/pounding
+    http://localhost/nodes/whacking
+
+    >>> manager.query.link('Carpentry').click()
+    >>> print_attrs()
+    Title: Carpentry
+    Description: Carpentry has a description.
+    Label: carp
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Conventional').click()
+    >>> print_attrs()
+    Title: Conventional
+    Description:
+    Label:
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Creative').click()
+    >>> print_attrs()
+    Title: Creative
+    Description:
+    Label: creat
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Hammering').click()
+    >>> print_attrs()
+    Title: Hammering
+    Description:
+    Label:
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Pounding').click()
+    >>> print_attrs()
+    Title: Pounding
+    Description:
+    Label:
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Whacking').click()
+    >>> print_attrs()
+    Title: Whacking
+    Description:
+    Label:
 

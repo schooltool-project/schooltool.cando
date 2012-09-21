@@ -28,9 +28,8 @@ from schooltool.export import export
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.skin import flourish
 
-from schooltool.cando.interfaces import ILayerContainer, INodeContainer
-from schooltool.cando.interfaces import ISkillSetContainer
-from schooltool.cando.interfaces import ICourseSkills
+from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
+    ISkillSetContainer, ICourseSkills, IDocumentContainer, IDocument)
 
 
 class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
@@ -88,23 +87,43 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
             parents = ', '.join([p.__name__ for p in layer.parents])
             self.write(ws, index + 1, 2, parents)
 
+    def export_documents(self, wb):
+        ws = wb.add_sheet('Documents')
+
+        headers = ['ID', 'Title', 'Description', 'Hierarchy']
+        for index, header in enumerate(headers):
+            self.write_header(ws, 0, index, header)
+
+        documents = IDocumentContainer(self.context)
+        for index, document in enumerate(documents.values()):
+            self.write(ws, index + 1, 0, document.__name__)
+            self.write(ws, index + 1, 1, document.title)
+            self.write(ws, index + 1, 2, document.description)
+            hierarchy = ', '.join([l.__name__ for l in document.hierarchy])
+            self.write(ws, index + 1, 3, hierarchy)
+
     def export_nodes(self, wb):
         ws = wb.add_sheet('Nodes')
 
-        headers = ['ID', 'Description', 'Parents', 'Layers', 'SkillSets']
+        headers = ['ID', 'Title', 'Description', 'Documents', 'Parents', 'Layers', 'SkillSets']
         for index, header in enumerate(headers):
             self.write_header(ws, 0, index, header)
 
         nodes = INodeContainer(self.context)
         for index, node in enumerate(nodes.values()):
             self.write(ws, index + 1, 0, node.__name__)
-            self.write(ws, index + 1, 1, node.description)
-            parents = ', '.join([p.__name__ for p in node.parents])
-            self.write(ws, index + 1, 2, parents)
+            self.write(ws, index + 1, 1, node.title)
+            self.write(ws, index + 1, 2, node.description)
+            documents = ', '.join([p.__name__ for p in node.parents
+                                   if IDocument(p, None) is not None])
+            self.write(ws, index + 1, 3, documents)
+            parents = ', '.join([p.__name__ for p in node.parents
+                                 if IDocument(p, None) is None])
+            self.write(ws, index + 1, 4, parents)
             layers = ', '.join([p.__name__ for p in node.layers])
-            self.write(ws, index + 1, 3, layers)
+            self.write(ws, index + 1, 5, layers)
             skillsets = ', '.join([p.__name__ for p in node.skillsets])
-            self.write(ws, index + 1, 4, skillsets)
+            self.write(ws, index + 1, 6, skillsets)
 
     def export_course_skills(self, wb):
         ws = wb.add_sheet('CourseSkills')
@@ -136,6 +155,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
         self.export_skillsets(wb)
         self.export_skills(wb)
         self.export_layers(wb)
+        self.export_documents(wb)
         self.export_nodes(wb)
         self.export_course_skills(wb)
 

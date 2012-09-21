@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:i18n="http://namespaces.zope.org/i18n"
-           i18n_domain="schooltool.cando">
+           xmlns:meta="http://namespaces.zope.org/meta">
 
   <include package="schooltool.common" />
 
-  <i18n:registerTranslations directory="locales" />
+  <!-- Extract flourish strings -->
+  <include package="schooltool.skin.flourish" file="meta.zcml" />
+  <meta:provides feature="schooltool.skin.flourish" />
+
   <include package="schooltool.cando" />
 
 </configure>

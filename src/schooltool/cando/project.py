@@ -17,21 +17,30 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 """Gradebook projects."""
+from decimal import Decimal
+
 from persistent.dict import PersistentDict
 
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements, implementer
 from zope.event import notify
-from zope.component import adapter
+from zope.component import (adapter, adapts, getUtility, getAdapters,
+    queryAdapter)
 from zope.container.contained import containedEvent
 from zope.container.interfaces import INameChooser
+from zope.i18n import translate
+from zope.intid.interfaces import IIntIds
 from zope.keyreference.interfaces import IKeyReference
 from zope.proxy import sameProxiedObjects
 
 from schooltool.requirement.requirement import Requirement
+from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.gradebook.activity import Worksheets, Worksheet
-from schooltool.cando.interfaces import IProjects, IProject
+from schooltool.gradebook.interfaces import IExternalActivity
+from schooltool.gradebook.interfaces import IExternalActivities
+from schooltool.cando.interfaces import IProjects, IProject, IProjectsGradebook
 from schooltool.cando.interfaces import ICourseProjects, ICourseProject
+from schooltool.cando.interfaces import ISectionSkills, ISkillsGradebook
 from schooltool.cando.skill import SkillSet
 from schooltool.course.interfaces import ISection, ICourse
 
@@ -167,3 +176,192 @@ def getSectionFromProjects(projects):
     annotations = projects.__parent__
     section = annotations.__parent__
     return section
+
+
+class CanDoExternalActivityProject(object):
+
+    implements(IExternalActivity)
+    adapts(IProject)
+
+    def __init__(self, context):
+        self.project = context
+        self.gradebook = IProjectsGradebook(context)
+        self.__parent__ = context
+        self.source = ""
+        self.external_activity_id = ""
+
+    @property
+    def description(self):
+        return self.project.description
+
+    def __eq__(self, other):
+        return IExternalActivity.providedBy(other) and \
+               self.source == other.source and \
+               self.external_activity_id == other.external_activity_id
+
+
+class CanDoExternalActivityProjectTotal(CanDoExternalActivityProject):
+
+    @property
+    def title(self):
+        msg = _('${project} total points',
+            mapping={'project': self.project.title})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPoints = 0
+        for competency in self.project.values():
+            numComps += 1
+            ev = self.gradebook.getScore(student, competency)
+            if ev is None or ev.value == UNSCORED:
+                continue
+            value = ev.scoreSystem.getNumericalValue(ev.value)
+            totalPoints += value
+        if numComps:
+            return Decimal(totalPoints) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivityProjectPercentPassed(CanDoExternalActivityProject):
+
+    @property
+    def title(self):
+        msg = _('${project} percent passed',
+            mapping={'project': self.project.title})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPassed = 0
+        for competency in self.project.values():
+            numComps += 1
+            ev = self.gradebook.getScore(student, competency)
+            if ev is None or ev.value == UNSCORED:
+                continue
+            if ev.scoreSystem.isPassingScore(ev.value):
+                totalPassed += 1
+        if numComps:
+            return Decimal(totalPassed) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivitySection(object):
+
+    implements(IExternalActivity)
+    adapts(ISection)
+
+    def __init__(self, context):
+        self.section = context
+        self.courses = ', '.join([c.title for c in self.section.courses])
+        self.__parent__ = context
+        self.source = ""
+        self.external_activity_id = ""
+
+    @property
+    def description(self):
+        return self.section.description
+
+    def __eq__(self, other):
+        return IExternalActivity.providedBy(other) and \
+               self.source == other.source and \
+               self.external_activity_id == other.external_activity_id
+
+
+class CanDoExternalActivitySectionTotal(CanDoExternalActivitySection):
+
+    @property
+    def title(self):
+        msg = _('${course} total points',
+            mapping={'course': self.courses})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPoints = 0
+        for skillset in ISectionSkills(self.section).values():
+            gradebook = ISkillsGradebook(skillset)
+            for competency in skillset.values():
+                numComps += 1
+                ev = gradebook.getScore(student, competency)
+                if ev is None or ev.value == UNSCORED:
+                    continue
+                value = ev.scoreSystem.getNumericalValue(ev.value)
+                totalPoints += value
+        if numComps:
+            return Decimal(totalPoints) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivitySectionPercentPassed(CanDoExternalActivitySection):
+
+    @property
+    def title(self):
+        msg = _('${course} percent passed',
+            mapping={'course': self.courses})
+        return translate(msg)
+
+    def getGrade(self, student):
+        numComps = totalPassed = 0
+        for skillset in ISectionSkills(self.section).values():
+            gradebook = ISkillsGradebook(skillset)
+            for competency in skillset.values():
+                numComps += 1
+                ev = gradebook.getScore(student, competency)
+                if ev is None or ev.value == UNSCORED:
+                    continue
+                if ev.scoreSystem.isPassingScore(ev.value):
+                    totalPassed += 1
+        if numComps:
+            return Decimal(totalPassed) / Decimal(numComps)
+        return None
+
+
+class CanDoExternalActivities(object):
+
+    implements(IExternalActivities)
+
+    title = u"CanDo"
+    source = "cando.external_activities"
+
+    def __init__(self, context):
+        self.context = context
+        self.__parent__ = context
+
+    def getExternalActivities(self):
+        result = []
+        intids = getUtility(IIntIds)
+        section_projects = IProjects(self.context)
+        for project in section_projects.values():
+            for name, activity in getAdapters([project], IExternalActivity):
+                external_activity = activity
+                external_activity.source = self.source
+                external_id = '%s_%s' % (name, intids.getId(project))
+                external_activity.external_activity_id = external_id
+                result.append(external_activity)
+        for name, activity in getAdapters([self.context], IExternalActivity):
+            external_activity = activity
+            external_activity.source = self.source
+            external_id = '%s_%s' % (name, intids.getId(self.context))
+            external_activity.external_activity_id = external_id
+            result.append(external_activity)
+        return result
+
+    def getExternalActivity(self, external_activity_id):
+        parts = external_activity_id.split('_')
+        if len(parts) != 2:
+            return None
+        name, context_intid = parts
+        try:
+            context_intid = int(context_intid)
+        except (ValueError,):
+            return None
+
+        context = getUtility(IIntIds).queryObject(context_intid)
+        if context is None:
+            return None
+        activity = queryAdapter(context, IExternalActivity, name=name)
+        if activity is None:
+            return None
+
+        activity.source = self.source
+        activity.external_activity_id = external_activity_id
+        return activity
+

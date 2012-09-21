@@ -18,12 +18,15 @@
 #
 from decimal import Decimal
 
+from zope.catalog.text import TextIndex
+from zope.index.text.interfaces import ISearchableText
 from zope.interface import implements, implementer
-from zope.component import adapter
+from zope.component import adapter, adapts
 from zope.container.btree import BTreeContainer
 from zope.container.interfaces import INameChooser
 
 from schooltool.app.app import InitBase, StartUpBase
+from schooltool.app.catalog import AttributeCatalog
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.cando import interfaces
 from schooltool.relationship import URIObject
@@ -111,12 +114,12 @@ class SkillSetContainer(BTreeContainer):
 class SkillSet(Requirement):
     implements(interfaces.ISkillSet)
 
-    external_id = u''
+    description = u''
     label = u''
 
-    def __init__(self, title, external_id=u'', label=u''):
+    def __init__(self, title, description=u'', label=u''):
         Requirement.__init__(self, title)
-        self.external_id = external_id
+        self.description = description
         self.label = label
 
     def add(self, skill):
@@ -151,8 +154,8 @@ SkillScoreSystem = GlobalDiscreteValuesScoreSystem(
     [('4', u'Expert', Decimal(4), Decimal(90)),
      ('3', u'Competent', Decimal(3), Decimal(70)),
      ('2', u'Practicing', Decimal(2), Decimal(50)),
-     ('1', u'Exposed', Decimal(1), Decimal(30)),
-     ('0', u'No evidence', Decimal(0), Decimal(0))],
+     ('1', u'Beginning', Decimal(1), Decimal(30)),
+     ('0', u'Uninformed', Decimal(0), Decimal(0))],
      '4', '3')
 
 
@@ -177,7 +180,38 @@ def querySkillScoreSystem():
     return ss
 
 
-# XXX: skill catalog
-#
+class SkillCatalog(AttributeCatalog):
+
+    version = '1 - attributes and text indexes'
+    interface = interfaces.ISkill
+    attributes = ('title', 'external_id', 'label', 'description',
+                  'required', 'retired')
+
+    def setIndexes(self, catalog):
+        super(SkillCatalog, self).setIndexes(catalog)
+        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+
+
+getSkillCatalog = SkillCatalog.get
+
+
+class SearchableTextSkill(object):
+
+    adapts(interfaces.ISkill)
+    implements(ISearchableText)
+
+    def __init__(self, context):
+        self.context = context
+
+    def getSearchableText(self):
+        result = [
+            self.context.title,
+            self.context.external_id or '',
+            self.context.label or '',
+            self.context.description or '',
+            ]
+        return ' '.join(result)
+
+
 # + directly equivalent
 # + all equivalent

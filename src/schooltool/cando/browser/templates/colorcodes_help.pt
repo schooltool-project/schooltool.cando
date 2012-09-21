@@ -1,0 +1,17 @@
+<div i18n:domain="schooltool.cando">
+  <table class="color-codes">
+    <thead>
+      <tr>
+        <th i18n:translate="">Skill Color Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td i18n:translate="" class="required">Required</td>
+      </tr>
+      <tr class="optional">
+        <td i18n:translate="" class="optional">Optional</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

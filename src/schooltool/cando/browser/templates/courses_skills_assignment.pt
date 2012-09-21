@@ -1,0 +1,127 @@
+<div i18n:domain="schooltool.cando"
+     tal:define="matched view/matched;
+                 layers view/layers/values;
+                 course_attrs view/course_attrs;
+                 node_attrs view/node_attrs;
+                 not_matched view/not_matched;">
+  <form tal:attributes="action request/URL" method="post">
+    <fieldset>
+      <legend>
+        <span i18n:translate="">Course Matching</span>
+      </legend>
+      <div class="row">
+        <div class="label">
+          <label for="course_attr">
+            <span i18n:translate="">Course attribute</span>
+            <span class="required">*</span>
+          </label>
+        </div>
+        <div class="widget">
+          <select name="course_attr" class="select-widget required choice-field">
+            <option i18n:translate="" value="">
+              Select an attribute
+            </option>
+            <tal:block repeat="course_attr course_attrs">
+              <option tal:define="value course_attr/value"
+                      tal:attributes="value value;
+                                      selected python: request.get('course_attr') == value and 'selected' or None"
+                      tal:content="course_attr/title" />
+            </tal:block>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label">
+          <label for="layer">
+            <span i18n:translate="">Node layer</span>
+            <span class="required">*</span>
+          </label>
+        </div>
+        <div class="widget">
+          <select name="layer" class="select-widget required choice-field">
+            <option i18n:translate="" value="">
+              Select a layer
+            </option>
+            <tal:block repeat="layer layers">
+              <option tal:define="value layer/__name__"
+                      tal:attributes="value value;
+                                      selected python: request.get('layer') == value and 'selected' or None"
+                      tal:content="layer/title" />
+            </tal:block>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="label">
+          <label for="node_attr">
+            <span i18n:translate="">Node attribute</span>
+            <span class="required">*</span>
+          </label>
+        </div>
+        <div class="widget">
+          <select name="node_attr" class="select-widget required choice-field">
+            <option i18n:translate="" value="">
+              Select an attribute
+            </option>
+            <tal:block repeat="node_attr node_attrs">
+              <option tal:define="value node_attr/value"
+                      tal:attributes="value value;
+                                      selected python: request.get('node_attr') == value and 'selected' or None"
+                      tal:content="node_attr/title" />
+            </tal:block>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+    <div class="buttons">
+      <input class="button-ok" type="submit" value="Search"
+             i18n:attributes="value" name="SEARCH_BUTTON" />
+      <input class="button-cancel" type="submit" value="Cancel"
+             i18n:attributes="value" name="CANCEL" />
+    </div>
+    <tal:block condition="not_matched">
+      <h3 i18n:translate="">Courses not matched</h3>
+      <table class="data">
+        <thead>
+          <tr>
+            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Course</th>
+            <th i18n:translate="">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="info not_matched">
+            <td tal:content="info/course_attr" />
+            <td tal:content="info/course/title" />
+            <td tal:content="info/reason" />
+        </tr>
+        </tbody>
+      </table>
+    </tal:block>
+    <tal:block condition="matched">
+      <h3 i18n:translate="">Courses matched</h3>
+      <table class="data">
+        <thead>
+          <tr>
+            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Course</th>
+            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Node</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="info matched">
+            <td tal:content="info/course_attr" />
+            <td tal:content="info/course/title" />
+            <td tal:content="info/node_attr" />
+            <td tal:content="info/node/title" />
+          </tr>
+        </tbody>
+      </table>
+      <div class="buttons" tal:condition="matched">
+        <input class="button-ok" type="submit" value="Assign"
+               i18n:attributes="value" name="ASSIGN_BUTTON" />
+      </div>
+    </tal:block>
+  </form>
+</div>

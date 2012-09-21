@@ -72,32 +72,65 @@
     </metal:block>
   </metal:block>
 
+  <div id="parents" tal:define="parents view/parents">
   <h3>
     <tal:block i18n:translate="">Parent layers</tal:block>
-    <a class="modify" href="" title="Edit parents"
-       tal:attributes="href view/edit_parents_url"
+  </h3>
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="parent parents">
+          <td>
+            <a tal:attributes="href string:${parent/@@absolute_url}"
+               tal:content="parent/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p tal:condition="not: parents" i18:translate="">
+      There are none.
+    </p>
+  </div>
+
+  <div id="children" tal:define="children view/children">
+    <h3 i18n:translate="">
+      Child layers
+    <a class="modify" href="" title="Edit children"
+       tal:attributes="href view/edit_children_url"
        i18n:attributes="title"
        tal:condition="context/schooltool:can_edit">
       <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
            alt="Edit"
            i18n:attributes="alt" />
     </a>
-  </h3>
-  <tal:block define="parents view/parents">
-    <p tal:repeat="parent parents"
-       tal:content="structure parent/schooltool:content/title" />
-    <p tal:condition="not: parents" i18:translate="">
+    </h3>
+    <table class="data" i18n:domain="schooltool">
+      <thead>
+        <tr>
+          <th>
+            <span i18n:translate="">Title</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="child children">
+          <td>
+            <a tal:attributes="href string:${child/@@absolute_url}"
+               tal:content="child/title" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p tal:condition="not: children" i18:translate="">
       There are none.
     </p>
-  </tal:block>
-
-  <tal:block define="children view/children" condition="children">
-    <h3 i18n:translate="">
-      Child layers
-    </h3>
-    <p tal:repeat="child children"
-       tal:content="structure child/schooltool:content/title" />
-  </tal:block>
+  </div>
 
   <h3>
     <a tal:attributes="href view/done_link"

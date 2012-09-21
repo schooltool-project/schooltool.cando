@@ -1,0 +1,437 @@
+Tests for the layer and node views
+==================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll define helper functions for printing the form fields of layers and nodes.
+
+    >>> def print_layer_attrs():
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.xpath('td[1]').text
+    ...         value = row.query.xpath('td[2]').text
+    ...         print '%s: %s' % (label, value)
+
+    >>> def print_node_attrs():
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.css('label span').text
+    ...         value = row.query.css('.widget :first-child').text
+    ...         print '%s: %s' % (label, value)
+
+We'll add some skillsets that we'll link to later.
+
+    >>> manager.ui.skillset.add('Basic Algebra')
+    >>> manager.ui.skillset.add('Continuing Algebra')
+    >>> manager.ui.skillset.add('Basic Calculus')
+    >>> manager.ui.skillset.add('Continuing Calculus')
+
+
+Layer maintenance
+-----------------
+
+Let's start by going to the layers container view.  We see there are no layers
+yet.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Layers').click()
+    >>> print manager.query_all.css('h3')[1].text
+    There are no layers.
+
+We'll add some layers.
+
+    >>> manager.ui.layer.add('Cluster')
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.layer.add('DutyArea')
+    >>> manager.ui.layer.add('Competency')
+
+Now we see them appear in the container.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Layers').click()
+    >>> print manager.query_all.css('.data a').text
+    Cluster
+    Competency
+    Course
+    DutyArea
+
+Let's inspect the Cluster layer.  We see the title field and the fact that there
+are no parents or children.
+
+    >>> manager.query.link('Cluster').click()
+    >>> print_layer_attrs()
+    Title: Cluster
+    >>> print manager.query_all.css('#parents p').text
+    There are none.
+    >>> print manager.query_all.css('#children p').text
+    There are none.
+
+We'll click the link to add a child.  We see that there are no children again,
+and we see the table of links for available children.  Note the fact that
+Cluster is not in that list as it makes no sense to be one's own child.
+
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    Course
+    DutyArea
+
+After clicking the button for adding the Course layer as a child we see that
+it appears in the current children table and is no longer in the available
+children table.
+
+    >>> manager.query.xpath('//button[@name="add_item.course"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Course
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    DutyArea
+
+We can remove it and put it back.
+
+    >>> manager.query.xpath('//button[@name="remove_item.course"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    Course
+    DutyArea
+
+    >>> manager.query.xpath('//button[@name="add_item.course"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Course
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    DutyArea
+
+We'll leave the edit children view and return the the layer view.  Now we see
+that there are still no parents, but the Course child has been added.
+
+    >>> manager.query.link('Done').click()
+    >>> print manager.query_all.css('#parents p').text
+    There are none.
+    >>> print manager.query_all.css('#children .data a').text
+    Course
+
+Let's visit the Course layer.  We see the Cluster parent and the fact that
+there are no children.
+
+    >>> manager.query.link('Course').click()
+    >>> print manager.query_all.css('#parents .data a').text
+    Cluster
+    >>> print manager.query_all.css('#children p').text
+    There are none.
+
+Clicking the button to edit the children we again see the empty current children
+table and the available children table.  This time we see that not only is the
+Course not able to be its own child, but Cluster, its parent, is also excluded
+from the table.  Adding Cluster to the children of Course would cause a
+CyclicRelationship exception, so it is not available.
+
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    DutyArea
+
+We'll add DutyArea as the child layer of Course.
+
+    >>> manager.query.xpath('//button[@name="add_item.dutyarea"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    DutyArea
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+
+We'll leave the edit children view and return the the layer view.  We still
+see Cluster parent, and now, the DutyArea child.
+
+    >>> manager.query.link('Done').click()
+    >>> print manager.query_all.css('#parents .data a').text
+    Cluster
+    >>> print manager.query_all.css('#children .data a').text
+    DutyArea
+
+Finally, we'll add the Competency layer as the child of DutyArea.  It's the only
+child available.
+
+    >>> manager.query.link('DutyArea').click()
+    >>> print manager.query_all.css('#parents .data a').text
+    Course
+    >>> print manager.query_all.css('#children p').text
+    There are none.
+
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+
+    >>> manager.query.xpath('//button[@name="add_item.competency"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Competency
+    >>> print manager.query.css('#available_table-ajax-available_table- h3').text
+    There are none.
+
+
+Node maintenance
+----------------
+
+Now we'll go to the nodes container view.  We need to click the 'Search' tab
+to do that.  We see there are no nodes yet.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.css('h3')[1].text
+    There are no nodes.
+
+We'll add some nodes for the Math cluster.
+
+    >>> manager.ui.node.add('Math')
+    >>> manager.ui.node.add('Algebra I')
+    >>> manager.ui.node.add('Calculus')
+
+Let's look at the Math node.  It has no parents, children, layers or skillsets.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Math').click()
+    >>> print_node_attrs()
+    Title: Math
+    Description: 
+    Label:
+    >>> print manager.query_all.css('#parents p')
+    <p i18:translate="">
+      There are none.
+    </p>
+    >>> print manager.query_all.css('#children p')
+    <p i18:translate="">
+      There are none.
+    </p>
+    >>> print manager.query_all.css('#layers p')
+    <p i18:translate="">
+      There are none.
+    </p>
+    >>> print manager.query_all.css('#skillsets p')
+    <p i18:translate="">
+      There are none.
+    </p>
+
+We'll add the Cluster layer.  In the edit layers view, we see the current
+layers and the available layers.
+
+    >>> href = manager.query.xpath('//a[@title="Edit layers"]').get_attribute('href')
+    >>> manager.open(href)
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Cluster
+    Competency
+    Course
+    DutyArea
+
+Adding the Cluster layer, we see how the tables change.
+
+    >>> manager.query.xpath('//button[@name="add_item.cluster"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Cluster
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    Course
+    DutyArea
+
+We can remove it and put it back.
+
+    >>> manager.query.xpath('//button[@name="remove_item.cluster"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Cluster
+    Competency
+    Course
+    DutyArea
+
+    >>> manager.query.xpath('//button[@name="add_item.cluster"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Cluster
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Competency
+    Course
+    DutyArea
+
+Let's add the two child nodes to Math.  When we enter the view for editing the
+child nodes, we see there are no children yet and the nodes that are available
+to be added as children.  Note that the Math node cannot be its own child.
+
+    >>> manager.query.link('Done').click()
+    >>> href = manager.query.xpath('//a[@title="Edit child nodes"]').get_attribute('href')
+    >>> manager.open(href)
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Algebra I
+    Calculus
+
+After clicking the button for adding the Algebra I node as a child we see that
+it appears in the child table and is no longer in the available children table.
+
+    >>> manager.query.xpath('//button[@name="add_item.algebra-i"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Algebra I
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Calculus
+
+We can remove it and put it back again.
+
+    >>> manager.query.xpath('//button[@name="remove_item.algebra-i"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Algebra I
+    Calculus
+
+    >>> manager.query.xpath('//button[@name="add_item.algebra-i"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Algebra I
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Calculus
+
+We'll add Calculus as a child as well.  Then we see both children and the fact
+that no more children are available.
+
+    >>> manager.query.xpath('//button[@name="add_item.calculus"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Algebra I
+    Calculus
+    >>> print manager.query.css('#available_table-ajax-available_table- h3').text
+    There are none.
+
+Before returning to the Math node, let's drill down to one of the child nodes,
+Algebra I.  We see that it has Math as a parent node.
+
+    >>> manager.query.link('Algebra I').click()
+    >>> print manager.query_all.css('#parents a').get_attribute('href')
+    http://localhost/nodes/math
+
+We'll go edit its children and see that there are even more limits to
+adding children.  Not only is Algebra I itself is off the list, but also its
+parent, Math.  Adding Math as a child of Algebra I would cause a
+CyclicRelationship exception, so it isn't available.
+
+    >>> href = manager.query.xpath('//a[@title="Edit child nodes"]').get_attribute('href')
+    >>> manager.open(href)
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Calculus
+
+We'll add it, even though it doesn't make any sense, and then remove it.
+
+    >>> manager.query.xpath('//button[@name="add_item.calculus"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Calculus
+    >>> print manager.query.css('#available_table-ajax-available_table- h3').text
+    There are none.
+
+    >>> manager.query.xpath('//button[@name="remove_item.calculus"]').click()
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Calculus
+
+Let's return the the Math node view.  We see that there are still no parents
+or skillsets, but we see the children and the layer.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Math').click()
+    >>> print manager.query_all.css('#parents p')
+    <p i18:translate="">
+      There are none.
+    </p>
+    >>> print manager.query_all.css('#skillsets p')
+    <p i18:translate="">
+      There are none.
+    </p>
+    >>> print manager.query_all.css('#children .data a').get_attribute('href')
+    http://localhost/nodes/algebra-i
+    http://localhost/nodes/calculus
+    >>> print manager.query_all.css('#layers .data a').get_attribute('href')
+    http://localhost/layers/cluster
+
+Finally, we'll go to the Algebra I node where it makes sense to add skillsets.
+We see that there are not any there yet.
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Algebra I').click()
+    >>> print manager.query_all.css('#skillsets p')
+    <p i18:translate="">
+      There are none.
+    </p>
+
+We'll go edit its skillsets.  We see no current skillsets and the list of
+available ones.
+
+    >>> href = manager.query.xpath('//a[@title="Edit skillsets"]').get_attribute('href')
+    >>> manager.open(href)
+    >>> print manager.query.css('#current_table-ajax-current_table- h3').text
+    There are none.
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Basic Algebra
+    Basic Calculus
+    Continuing Algebra
+    Continuing Calculus
+
+Let's add the two algebra skillsets and see how the tables have changed.
+
+    >>> manager.query.xpath('//button[@name="add_item.Basic Al1"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.Continui2"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Basic Algebra
+    Continuing Algebra
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Basic Calculus
+    Continuing Calculus
+
+We'll add the other two skillsets and then remove them to see how the empty
+available skillsets table looks.
+
+    >>> manager.query.xpath('//button[@name="add_item.Basic Ca3"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.Continui4"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Basic Algebra
+    Basic Calculus
+    Continuing Algebra
+    Continuing Calculus
+    >>> print manager.query.css('#available_table-ajax-available_table- h3').text
+    There are none.
+
+    >>> manager.query.xpath('//button[@name="remove_item.Basic Ca3"]').click()
+    >>> manager.query.xpath('//button[@name="remove_item.Continui4"]').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    Basic Algebra
+    Continuing Algebra
+    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    Basic Calculus
+    Continuing Calculus
+
+Finally, we return to the Algebra I node view and show how the skillsets are
+there now.
+
+    >>> manager.query.link('Done').click()
+    >>> print manager.query_all.css('#skillsets .data a').get_attribute('href')
+    http://localhost/skills/Basic%20Al1
+    http://localhost/skills/Continui2
+
