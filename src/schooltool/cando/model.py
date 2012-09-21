@@ -477,25 +477,20 @@ def removingLayerDoesntViolateModel(event):
 
 def getOrderedByHierarchy(layers):
     layers = list(layers)
+    orphans = []
     result = []
-    for index, layer in enumerate(layers):
-        for parent in layer.parents:
-            if parent in layers:
-                break
+    for layer in layers:
+        if not list(layer.parents) and not list(layer.children):
+            orphans.append(layer)
         else:
-            result.append(layer)
-            layers.pop(index)
-            break
-    if not result:
-        return result
-    while layers:
-        for index, layer in enumerate(layers):
-            if result[-1] in layer.parents:
+            for index, item in enumerate(result):
+                parents = _expand_nodes(nodes=[item], functor=lambda n: n.parents)
+                if layer in parents:
+                    result.insert(index, layer)
+                    break
+            else:
                 result.append(layer)
-                layers.pop(index)
-                break
-        else:
-            break
+    result.extend(sorted(orphans, key=lambda o: o.title))
     return result
 
 

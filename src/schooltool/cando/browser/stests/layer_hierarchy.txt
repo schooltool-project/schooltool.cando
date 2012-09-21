@@ -1,0 +1,106 @@
+Tests for the layer hierachy
+============================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll add some layers.
+
+    >>> manager.ui.layer.add('Layer1')
+    >>> manager.ui.layer.add('Layer2')
+    >>> manager.ui.layer.add('Layer3')
+    >>> manager.ui.layer.add('Layer4')
+    >>> manager.ui.layer.add('Layer5')
+    >>> manager.ui.layer.add('Layer6')
+
+First time we go to the search, we see the layers sorted by title.  Since we
+haven't linked any layers, parent to child, they are all orphans which will
+always come at the end, sorted by title.
+
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.xpath('//input[@type="checkbox"]').get_attribute('value')
+    layer1
+    layer2
+    layer3
+    layer4
+    layer5
+    layer6
+
+First, we'll make layer4 the parent of layer2.
+
+    >>> manager.query.link('Layers').click()
+    >>> manager.query.link('Layer4').click()
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.layer2"]').click()
+
+Now, when we go to the search, we see layer4, then its child, layer2, then the
+orphans, sorted by title.
+
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.xpath('//input[@type="checkbox"]').get_attribute('value')
+    layer4
+    layer2
+    layer1
+    layer3
+    layer5
+    layer6
+
+Next, we'll make layer2 the parent of layer5.
+
+    >>> manager.query.link('Layers').click()
+    >>> manager.query.link('Layer2').click()
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.layer5"]').click()
+
+Now, when we go to the search, we see layer4, then its child, layer2, then
+layer2's child, layer5, then the orphans, sorted by title.
+
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.xpath('//input[@type="checkbox"]').get_attribute('value')
+    layer4
+    layer2
+    layer5
+    layer1
+    layer3
+    layer6
+
+Now we'll get cute and add a parent to a layer that already has one.  Layer6
+will also have layer5 as a child.
+
+    >>> manager.query.link('Layers').click()
+    >>> manager.query.link('Layer6').click()
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.layer5"]').click()
+
+Now layer6 comes before layer5 in the sort.
+
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.xpath('//input[@type="checkbox"]').get_attribute('value')
+    layer4
+    layer2
+    layer6
+    layer5
+    layer1
+    layer3
+
+Finally, we make Layer3 the parent of layer6.
+
+    >>> manager.query.link('Layers').click()
+    >>> manager.query.link('Layer3').click()
+    >>> manager.query.xpath('//a[@title="Edit children"]').click()
+    >>> manager.query.xpath('//button[@name="add_item.layer6"]').click()
+
+We see the resulting sort of layers, no layer coming after its child, and we see
+our last remaining orphan at the end.
+
+    >>> manager.query.link('Search').click()
+    >>> print manager.query_all.xpath('//input[@type="checkbox"]').get_attribute('value')
+    layer4
+    layer2
+    layer3
+    layer6
+    layer5
+    layer1
+
