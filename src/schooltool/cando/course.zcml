@@ -37,7 +37,6 @@
   <adapter factory=".course.getSectionSkills"
            trusted="True" />
 
-
   <class class=".course.CourseSkill">
     <require
         permission="schooltool.edit"
@@ -45,10 +44,6 @@
     <require
         permission="schooltool.view"
         interface=".interfaces.ICourseSkill" />
-    <!-- XXX: hack to bypass GradebookOverview checks -->
-    <require
-        permission="schooltool.view"
-        attributes="scoresystem" />
   </class>
 
 </configure>

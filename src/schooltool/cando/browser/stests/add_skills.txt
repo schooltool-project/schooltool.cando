@@ -1,0 +1,110 @@
+Tests for the skill scoresytems
+===============================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll define a helper function for printing the form fields of any object.
+
+    >>> def print_attrs():
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.xpath('td[1]').text
+    ...         value = row.query.xpath('td[2]').text
+    ...         print '%s: %s' % (label, value)
+
+Let's start by adding a skillset.
+
+    >>> manager.open('http://localhost/skills')
+    >>> manager.query.link('Skill Set').click()
+    >>> manager.query.name('form.widgets.title').type('Carpentry')
+    >>> manager.query.name('form.widgets.label').type('Carp label')
+    >>> manager.query.button('Submit').click()
+
+We see that it was added.
+
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/Carpentr1
+    >>> manager.query.link('Carpentry').click()
+    >>> print_attrs()
+    Full description:
+    Label: Carp label
+
+Now, we'll add a skill to it.  We see that the scoresystem field is set to the
+default, one the user hasn't even chosen yet.
+
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    letter-grade-
+
+We'll change it to 'Extended Letter Grade' before submitting it.
+
+    >>> manager.query.name('form.widgets.title').type('Pounding')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Extended Letter Grade')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+
+We see that it was added.
+
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/Carpentr1/Pounding1
+    >>> manager.query.link('Pounding').click()
+    >>> print_attrs()
+    Scoresystem: Extended Letter Grade
+    Full description:
+    Short label: 01
+    Required: Yes
+    External ID:
+
+We'll add another skill.  We see that the scoresystem field is not set to the
+default this time.  The choice we made last time we added a skill is remembered
+so we don't have to choose it every time.
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    extended-letter-grade-
+
+Now we'll fill in the form and add our second skill.  We see that it is there
+after we submit it.
+
+    >>> manager.query.name('form.widgets.title').type('Hammering')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Pass/Fail')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+    >>> manager.query.link('Hammering').click()
+    >>> print_attrs()
+    Scoresystem: Pass/Fail
+    Full description:
+    Short label: 02
+    Required: Yes
+    External ID:
+
+We'll add one last skill.  Again, it remembered the last scoresystem we chose.
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    passfail-
+    >>> manager.query.name('form.widgets.title').type('Whacking')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Letter Grade')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+    >>> manager.query.link('Whacking').click()
+    >>> print_attrs()
+    Scoresystem: Letter Grade
+    Full description:
+    Short label: 03
+    Required: Yes
+    External ID:
+
+We see our skillset now has three skills.
+
+    >>> manager.query.link('Done').click()
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/Carpentr1/Hammerin2
+    http://localhost/skills/Carpentr1/Pounding1
+    http://localhost/skills/Carpentr1/Whacking3
+

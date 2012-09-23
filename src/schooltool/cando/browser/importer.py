@@ -29,6 +29,8 @@ from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
     ERROR_INVALID_SCHOOL_YEAR, ERROR_MISSING_YEAR_ID, ERROR_INVALID_COURSE_ID)
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
+from schooltool.requirement.interfaces import IScoreSystemContainer
+
 from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
     ISkillSetContainer, ICourseSkills, IDocumentContainer)
@@ -46,6 +48,7 @@ ERROR_MISSING_SKILLSET_ID = _("is missing a skillset id")
 ERROR_INVALID_EQUIVALENT = _("has an invalid equivalent skill id")
 ERROR_NODE_LABEL_TOO_BIG = _("node label has more than seven characters")
 ERROR_INVALID_NODE = _("has an invalid node id")
+ERROR_INVALID_SCORESYSTEM = _("has an invalid scoresystem")
 
 
 def breakupIds(ids):
@@ -88,6 +91,7 @@ class SkillsImporter(ImporterBase):
     def process(self):
         sh = self.sheet
         skillsets = ISkillSetContainer(self.context)
+        scoresystems = IScoreSystemContainer(self.context)
         skillset = None
 
         for row in range(1, sh.nrows):
@@ -99,11 +103,12 @@ class SkillsImporter(ImporterBase):
             skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
             title = self.getRequiredTextFromCell(sh, row, 2)
-            description = self.getTextFromCell(sh, row, 4)
-            external_id = self.getTextFromCell(sh, row, 5)
-            label = self.getTextFromCell(sh, row, 6)
-            required = self.getBoolFromCell(sh, row, 7)
-            retired = self.getBoolFromCell(sh, row, 8)
+            scoresystem = self.getRequiredTextFromCell(sh, row, 3)
+            description = self.getTextFromCell(sh, row, 5)
+            external_id = self.getTextFromCell(sh, row, 6)
+            label = self.getTextFromCell(sh, row, 7)
+            required = self.getBoolFromCell(sh, row, 8)
+            retired = self.getBoolFromCell(sh, row, 9)
             if num_errors < len(self.errors):
                 continue
 
@@ -116,11 +121,16 @@ class SkillsImporter(ImporterBase):
                 self.error(row, 0, ERROR_MISSING_SKILLSET_ID)
                 continue
 
+            if scoresystem not in scoresystems:
+                self.error(row, 3, ERROR_INVALID_SCORESYSTEM)
+                continue
+
             if name in skillset:
                 skill = skillset[name]
                 skill.title = title
             else:
                 skill = skillset[name] = Skill(title)
+            skill.scoresystem = removeSecurityProxy(scoresystems[scoresystem])
             skill.description = description
             skill.external_id = external_id
             skill.label = label
@@ -136,7 +146,7 @@ class SkillsImporter(ImporterBase):
 
             skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
-            equivalent = self.getTextFromCell(sh, row, 3)
+            equivalent = self.getTextFromCell(sh, row, 4)
 
             if skillset_id:
                 if skillset_id not in skillsets:
@@ -152,7 +162,7 @@ class SkillsImporter(ImporterBase):
                 equiv.remove(eq)
             for part in breakupIds(equivalent):
                 if part not in skillset:
-                    self.error(row, 3, ERROR_INVALID_EQUIVALENT)
+                    self.error(row, 4, ERROR_INVALID_EQUIVALENT)
                     break
                 equiv.add(removeSecurityProxy(skillset[part]))
 
