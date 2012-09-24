@@ -103,12 +103,12 @@ class SkillsImporter(ImporterBase):
             skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
             title = self.getRequiredTextFromCell(sh, row, 2)
-            scoresystem = self.getRequiredTextFromCell(sh, row, 3)
-            description = self.getTextFromCell(sh, row, 5)
-            external_id = self.getTextFromCell(sh, row, 6)
-            label = self.getTextFromCell(sh, row, 7)
-            required = self.getBoolFromCell(sh, row, 8)
-            retired = self.getBoolFromCell(sh, row, 9)
+            description = self.getTextFromCell(sh, row, 4)
+            external_id = self.getTextFromCell(sh, row, 5)
+            label = self.getTextFromCell(sh, row, 6)
+            required = self.getBoolFromCell(sh, row, 7)
+            retired = self.getBoolFromCell(sh, row, 8)
+            scoresystem = self.getTextFromCell(sh, row, 9)
             if num_errors < len(self.errors):
                 continue
 
@@ -121,7 +121,7 @@ class SkillsImporter(ImporterBase):
                 self.error(row, 0, ERROR_MISSING_SKILLSET_ID)
                 continue
 
-            if scoresystem not in scoresystems:
+            if scoresystem and scoresystem not in scoresystems:
                 self.error(row, 3, ERROR_INVALID_SCORESYSTEM)
                 continue
 
@@ -130,7 +130,9 @@ class SkillsImporter(ImporterBase):
                 skill.title = title
             else:
                 skill = skillset[name] = Skill(title)
-            skill.scoresystem = removeSecurityProxy(scoresystems[scoresystem])
+            if scoresystem:
+                skill.scoresystem = removeSecurityProxy(
+                    scoresystems[scoresystem])
             skill.description = description
             skill.external_id = external_id
             skill.label = label
@@ -146,7 +148,7 @@ class SkillsImporter(ImporterBase):
 
             skillset_id = self.getTextFromCell(sh, row, 0)
             name = self.getRequiredTextFromCell(sh, row, 1)
-            equivalent = self.getTextFromCell(sh, row, 4)
+            equivalent = self.getTextFromCell(sh, row, 3)
 
             if skillset_id:
                 if skillset_id not in skillsets:
@@ -162,7 +164,7 @@ class SkillsImporter(ImporterBase):
                 equiv.remove(eq)
             for part in breakupIds(equivalent):
                 if part not in skillset:
-                    self.error(row, 4, ERROR_INVALID_EQUIVALENT)
+                    self.error(row, 3, ERROR_INVALID_EQUIVALENT)
                     break
                 equiv.add(removeSecurityProxy(skillset[part]))
 
