@@ -17,6 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 from decimal import Decimal
+import rwproperty
 
 from zope.annotation.interfaces import IAnnotations
 from zope.catalog.text import TextIndex
@@ -70,7 +71,7 @@ class Skill(Requirement):
     description = u''
     required = False
     retired = False
-    scoresystem = None
+    custom_scoresystem = None
 
     equivalent = RelationshipProperty(URIEquivalent, URISkill, URISkill)
 
@@ -80,7 +81,17 @@ class Skill(Requirement):
         self.required = required
         self.external_id = external_id
         self.label = label
-        self.scoresystem = scoresystem
+        self.custom_scoresystem = scoresystem
+
+    @rwproperty.getproperty
+    def scoresystem(self):
+        if self.custom_scoresystem is not None:
+            return self.custom_scoresystem
+        return querySkillScoreSystem()
+
+    @rwproperty.setproperty
+    def scoresystem(self, new_scoresystem):
+        self.custom_scoresystem = new_scoresystem
 
     def findAllEquivalent(self):
         """Find indirectly equivalent skills."""
@@ -180,17 +191,18 @@ def querySkillScoreSystem():
     app = ISchoolToolApplication(None)
     ssc = IScoreSystemContainer(app)
     ss = ssc.get(SkillScoreSystem.__name__, None)
-    return ss
+    if ss is not None:
+        return ss
+    ssc = IScoreSystemContainer(ISchoolToolApplication(None))
+    if len(ssc) > 0:
+        return ssc.values()[0]
+    return None
 
 
 def getDefaultSkillScoreSystem(person):
     default_ss = querySkillScoreSystem()
     if default_ss is None:
-        ssc = IScoreSystemContainer(ISchoolToolApplication(None))
-        if len(ssc) > 0:
-            default_ss = ssc.values()[0]
-        else:
-            return None
+        return None
 
     default = default_ss.__name__.encode('punycode')
     if person is None:
