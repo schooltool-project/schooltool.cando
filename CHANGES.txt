@@ -2,10 +2,21 @@
 CHANGES
 =======
 
-0.1.1 (unreleased)
+0.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- edit document hierarchy view now sorts by hierarchy order
+- nodes table filter now orders layer checkboxes by hierarchy order
+- I can't set a node label through the web (https://launchpad.net/bugs/1049442)
+
+
+0.2 (2012-09-13)
+----------------
+
+- Added CourseNodes sheet to skills importer
+- Made Batch Assign Skills view to associate several nodes at once
+- Skills Document table views need cyclic relationship check (https://launchpad.net/bugs/1030865)
+- Added Skill Sets tab back to skills tertiary
 
 
 0.1 (2012-08-08)

@@ -72,10 +72,10 @@
     </metal:block>
   </metal:block>
 
+  <div id="parents" tal:define="parents view/parents">
   <h3>
     <tal:block i18n:translate="">Parent layers</tal:block>
   </h3>
-  <tal:block define="parents view/parents">
     <table class="data" i18n:domain="schooltool">
       <thead>
         <tr>
@@ -96,9 +96,9 @@
     <p tal:condition="not: parents" i18:translate="">
       There are none.
     </p>
-  </tal:block>
+  </div>
 
-  <tal:block define="children view/children">
+  <div id="children" tal:define="children view/children">
     <h3 i18n:translate="">
       Child layers
     <a class="modify" href="" title="Edit children"
@@ -130,7 +130,7 @@
     <p tal:condition="not: children" i18:translate="">
       There are none.
     </p>
-  </tal:block>
+  </div>
 
   <h3>
     <a tal:attributes="href view/done_link"

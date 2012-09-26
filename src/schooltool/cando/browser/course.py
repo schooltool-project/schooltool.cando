@@ -776,20 +776,19 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                         })
                 continue
             if course_attr_value:
-                assignment = {}
+                assigned = False
                 for node in nodes:
                     node_attr_value = getattr(node, node_attr, '')
                     if node_attr_value:
                         if node_attr_value == course_attr_value:
-                            assignment = {
+                            assignments.append({
                                     'course': course,
                                     'course_attr': course_attr_value,
                                     'node': node,
                                     'node_attr': node_attr_value,
-                                    }
-                if assignment:
-                    assignments.append(assignment)
-                else:
+                                    })
+                            assigned = True
+                if not assigned:
                     not_assigned.append({
                             'course': course,
                             'course_attr': course_attr_value,

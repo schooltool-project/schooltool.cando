@@ -593,7 +593,6 @@
   <flourish:page
       name="index.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"
-      title="Score"
       class="schooltool.cando.browser.gradebook.CanDoGradeStudent"
       permission="schooltool.edit"
       />
@@ -617,7 +616,6 @@
   <flourish:page
       name="student_competency_report.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"
-      title="Student Competency Record"
       class="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
       permission="schooltool.edit"
       />
@@ -637,6 +635,23 @@
       manager=".gradebook.GradebookHelpLinks"
       permission="schooltool.view"
       view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ICourseSkillSet"
+      view="schooltool.cando.browser.gradebook.CanDoGradeStudent"
+      title=""
+      />
+
+  <flourish:page_breadcrumbs
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.StudentGradebookBreadcrumbs"
+      />
+
+  <flourish:activeViewlet
+      name="cando"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view="schooltool.cando.browser.gradebook.CanDoGradeStudent"
       />
 
 </configure>

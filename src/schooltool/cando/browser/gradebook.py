@@ -217,6 +217,17 @@ class SkillsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
         return '../gradebook-skills'
 
 
+class StudentGradebookBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
+
+    @property
+    def title(self):
+        return self.context.student.title
+
+    @property
+    def url(self):
+        return ''
+
+
 class CanDoProjectsAddLinks(flourish.page.RefineLinksViewlet):
 
     pass
@@ -437,6 +448,7 @@ class CanDoGradebookTertiaryNavigationManager(
         result = []
         gradebook = proxy.removeSecurityProxy(self.context)
         current = gradebook.context.__name__
+        collator = ICollator(self.request.locale)
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
@@ -449,8 +461,9 @@ class CanDoGradebookTertiaryNavigationManager(
             result.append({
                 'class': classes and ' '.join(classes) or None,
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
+                'title': title,
                 })
-        return result
+        return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
 
 
 class CanDoNavigationViewletBase(object):
@@ -768,6 +781,7 @@ class MySkillsGradesTertiaryNavigationManager(
         result = []
         gradebook = proxy.removeSecurityProxy(self.context)
         current = gradebook.context.__name__
+        collator = ICollator(self.request.locale)
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
@@ -780,8 +794,9 @@ class MySkillsGradesTertiaryNavigationManager(
             result.append({
                 'class': classes and ' '.join(classes) or None,
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
+                'title': title,
                 })
-        return result
+        return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
 
 
 class CanDoGradeStudent(flourish.page.Page):
@@ -792,8 +807,13 @@ class CanDoGradeStudent(flourish.page.Page):
     container_class = 'container widecontainer'
 
     @property
-    def subtitle(self):
+    def title(self):
         return self.context.student.title
+
+    @property
+    def subtitle(self):
+        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
+        return gradebook.section.title
 
     @property
     def timezone(self):

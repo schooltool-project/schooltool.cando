@@ -29,6 +29,7 @@ from zope.interface import implements, directlyProvides
 from zope.intid.interfaces import IIntIds
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.traversing.browser.interfaces import IAbsoluteURL
 
@@ -51,6 +52,7 @@ from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
+from schooltool.cando.model import _expand_nodes, getOrderedByHierarchy
 from schooltool.common.inlinept import InlineViewPageTemplate, InheritTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
@@ -237,7 +239,12 @@ class LayerContainerSourceMixin(object):
 class AvailableChildLayersTable(LayerContainerSourceMixin,
                                 RelationshipAddTableMixin,
                                 LayersTable):
-    pass
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
 
 
 class RemoveChildLayersTable(LayerContainerSourceMixin,
@@ -418,7 +425,7 @@ class NodesTable(table.ajax.Table):
         label = zc.table.column.GetterColumn(
             name='label',
             title=_(u"Label"),
-            getter=lambda i, f: i.label
+            getter=lambda i, f: i.label or ''
             )
         title = zc.table.column.GetterColumn(
             name='title',
@@ -465,11 +472,8 @@ class NodesTableFilter(table.ajax.TableFilter):
 
     def layers(self):
         result = []
-        container = self.layerContainer()
-        collator = ICollator(self.request.locale)
-        items = sorted(container.items(),
-                       key=lambda (lid, layer): layer.title,
-                       cmp=collator.cmp)
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        items = [(l.__name__, l) for l in layers]
         for id, layer in items:
             checked = not self.manager.fromPublication
             if self.search_layer_ids in self.request:
@@ -481,7 +485,6 @@ class NodesTableFilter(table.ajax.TableFilter):
                            'title': layer.title,
                            'checked': checked})
         return result
-
 
     def filter(self, items):
         if self.ignoreRequest:
@@ -499,7 +502,7 @@ class NodesTableFilter(table.ajax.TableFilter):
                 items = [item for item in items
                          if set(list(item.layers)).intersection(layers)]
         else:
-            return []
+            return items
         if self.search_title_id in self.request:
             searchstr = self.request[self.search_title_id].lower()
             items = [item for item in items
@@ -525,7 +528,12 @@ class NodeContainerSourceMixin(object):
 class AvailableChildNodesTable(NodeContainerSourceMixin,
                                RelationshipAddTableMixin,
                                NodesTable):
-    pass
+
+    def items(self):
+        context = removeSecurityProxy(self.context)
+        parents = _expand_nodes(nodes=[context], functor=lambda n: n.parents)
+        return [l for l in self.source.values()
+                if l.__name__ != context.__name__ and l not in parents]
 
 
 class RemoveChildNodesTable(NodeContainerSourceMixin,
