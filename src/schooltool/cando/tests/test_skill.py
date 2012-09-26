@@ -24,13 +24,14 @@ import doctest
 
 from zope.interface.verify import verifyObject
 from zope.app.testing import setup
-from zope.component import provideHandler
+from zope.component import provideHandler, provideAdapter
 from zope.interface import implements
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.relationship.tests import setUpRelationships
 #from schooltool.testing.catalog import setUpIntIds, tearDownIntIds
 #from schooltool.testing.catalog import setUpCatalogs, tearDownCatalogs
+from schooltool.requirement.interfaces import IScoreSystemContainer
 from schooltool.cando.interfaces import (
     ISkill,
     )
@@ -119,10 +120,16 @@ def doctest_Skill_Equivalency():
     """
 
 
+class AppStub(dict):
+    implements(ISchoolToolApplication)
+
+
 def setUp(test):
     setup.placefulSetUp()
     setup.setUpTraversal()
     setup.setUpAnnotations()
+    provideAdapter(lambda n: AppStub(), (None,), ISchoolToolApplication)
+    provideAdapter(lambda a: {}, (ISchoolToolApplication,), IScoreSystemContainer)
     # XXX: no int id or catalog usage yet
     #setUpIntIds(test)
     #setUpCatalogs(test)

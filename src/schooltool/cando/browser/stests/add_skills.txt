@@ -1,5 +1,5 @@
-Tests for the global skills xls import
-======================================
+Tests for the skill scoresytems
+===============================
 
 Log in as manager:
 
