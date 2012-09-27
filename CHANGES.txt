@@ -2,11 +2,12 @@
 CHANGES
 =======
 
-0.2.1 (unreleased)
+0.2.1 (2012-09-27)
 ------------------
 
-- edit document hierarchy view now sorts by hierarchy order
-- nodes table filter now orders layer checkboxes by hierarchy order
+- Sorted worksheets in third-nav of the gradebook views
+- Edit document hierarchy view now sorts by hierarchy order
+- Nodes table filter now orders layer checkboxes by hierarchy order
 - I can't set a node label through the web (https://launchpad.net/bugs/1049442)
 
 
