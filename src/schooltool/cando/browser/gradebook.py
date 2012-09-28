@@ -452,8 +452,8 @@ class CanDoGradebookTertiaryNavigationManager(
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
-               worksheet.skillset.label:
-                title = '%s: %s' % (worksheet.skillset.label, title)
+               worksheet.label:
+                title = '%s: %s' % (worksheet.label, title)
             url = '%s/gradebook' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -555,8 +555,8 @@ class GradebookSkillsView(flourish.form.Dialog):
 
     def getWorksheetLabel(self, worksheet):
         if ISkillsGradebook.providedBy(self.context):
-            skillset = proxy.removeSecurityProxy(worksheet).skillset
-            return skillset.label
+            unproxied = proxy.removeSecurityProxy(worksheet)
+            return unproxied.label
 
 
 class ScoreSystemHelpView(flourish.form.Dialog):
@@ -785,8 +785,8 @@ class MySkillsGradesTertiaryNavigationManager(
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
-               worksheet.skillset.label:
-                title = '%s: %s' % (worksheet.skillset.label, title)
+               worksheet.label:
+                title = '%s: %s' % (worksheet.label, title)
             url = '%s/mygrades' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -893,8 +893,8 @@ class CanDoGradeStudent(flourish.page.Page):
 
     def getWorksheetLabel(self, worksheet):
         if ISkillsGradebook.providedBy(self.context):
-            skillset = proxy.removeSecurityProxy(worksheet).skillset
-            return skillset.label
+            unproxied = proxy.removeSecurityProxy(worksheet)
+            return unproxied.label
 
     def getId(self, skill):
         skillset = skill.__parent__

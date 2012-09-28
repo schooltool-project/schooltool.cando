@@ -45,7 +45,7 @@ from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import ISkillsGradebook
-from schooltool.cando.interfaces import ICourseSkillSet
+from schooltool.cando.interfaces import ISectionSkillSet
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.interfaces import ICanDoStudentGradebook
 from schooltool.cando.project import Project
@@ -121,7 +121,7 @@ class ProjectsGradebook(Gradebook):
 class SkillsGradebook(Gradebook):
 
     implements(ISkillsGradebook)
-    adapts(ICourseSkillSet)
+    adapts(ISectionSkillSet)
 
     # XXX: Merge with Gradebook and GradebookBase
     def __init__(self, context):
@@ -154,7 +154,7 @@ class SkillsGradebook(Gradebook):
 class MySkillsGrades(SkillsGradebook):
 
     implements(IMySkillsGrades)
-    adapts(ICourseSkillSet)
+    adapts(ISectionSkillSet)
 
     def __init__(self, context):
         super(MySkillsGrades, self).__init__(context)
