@@ -19,6 +19,7 @@
 """
 Course skill views.
 """
+import zope.lifecycleevent
 from zope.cachedescriptors.property import Lazy
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.i18n import translate
@@ -653,6 +654,7 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         required_prefix = 'required.'
         visible_prefix = 'visible.'
         for course_skillset_id in self.context:
+            skillset_modified = False
             course_skillset = self.context[course_skillset_id]
             skillset = course_skillset.skillset
             title = skillset.title
@@ -672,9 +674,11 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     required = required_name in self.request
                     if course_skill.required != required:
                         course_skill.required = required
+                        skillset_modified = True
                     hidden = not visible_name in self.request
                     if course_skill.retired != hidden:
                         course_skill.retired = hidden
+                        skillset_modified = True
                 skills.append({
                         'id': skill_id,
                         'title': skill_title,
@@ -687,6 +691,8 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     'title': title,
                     'skills': skills,
                     })
+            if skillset_modified:
+                zope.lifecycleevent.modified(course_skillset)
         if self.submitted:
             self.request.response.redirect(self.nextURL())
             return

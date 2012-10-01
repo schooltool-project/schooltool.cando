@@ -14,5 +14,11 @@
 
   <i18n:registerTranslations directory="locales" />
 
+  <utility
+      name="schooltool.cando"
+      provides="zope.app.generations.interfaces.ISchemaManager"
+      component=".generations.schemaManager"
+      />
+
 </configure>
 

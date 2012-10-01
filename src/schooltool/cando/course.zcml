@@ -14,7 +14,7 @@
     <allow interface="zope.interface.common.mapping.IReadMapping" />
     <require
         permission="schooltool.view"
-        attributes="keys __iter__ values items __len__ deployed title skillset"
+        attributes="all_keys keys __iter__ values items __len__ deployed title skillset"
         />
     <require
         permission="schooltool.edit"
@@ -25,18 +25,8 @@
   <adapter factory=".course.getCourseSkills"
            trusted="True" />
 
-  <class class=".course.SectionSkills">
-    <require
-        permission="schooltool.edit"
-        set_schema=".interfaces.ISectionSkills" />
-    <require
-        permission="schooltool.view"
-        interface=".interfaces.ISectionSkills" />
-  </class>
-
-  <adapter factory=".course.getSectionSkills"
+  <adapter factory=".course.getCourseSkillsCourse"
            trusted="True" />
-
 
   <class class=".course.CourseSkill">
     <require
@@ -50,5 +40,53 @@
         permission="schooltool.view"
         attributes="scoresystem" />
   </class>
+
+  <adapter factory=".course.CourseWorksheetAdded"
+           name="deploy_section_worksheet" />
+
+  <adapter factory=".course.CourseWorksheetRemoved"
+           name="remove_section_worksheet" />
+
+  <adapter factory=".course.CourseSkillSetModified"
+           name="update_section_skills" />
+
+  <class class=".course.SectionSkills">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ISectionSkills" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ISectionSkills" />
+  </class>
+
+  <class class=".course.SectionSkill">
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.ISectionSkill" />
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.ISectionSkill" />
+    <!-- XXX: hack to bypass GradebookOverview checks -->
+    <require
+        permission="schooltool.view"
+        attributes="scoresystem" />
+  </class>
+
+  <class class=".course.SectionSkillSet">
+    <allow interface="zope.interface.common.mapping.IReadMapping" />
+    <require
+        permission="schooltool.view"
+        attributes="all_keys keys __iter__ values items __len__ deployed title"
+        />
+    <require
+        permission="schooltool.edit"
+        interface="zope.interface.common.mapping.IWriteMapping"
+        set_schema="schooltool.gradebook.interfaces.IWorksheet"
+        />
+  </class>
+
+  <adapter factory=".course.getSectionSkills"
+           trusted="True" />
+
 
 </configure>

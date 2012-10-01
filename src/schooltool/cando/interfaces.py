@@ -191,6 +191,17 @@ class ISectionSkills(IWorksheets):
     pass
 
 
+class ISectionSkillSet(ISkillSet, IWorksheet):
+
+    skillset = Attribute(u"The global skillset.")
+
+
+class ISectionSkill(ISkill):
+    section_intid = zope.schema.Int(title=_("Section intID"), required=False)
+    section_skillset_name = zope.schema.Int(title=_("Skillset ID"), required=False)
+    section_skill_name = zope.schema.Int(title=_("Skill ID"), required=False)
+
+
 class ICanDoGradebook(IGradebook):
     pass
 

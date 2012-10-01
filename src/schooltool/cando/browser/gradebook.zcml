@@ -387,13 +387,13 @@
       />
 
   <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view=".gradebook.SkillsGradebookOverview"
       title=""
       />
 
   <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view="schooltool.gradebook.browser.gradebook.FlourishGradeActivity"
       title=""
       />
@@ -406,7 +406,7 @@
   <flourish:activeViewlet
       name="cando"
       manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view=".gradebook.SkillsGradebookOverview"
       />
 
@@ -571,13 +571,13 @@
       />
 
   <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view=".gradebook.MySkillsGradesView"
       title=""
       />
 
   <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view="schooltool.gradebook.browser.gradebook.FlourishStudentGradeHistory"
       title=""
       />
@@ -638,7 +638,7 @@
       />
 
   <flourish:breadcrumb
-      for="schooltool.cando.interfaces.ICourseSkillSet"
+      for="schooltool.cando.interfaces.ISectionSkillSet"
       view="schooltool.cando.browser.gradebook.CanDoGradeStudent"
       title=""
       />

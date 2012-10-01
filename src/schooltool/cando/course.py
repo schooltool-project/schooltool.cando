@@ -22,21 +22,28 @@ from persistent.dict import PersistentDict
 from zope.annotation.interfaces import IAnnotations
 from zope.event import notify
 from zope.interface import implements, implementer
+from zope.intid.interfaces import IIntIds
 from zope.cachedescriptors.property import Lazy
-from zope.component import adapter
+from zope.component import adapts, adapter, getUtility
 from zope.container.contained import containedEvent
-from zope.location.location import LocationProxy
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
 from zope.proxy.decorator import SpecificationDecoratorBase
 from zope.proxy import getProxiedObject
+from zope.security.proxy import removeSecurityProxy
 
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.app.relationships import CourseSections
 from schooltool.cando.interfaces import ICourseSkills, ICourseSkillSet
 from schooltool.cando.interfaces import ICourseSkill
-from schooltool.cando.interfaces import ISectionSkills
+from schooltool.cando.interfaces import ISectionSkills, ISectionSkillSet
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.skill import Skill
+from schooltool.course.interfaces import ISection, ICourse
 from schooltool.gradebook.activity import Worksheets, GenericWorksheet
 from schooltool.requirement.requirement import Requirement
-from schooltool.course.interfaces import ISection, ICourse
+from schooltool.schoolyear.subscriber import ObjectEventAdapterSubscriber
 
 from schooltool.cando import CanDoMessage as _
 
@@ -51,6 +58,49 @@ class CourseSkills(Requirement):
 
 class ReadOnlyContainer(KeyError):
     pass
+
+
+class SectionSkillSet(GenericWorksheet):
+    implements(ISectionSkillSet)
+
+    skillset = None
+
+    def __init__(self, skillset):
+        self.skillset = skillset
+        super(SectionSkillSet, self).__init__(skillset.title)
+
+    @property
+    def deployed(self):
+        return True
+
+    @property
+    def title(self):
+        return self.skillset.title
+
+    @title.setter
+    def title(self, value):
+        pass
+
+    @property
+    def description(self):
+        course_skillset = self.skillset
+        return course_skillset.skillset.description
+
+    @property
+    def label(self):
+        course_skillset = self.skillset
+        return course_skillset.skillset.label
+
+    def all_keys(self):
+        return super(SectionSkillSet, self).keys()
+
+    def keys(self):
+        return [key for key in self.all_keys()
+                if not self[key].retired]
+
+    def __contains__(self, key):
+        return key in self.all_keys()
+
 
 
 class CourseSkillSet(GenericWorksheet):
@@ -71,6 +121,9 @@ class CourseSkillSet(GenericWorksheet):
         app = ISchoolToolApplication(None)
         ssc = ISkillSetContainer(app)
         return ssc.get(self.__name__)
+
+    def all_keys(self):
+        return list(self.skillset.keys())
 
     def keys(self):
         skillset = self.skillset
@@ -137,51 +190,31 @@ def getCourseSkills(course):
 getCourseSkills.factory = CourseSkills
 
 
+@adapter(ICourseSkills)
+@implementer(ICourse)
+def getCourseSkillsCourse(skills):
+    return skills.__parent__
+
+
 class SectionSkills(Worksheets):
     implements(ISectionSkills)
 
     annotations_current_worksheet_key = 'schooltool.cando.project.sectionskills'
 
-    def getDefaultWorksheet(self):
-        sheets = self.all_worksheets
-        if sheets:
-            return sheets[0]
-        return None
+
+class SectionSkill(Skill):
+
+    section_intid = None
+    source_skillset_name = None
+    source_skill_name = None
 
     @property
-    def courses(self):
-        section = self.__parent__
-        return sorted(section.courses, key=lambda c: c.__name__)
-
-    @property
-    def worksheets(self):
-        return self.all_worksheets
-
-    @property
-    def all_worksheets(self):
-        sheets = []
-        courses = self.courses
-        for course in courses:
-            skills = []
-            for skill in ICourseSkills(course).values():
-                worksheet = LocationProxy(
-                    skill,
-                    container=self,
-                    name=skill.__name__)
-                skills.append(worksheet)
-            sheets.extend(skills)
-        return sheets
-
-    def values(self):
-        return self.worksheets
-
-    def __getitem__(self, key):
-        items = [(value.__name__, value)
-                 for value in self.values()]
-        return dict(items)[key]
-
-    def keys(self):
-        return [value.__name__ for value in self.values()]
+    def section(self):
+        if self.section_id is None:
+            return None
+        int_ids = getUtility(IIntIds)
+        section = int_ids.queryObject(self.section_intid)
+        return section
 
 
 @adapter(ISection)
@@ -199,6 +232,75 @@ def getSectionSkills(section):
         return skills
 
 getSectionSkills.factory = SectionSkills
+
+
+class CourseWorksheetEventSubscriber(ObjectEventAdapterSubscriber):
+
+    @property
+    def sections(self):
+        skillset = self.object
+        course = removeSecurityProxy(ICourse(skillset.__parent__))
+        sections = list(CourseSections.query(course=course))
+        return sections
+
+
+class CourseWorksheetRemoved(CourseWorksheetEventSubscriber):
+    adapts(IObjectRemovedEvent, ICourseSkillSet)
+
+    def __call__(self):
+        skillset = self.object
+        for section in self.sections:
+            worksheets = ISectionSkills(section)
+            if self.object.__name__ in worksheets:
+                del worksheets[skillset.__name__]
+
+
+class CourseSkillSetModified(CourseWorksheetEventSubscriber):
+
+    adapts(IObjectModifiedEvent, ICourseSkillSet)
+
+    def __call__(self):
+        int_ids = getUtility(IIntIds)
+        skillset = self.object
+        for section in self.sections:
+            worksheets = ISectionSkills(section)
+            section_intid = int_ids.getId(section)
+            if self.object.__name__ not in worksheets:
+                worksheet = worksheets[skillset.__name__] = SectionSkillSet(skillset)
+            else:
+                worksheet = worksheets[self.object.__name__]
+
+            delete_skills = list(worksheet.all_keys())
+            for skill_name in skillset.all_keys():
+                skill = skillset[skill_name]
+                if skill_name not in worksheet.all_keys():
+                    target_skill = worksheet[skill_name] = SectionSkill(skill.title)
+                    target_skill.equivalent.add(removeSecurityProxy(skill))
+                else:
+                    if skill_name in delete_skills:
+                        delete_skills.remove(skill_name)
+                    target_skill = worksheet[skill_name]
+
+                for attr in ('external_id', 'label', 'description',
+                             'required', 'retired'):
+                    val = getattr(skill, attr, None)
+                    if getattr(target_skill, attr, None) != val:
+                        setattr(target_skill, attr, val)
+                if target_skill.section_intid != section_intid:
+                    target_skill.section_intid = section_intid
+                if target_skill.source_skill_name != skill.__name__:
+                    target_skill.source_skill_name = skill.__name__
+                if target_skill.source_skillset_name != skill.__parent__.__name__:
+                    target_skill.source_skillset_name = skill.__parent__.__name__
+
+            available = worksheet.all_keys()
+            for skill_name in delete_skills:
+                if skill_name in available:
+                    del worksheet[skill_name]
+
+
+class CourseWorksheetAdded(CourseSkillSetModified):
+    adapts(IObjectAddedEvent, ICourseSkillSet)
 
 
 # XXX: maybe course-skillset relationship views
