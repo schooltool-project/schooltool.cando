@@ -1,0 +1,266 @@
+Projects gradebook tests
+========================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+Set up a section:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', '2012', 'Programming')
+    >>> manager.ui.section.instructors.add('2012', '2012', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', '2012', 'Programming (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+Set up skills:
+
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.node.add('Programming', label='PRO')
+
+    >>> manager.ui.skillset.add('Python Environment', '01')
+    >>> manager.ui.skillset.add('Data Types, Statements, and Expressions', '02')
+    >>> manager.ui.skillset.add('Errors', '03')
+    >>> manager.ui.skillset.add('Strings', '04')
+
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Use the Python shell for interactive evaluation',
+    ...     '01')
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Make Python scripts with a text editor',
+    ...     '02',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Recognize int, float, str, list, tuple, and dict.',
+    ...     '03')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use type(...) to determine the data type of a given value.',
+    ...     '04')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use assignment statements to assign names (variables) to values.',
+    ...     '05')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use the input function to read user input.',
+    ...     '06')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Define keyword and recognize keywords in Python.',
+    ...     '07')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Create legal variable names and recognize illegal ones.',
+    ...     '08',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Recognize and differentiate among errors.',
+    ...     '09')
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Read and interpret stack traceback messages.',
+    ...     '10')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Create string literals with single, double, and triple quotes.',
+    ...     '11')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the len() function to return the length of a string.',
+    ...     '12')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the find(...) method to locate substrings in a string.',
+    ...     '13',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the split() method to break a string into a list.',
+    ...     '14',
+    ...     required=False)
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Programming').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit skillsets"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Done').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> layers_accordion_header = accordion_headers[3]
+    >>> layers_accordion_header.click()
+    >>> layers_accordion_content = accordion_contents[3]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit layers"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+
+Assign the skills to the course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Batch Assign Skills').click()
+    >>> manager.query.name('course_attr').ui.set_value('Course ID')
+    >>> manager.query.name('layer').ui.set_value('Course')
+    >>> manager.query.name('node_attr').ui.set_value('Label')
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.name('ASSIGN_BUTTON').click()
+
+Log in as instructor:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+Set up three skills in the default project:
+
+    >>> teacher.query.css('ul.gradebook-modes #projects').click()
+
+    >>> teacher.query.link('Skill').click()
+    >>> teacher.query.link('Programming').click()
+    >>> teacher.query.link('Python Environment').click()
+    >>> teacher.query.name('Python E1.Use the 1').click()
+    >>> teacher.query.name('SUBMIT').click()
+
+    >>> teacher.query.link('Skill').click()
+    >>> teacher.query.link('Programming').click()
+    >>> teacher.query.link('Errors').click()
+    >>> teacher.query.name('Errors-3.Recogniz1').click()
+    >>> teacher.query.name('SUBMIT').click()
+
+    >>> teacher.query.link('Skill').click()
+    >>> teacher.query.link('Programming').click()
+    >>> teacher.query.link('Strings').click()
+    >>> teacher.query.name('Strings-4.Use the 4').click()
+    >>> teacher.query.name('SUBMIT').click()
+
+Grade the project skills:
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '4')
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '09', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '09', '1')
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '14', '4')
+
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+
+Print the project's gradebook:
+
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------+
+    | *Project1* |
+    +------------+
+    +------------------+----+----+----+
+    | Name             | 01 | 09 | 14 |
+    |                  | 4  | 4  | 4  |
+    +------------------+----+----+----+
+    | Cerna, Camila    | 3  | 2  | 4  |
+    | Tejada, Mario    | 3  |    |    |
+    | Vividor, Liliana | 4  | 1  |    |
+    +------------------+----+----+----+
+
+Print every worksheet in the skills gradebook to see how the grades
+are updated from the project:
+
+    >>> teacher.query.css('ul.gradebook-modes #skills').click()
+
+    >>> sel = 'a[title="01: Python Environment"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+---------------------------------------------+------------+-------------+
+    | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors | 04: Strings |
+    +--------------------------+---------------------------------------------+------------+-------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  |    |
+    | Tejada, Mario    | 3  |    |
+    | Vividor, Liliana | 4  |    |
+    +------------------+----+----+
+
+    >>> sel = 'a[title="02: Data Types, Statements, and Expressions"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+-----------------------------------------------+------------+-------------+
+    | 01: Python Environment | *02: Data Types, Statements, and Expressions* | 03: Errors | 04: Strings |
+    +------------------------+-----------------------------------------------+------------+-------------+
+    +------------------+----+----+----+----+----+----+
+    | Name             | 03 | 04 | 05 | 06 | 07 | 08 |
+    |                  | 4  | 4  | 4  | 4  | 4  | 4  |
+    +------------------+----+----+----+----+----+----+
+    | Cerna, Camila    |    |    |    |    |    |    |
+    | Tejada, Mario    |    |    |    |    |    |    |
+    | Vividor, Liliana |    |    |    |    |    |    |
+    +------------------+----+----+----+----+----+----+
+
+    >>> sel = 'a[title="03: Errors"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+---------------------------------------------+--------------+-------------+
+    | 01: Python Environment | 02: Data Types, Statements, and Expressions | *03: Errors* | 04: Strings |
+    +------------------------+---------------------------------------------+--------------+-------------+
+    +------------------+----+----+
+    | Name             | 09 | 10 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  |    |
+    | Tejada, Mario    |    |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+
+
+    >>> sel = 'a[title="04: Strings"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+---------------------------------------------+------------+---------------+
+    | 01: Python Environment | 02: Data Types, Statements, and Expressions | 03: Errors | *04: Strings* |
+    +------------------------+---------------------------------------------+------------+---------------+
+    +------------------+----+----+----+----+
+    | Name             | 11 | 12 | 13 | 14 |
+    |                  | 4  | 4  | 4  | 4  |
+    +------------------+----+----+----+----+
+    | Cerna, Camila    |    |    |    | 4  |
+    | Tejada, Mario    |    |    |    |    |
+    | Vividor, Liliana |    |    |    |    |
+    +------------------+----+----+----+----+

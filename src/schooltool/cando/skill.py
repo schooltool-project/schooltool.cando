@@ -93,7 +93,8 @@ class Skill(Requirement):
     def copy(self):
         return Skill(title=self.title,
                      required=self.required,
-                     external_id=self.external_id)
+                     external_id=self.external_id,
+                     label=self.label)
 
     def __repr__(self):
         desc = unicode(self.title)

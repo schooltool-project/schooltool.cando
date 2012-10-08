@@ -71,7 +71,7 @@
       />
 
   <flourish:viewlet
-      name="../addSkillBrowse.html"
+      name="../addSkillSearch.html"
       class=".gradebook.SkillAddLink"
       manager=".gradebook.CanDoProjectsAddLinks"
       permission="schooltool.edit"
@@ -136,34 +136,58 @@
   </configure>
 
   <flourish:page
-      name="addSkillBrowse.html"
+      name="addSkillSearch.html"
       for="schooltool.cando.interfaces.IProject"
-      subtitle="XXX Browse and Select Skill XXX"
-      class="schooltool.cando.browser.gradebook.ProjectSkillBrowseView"
+      subtitle="Search Skills"
+      class="schooltool.cando.browser.gradebook.ProjectSkillSearchView"
       permission="schooltool.edit"
       />
 
   <flourish:viewlet
       name="table"
-      class=".gradebook.SkillsTable"
-      for="schooltool.cando.interfaces.IProject"
+      class=".gradebook.SkillSearchTable"
+      for="schooltool.cando.interfaces.INodeContainer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".gradebook.ProjectSkillSearchView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="children_table"
+      class=".gradebook.NodeChildrenTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".gradebook.ProjectSkillSearchView"
       permission="schooltool.view"
       />
 
   <flourish:viewlet
       name="filter"
-      before="batch table"
-      class=".gradebook.SkillsTableFilter"
-      render="template"
-      manager=".gradebook.SkillsTable"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".gradebook.NodeChildrenTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="skillsets_table"
+      class=".gradebook.NodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".gradebook.ProjectSkillSearchView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".gradebook.NodeSkillSetsTable"
       permission="schooltool.view"
       />
 
   <flourish:page
       name="addSkillCreate.html"
       for="schooltool.cando.interfaces.IProject"
-      subtitle="XXX Create New Skill XXX"
+      subtitle="New Skill"
       class="schooltool.cando.browser.gradebook.ProjectSkillAddView"
       content_template="templates/form.pt"
       permission="schooltool.edit"
@@ -173,7 +197,7 @@
       name="tertiary_navigation"
       provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
       class=".gradebook.SkillAddTertiaryNavigationManager"
-      view=".gradebook.ProjectSkillBrowseView"
+      view=".gradebook.ProjectSkillSearchView"
       permission="zope.Public"
       />
 

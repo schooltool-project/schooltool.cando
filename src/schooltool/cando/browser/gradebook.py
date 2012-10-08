@@ -23,6 +23,7 @@ CanDo view components.
 import pytz
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
 from zope.component import getUtility
 from zope.container.interfaces import INameChooser
@@ -73,6 +74,7 @@ from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.gradebook import ensureAtLeastOneProject
+from schooltool.cando.browser.model import NodesTable
 from schooltool.cando.project import Project
 from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
@@ -605,11 +607,197 @@ class ColorCodesHelpView(flourish.form.Dialog):
             }
 
 
-class ProjectSkillBrowseView(flourish.page.Page):
+class ProjectSkillSearchView(flourish.page.Page):
 
-    content_template = InlineViewPageTemplate('''
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+    # XXX: use a step approach similar to timetable wizard!
+
+    first_step_template = InlineViewPageTemplate('''
+      <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
     ''')
+
+    second_step_template = InlineViewPageTemplate('''
+      <tal:block i18n:domain="schooltool.cando"
+                 define="children view/node/children;
+                         skillsets view/node/skillsets;">
+        <h3 tal:content="view/node/title" />
+        <tal:block condition="children">
+          <h3 i18n:translate="">Child nodes</h3>
+          <div tal:content="structure context/schooltool:content/ajax/view/node/children_table" />
+        </tal:block>
+        <tal:block condition="skillsets">
+          <h3 i18n:translate="">SkillSets</h3>
+          <div tal:content="structure context/schooltool:content/ajax/view/node/skillsets_table" />
+        </tal:block>
+      </tal:block>
+    ''')
+
+    third_step_template = InlineViewPageTemplate('''
+      <tal:block i18n:domain="schooltool.cando"
+                 define="skills view/skills;">
+        <h3 tal:content="view/node/title" />
+        <h3 tal:content="view/skillset/title" />
+        <form method="post" tal:condition="skills"
+              tal:attributes="action request/URL">
+          <input type="hidden" name="node"
+                 tal:attributes="value request/node|nothing" />
+          <input type="hidden" name="skillset"
+                 tal:attributes="value request/skillset|nothing" />
+          <table class="data">
+            <thead>
+              <tr>
+                <th i18n:translate="">Label</th>
+                <th i18n:translate="">Title</th>
+                <th i18n:translate="">Add</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="skill skills">
+                <td tal:content="skill/label" />
+                <td tal:content="skill/title" />
+                <td>
+                  <input type="checkbox" value="1"
+                         tal:attributes="name skill/input_name" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="buttons">
+            <input type="submit" class="button-ok" value="Submit"
+                   name="SUBMIT" i18n:attributes="value" />
+            <input type="submit" class="button-cancel" value="Cancel"
+                   name="CANCEL" i18n:attributes="value" />
+          </div>
+        </form>
+        <p i18n:translate="" tal:condition="not:skills">
+          There are no skills.
+        </p>
+      </tal:block>
+    ''')
+
+    @property
+    def content_template(self):
+        if self.node is not None:
+            if self.skillset is not None:
+                return self.third_step_template
+            return self.second_step_template
+        return self.first_step_template
+
+    @Lazy
+    def container(self):
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app)
+
+    @Lazy
+    def skillset_container(self):
+        app = ISchoolToolApplication(None)
+        return ISkillSetContainer(app)
+
+    @Lazy
+    def node(self):
+        node = self.request.get('node')
+        return self.container.get(node)
+
+    @Lazy
+    def skillset(self):
+        skillset = self.request.get('skillset')
+        return self.skillset_container.get(skillset)
+
+    def skills(self):
+        result = []
+        for skill in self.skillset.values():
+            result.append({
+                    'label': skill.label,
+                    'title': skill.title,
+                    'input_name': self.getSkillId(skill),
+                    'obj': skill,
+                    })
+        return result
+
+    def getSkillId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        if 'SUBMIT' in self.request:
+            chooser = INameChooser(self.context)
+            for skill in self.skills():
+                if skill['input_name'] in self.request:
+                    skill_copy = skill['obj'].copy()
+                    name = chooser.chooseName('', skill_copy)
+                    self.context[name] = skill_copy
+                    skill_copy.equivalent.add(skill['obj'])
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        return '%s/gradebook' % absoluteURL(self.context, self.request)
+
+
+def title_cell_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        return '<a href="%s?node=%s">%s</a>' % (
+            view_url, item.__name__, value)
+    return cell_formatter
+
+
+def skillset_title_cell_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        node = formatter.request.get('node', '')
+        return '<a href="%s?node=%s&skillset=%s">%s</a>' % (
+            view_url, node, item.__name__, value)
+    return cell_formatter
+
+
+class SkillSearchTable(NodesTable):
+
+    def updateFormatter(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+        if self._table_formatter is None:
+            self.setUp(formatters=[lambda v,i,f: v,
+                                   title_cell_formatter(view_url),
+                                   lambda v,i,f: v,],
+                       table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+
+class NodeChildrenTable(SkillSearchTable):
+
+    batch_size = 0
+
+    def items(self):
+        return self.context.children
+
+
+class NodeSkillSetsTable(SkillSearchTable):
+
+    batch_size = 0
+
+    def columns(self):
+        label, title, layer = super(NodeSkillSetsTable, self).columns()
+        return [label, title]
+
+    def items(self):
+        return self.context.skillsets
+
+    def sortOn(self):
+        return (('label', False),)
+
+    def updateFormatter(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+        if self._table_formatter is None:
+            self.setUp(formatters=[lambda v,i,f: v,
+                                   skillset_title_cell_formatter(view_url),
+                                   lambda v,i,f: v,],
+                       table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
 
 
 class SkillAddTertiaryNavigationManager(
@@ -630,8 +818,8 @@ class SkillAddTertiaryNavigationManager(
         path = self.request['PATH_INFO']
         current = path[path.rfind('/')+1:]
         actions = [
-            ('addSkillBrowse.html', _('XXX Browse and Select Skill XXX')),
-            ('addSkillCreate.html', _('XXX Create New Skill XXX')),
+            ('addSkillSearch.html', _('Search Skills')),
+            ('addSkillCreate.html', _('New Skill')),
             ]
         for action, title in actions:
             url = '%s/%s' % (absoluteURL(self.context, self.request), action)
@@ -641,91 +829,6 @@ class SkillAddTertiaryNavigationManager(
                 'viewlet': u'<a href="%s">%s</a>' % (url, title),
                 })
         return result
-
-
-class SkillsTable(table.ajax.IndexedTable):
-
-    @property
-    def source(self):
-        app = ISchoolToolApplication(None)
-        return ISkillSetContainer(app)
-
-    def columns(self):
-        default = table.ajax.Table.columns(self)
-        label = zc.table.column.GetterColumn(
-            name='label',
-            title=_(u'Label'),
-            getter=lambda i, f: i.label or '')
-        directlyProvides(label, ISortableColumn)
-        return [label] + default
-
-    def sortOn(self):
-        return (('label', False), ("title", False),)
-
-
-class SkillsTableFilter(table.ajax.IndexedTableFilter):
-
-    template = ViewPageTemplateFile('templates/project_skill_table_filter.pt')
-    title = _('Skill title, label, external ID and/or description')
-
-    @property
-    def search_title_id(self):
-        return self.manager.html_id+"-title"
-
-    @property
-    def search_group_id(self):
-        return self.manager.html_id+"-group"
-
-    @property
-    def parameters(self):
-        return (self.search_title_id, self.search_group_id)
-
-    def filter(self, items):
-        if self.ignoreRequest:
-            return items
-        if self.search_group_id in self.request:
-            group = self.groupContainer().get(self.request[self.search_group_id])
-            if group:
-                int_ids = getUtility(IIntIds)
-                keys = set()
-                for skillset in group.skillsets:
-                    for skill in skillset.values():
-                        keys.add(int_ids.queryId(skill))
-                items = [item for item in items
-                         if item['id'] in keys]
-        if self.search_title_id in self.request:
-            searchstr = self.request[self.search_title_id]
-            query = buildQueryString(searchstr)
-            if query:
-                app = ISchoolToolApplication(None)
-                container = ISkillSetContainer(app)
-                catalog = ICatalog(container)
-                result = catalog['text'].apply(query)
-                items = [item for item in items
-                         if item['id'] in result]
-        return items
-
-    def groupContainer(self):
-        # XXX must know which group container to pick
-        app = ISchoolToolApplication(None)
-        return INodeContainer(app, {})
-
-    def groups(self):
-        groups = []
-        container = self.groupContainer()
-        collator = ICollator(self.request.locale)
-        group_items = sorted(container.items(),
-                             cmp=collator.cmp,
-                             key=lambda (gid, g): g.title)
-        for id, group in group_items:
-            skills = []
-            for skillset in group.skillsets:
-                for skill in skillset.values():
-                    skills.append(skill)
-            if len(skills) > 0:
-                groups.append({'id': id,
-                               'title': "%s (%s)" % (group.title, len(skills))})
-        return groups
 
 
 class MySkillsGradesView(FlourishMyGradesView):

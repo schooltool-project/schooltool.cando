@@ -117,6 +117,32 @@ class ProjectsGradebook(Gradebook):
         worksheet = proxy.removeSecurityProxy(worksheet)
         worksheets.setCurrentWorksheet(person, worksheet)
 
+    def filterEquivalent(self, equivalent):
+        # select only equivalent skills that belong to this section
+        return filter(
+            lambda e: ISection(e.__parent__, None) is self.section,
+            equivalent)
+
+    def evaluate(self, student, activity, score, evaluator=None):
+        super(ProjectsGradebook, self).evaluate(
+            student, activity, score, evaluator)
+        equivalent = self.filterEquivalent(activity.findAllEquivalent())
+        for skill in equivalent:
+            worksheet = skill.__parent__
+            gradebook = ISkillsGradebook(worksheet, None)
+            if gradebook is not None:
+                gradebook.evaluate(student, skill, score, evaluator)
+
+    def removeEvaluation(self, student, activity, evaluator=None):
+        super(ProjectsGradebook, self).removeEvaluation(
+            student, activity, evaluator)
+        equivalent = self.filterEquivalent(activity.findAllEquivalent())
+        for skill in equivalent:
+            worksheet = skill.__parent__
+            gradebook = ISkillsGradebook(worksheet, None)
+            if gradebook is not None:
+                gradebook.removeEvaluation(student, skill, evaluator)
+
 
 class SkillsGradebook(Gradebook):
 

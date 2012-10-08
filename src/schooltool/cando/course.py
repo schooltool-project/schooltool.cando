@@ -102,7 +102,6 @@ class SectionSkillSet(GenericWorksheet):
         return key in self.all_keys()
 
 
-
 class CourseSkillSet(GenericWorksheet):
     implements(ICourseSkillSet)
 
