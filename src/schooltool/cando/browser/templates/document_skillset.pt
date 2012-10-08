@@ -1,4 +1,4 @@
-<tal:block i18n:domain="schooltool">
+<tal:block i18n:domain="schooltool.cando">
   <h3>
     <tal:block replace="context/title" />
     <a class="modify" href="" title="Edit this skill set"
@@ -6,6 +6,7 @@
        i18n:attributes="title"
        tal:condition="view/can_edit">
       <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+           i18n:domain="schooltool"
            alt="Edit"
            i18n:attributes="alt" />
     </a>
@@ -25,7 +26,7 @@
   </h3>
   <div tal:content="structure context/schooltool:content/ajax/table" />
 
-  <h3>
+  <h3 class="done-link" i18n:domain="schooltool">
     <a tal:attributes="href view/done_link"
        i18n:translate="">Done</a>
   </h3>

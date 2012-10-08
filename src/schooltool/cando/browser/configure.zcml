@@ -376,6 +376,15 @@
       />
 
   <flourish:viewlet
+      name="done"
+      after="table batch"
+      manager=".course.SkillsetNodesTable"
+      class=".course.SkillsetNodesTableDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="cando-resources"
       view=".course.CourseAssignSkillsView"
       manager="schooltool.skin.flourish.page.IPageContentManager"

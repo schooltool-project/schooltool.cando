@@ -31,10 +31,11 @@
         </td>
         <td>
           <span tal:content="worksheet/title" />
-          <a class="modify" href="" title="Edit"
+          <a class="modify" href="" title="Edit this skill set"
              tal:attributes="href worksheet/url"
              i18n:attributes="title">
             <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+                 i18n:domain="schooltool"
                  alt="Edit"
                  i18n:attributes="alt" />
           </a>
@@ -49,7 +50,7 @@
       </tr>
     </table>
 
-    <h3>
+    <h3 class="done-link" i18n:domain="schooltool">
       <a tal:attributes="href string:${context/__parent__/@@absolute_url}/gradebook-skills"
          tal:condition="context"
          i18n:translate="">Done</a>
