@@ -317,6 +317,19 @@
       permission="schooltool.edit"
       />
 
+  <configure package="schooltool.skin.flourish">
+
+    <flourish:page
+        name="edit.html"
+        for="schooltool.cando.interfaces.IProject"
+        class="schooltool.cando.browser.gradebook.ProjectEditView"
+        content_template="templates/z3c-schooltool-form.pt"
+        permission="schooltool.edit"
+        subtitle="Edit"
+        />
+
+  </configure>
+
   <flourish:viewletManager
       name="tertiary_navigation"
       provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"

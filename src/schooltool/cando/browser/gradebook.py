@@ -59,6 +59,7 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
+from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
 from schooltool.requirement.scoresystem import ScoreValidationError
@@ -477,7 +478,10 @@ class CanDoGradebookTertiaryNavigationManager(
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 'title': title,
                 })
-        return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
+        # XXX: split into separate adapters for each gradebook
+        if ISkillsGradebook.providedBy(self.context):
+            result.sort(key=lambda x:x['title'], cmp=collator.cmp)
+        return result
 
 
 class CanDoNavigationViewletBase(object):
@@ -1028,3 +1032,8 @@ class StudentCompetencyRecordView(CanDoGradeStudent):
 
     content_template = ViewPageTemplateFile(
         'templates/student_competency_record.pt')
+
+
+class ProjectEditView(FlourishWorksheetEditView):
+
+    fields = field.Fields(IProject).select('title')
