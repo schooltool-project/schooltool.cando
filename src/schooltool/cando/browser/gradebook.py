@@ -373,11 +373,23 @@ class SkillPopupMenuView(FlourishActivityPopupMenuView):
         if activity_id is not None and activity_id in worksheet:
             activity = worksheet[activity_id]
             info = self.getActivityInfo(activity)
-            info.update({
-                    'canDelete': False,
-                    'moveLeft': False,
-                    'moveRight': False,
-                    })
+            if ISkillsGradebook.providedBy(self.context):
+                info.update({
+                        'canDelete': False,
+                        'moveLeft': False,
+                        'moveRight': False,
+                        })
+            else:
+                info.update({
+                        'canDelete': True,
+                        'moveLeft': True,
+                        'moveRight': True,
+                        })
+                keys = worksheet.keys()
+                if keys[0] == activity.__name__:
+                    info['moveLeft'] = False
+                if keys[-1] == activity.__name__:
+                    info['moveRight'] = False
             result['header'] = info['longTitle']
             result['options'] = self.options(info, worksheet)
         return result
