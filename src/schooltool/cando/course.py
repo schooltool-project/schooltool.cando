@@ -71,7 +71,7 @@ class SectionSkillSet(GenericWorksheet):
 
     @property
     def deployed(self):
-        return True
+        return False
 
     @property
     def title(self):
