@@ -35,8 +35,10 @@ from zope.security.proxy import removeSecurityProxy
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.relationships import CourseSections
-from schooltool.cando.interfaces import ICourseSkills, ICourseSkillSet
-from schooltool.cando.interfaces import ICourseSkill
+from schooltool.app.relationships import URICourseSections
+from schooltool.app.relationships import URISectionOfCourse, URICourse
+from schooltool.cando.interfaces import ICourseSkills
+from schooltool.cando.interfaces import ICourseSkillSet, ICourseSkill
 from schooltool.cando.interfaces import ISectionSkills, ISectionSkillSet
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.skill import Skill
@@ -254,52 +256,79 @@ class CourseWorksheetRemoved(CourseWorksheetEventSubscriber):
                 del worksheets[skillset.__name__]
 
 
+def updateCourseSkillSet(skillset, section):
+    int_ids = getUtility(IIntIds)
+    worksheets = ISectionSkills(section)
+    section_intid = int_ids.getId(section)
+    unproxied_skillset = removeSecurityProxy(skillset)
+    if skillset.__name__ not in worksheets:
+        worksheet = worksheets[skillset.__name__] = SectionSkillSet(unproxied_skillset)
+    else:
+        worksheet = worksheets[skillset.__name__]
+
+    delete_skills = list(worksheet.all_keys())
+    for skill_name in skillset.all_keys():
+        skill = skillset[skill_name]
+        if skill_name not in worksheet.all_keys():
+            target_skill = worksheet[skill_name] = SectionSkill(skill.title)
+            target_skill.equivalent.add(removeSecurityProxy(skill))
+        else:
+            if skill_name in delete_skills:
+                delete_skills.remove(skill_name)
+            target_skill = worksheet[skill_name]
+
+        for attr in ('external_id', 'label', 'description',
+                     'required', 'retired'):
+            val = getattr(skill, attr, None)
+            if getattr(target_skill, attr, None) != val:
+                setattr(target_skill, attr, val)
+        if target_skill.section_intid != section_intid:
+            target_skill.section_intid = section_intid
+        if target_skill.source_skill_name != skill.__name__:
+            target_skill.source_skill_name = skill.__name__
+        if target_skill.source_skillset_name != skill.__parent__.__name__:
+            target_skill.source_skillset_name = skill.__parent__.__name__
+
+    available = worksheet.all_keys()
+    for skill_name in delete_skills:
+        if skill_name in available:
+            del worksheet[skill_name]
+
+
 class CourseSkillSetModified(CourseWorksheetEventSubscriber):
 
     adapts(IObjectModifiedEvent, ICourseSkillSet)
 
     def __call__(self):
-        int_ids = getUtility(IIntIds)
         skillset = self.object
         for section in self.sections:
-            worksheets = ISectionSkills(section)
-            section_intid = int_ids.getId(section)
-            if self.object.__name__ not in worksheets:
-                worksheet = worksheets[skillset.__name__] = SectionSkillSet(skillset)
-            else:
-                worksheet = worksheets[self.object.__name__]
+            updateCourseSkillSet(skillset, section)
 
-            delete_skills = list(worksheet.all_keys())
-            for skill_name in skillset.all_keys():
-                skill = skillset[skill_name]
-                if skill_name not in worksheet.all_keys():
-                    target_skill = worksheet[skill_name] = SectionSkill(skill.title)
-                    target_skill.equivalent.add(removeSecurityProxy(skill))
-                else:
-                    if skill_name in delete_skills:
-                        delete_skills.remove(skill_name)
-                    target_skill = worksheet[skill_name]
-
-                for attr in ('external_id', 'label', 'description',
-                             'required', 'retired'):
-                    val = getattr(skill, attr, None)
-                    if getattr(target_skill, attr, None) != val:
-                        setattr(target_skill, attr, val)
-                if target_skill.section_intid != section_intid:
-                    target_skill.section_intid = section_intid
-                if target_skill.source_skill_name != skill.__name__:
-                    target_skill.source_skill_name = skill.__name__
-                if target_skill.source_skillset_name != skill.__parent__.__name__:
-                    target_skill.source_skillset_name = skill.__parent__.__name__
-
-            available = worksheet.all_keys()
-            for skill_name in delete_skills:
-                if skill_name in available:
-                    del worksheet[skill_name]
 
 
 class CourseWorksheetAdded(CourseSkillSetModified):
     adapts(IObjectAddedEvent, ICourseSkillSet)
+
+
+class DeploySkillsToNewSection(ObjectEventAdapterSubscriber):
+    adapts(IObjectAddedEvent, ISection)
+
+    def __call__(self):
+        section = self.object
+        for course in section.courses:
+            courseskills = ICourseSkills(course)
+            for skillset in courseskills.values():
+                updateCourseSkillSet(skillset, section)
+
+
+def updateSectionSkillsOnCourseChange(event):
+    if event.rel_type != URICourseSections:
+        return
+    section = event[URISectionOfCourse]
+    course = event[URICourse]
+    courseskills = ICourseSkills(course)
+    for skillset in courseskills.values():
+        updateCourseSkillSet(skillset, section)
 
 
 # XXX: maybe course-skillset relationship views
