@@ -176,6 +176,43 @@ class SkillsGradebook(Gradebook):
         worksheet = proxy.removeSecurityProxy(worksheet)
         worksheets.setCurrentWorksheet(person, worksheet)
 
+    def getScore(self, student, activity):
+        score = super(SkillsGradebook, self).getScore(student, activity)
+        if score is not None:
+            return score
+        return self.getPreviousScore(student, activity)
+
+    def getPreviousScore(self, student, activity):
+        equivalent = activity.findAllEquivalent()
+        previous = self.getPreviousSections(self.section)
+        for section in previous:
+            filtered = self.filterEquivalent(equivalent, section)
+            if filtered:
+                # XXX: could there be more than one equivalent
+                #      in a linked section?
+                skill = proxy.removeSecurityProxy(filtered[0])
+                worksheet = skill.__parent__
+                gradebook = ISkillsGradebook(worksheet, None)
+                if gradebook is not None:
+                    score = gradebook.getScore(student, skill)
+                    if score is not None:
+                        return score
+
+    def getPreviousSections(self, section):
+        result = []
+        previous = section.previous
+        while previous:
+            result.append(previous)
+            previous = previous.previous
+        return result
+
+    def filterEquivalent(self, equivalent, section):
+        # select only equivalent skills that belong to this section
+        equivalent = [proxy.removeSecurityProxy(e) for e in equivalent]
+        return filter(
+            lambda e: ISection(e.__parent__, None) is section,
+            equivalent)
+
 
 class MySkillsGrades(SkillsGradebook):
 

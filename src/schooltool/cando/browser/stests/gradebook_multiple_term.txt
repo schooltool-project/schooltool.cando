@@ -1,0 +1,192 @@
+Skills gradebook for multiple term sections
+===========================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+Set up a multiple term section:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', 'Q1', '2012-01-01', '2012-03-31')
+    >>> manager.ui.term.add('2012', 'Q2', '2012-04-01', '2012-06-30')
+    >>> manager.ui.term.add('2012', 'Q3', '2012-07-01', '2012-09-30')
+    >>> manager.ui.term.add('2012', 'Q4', '2012-10-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', 'Q1', 'Programming', ends='Q4')
+    >>> manager.ui.section.instructors.add('2012', 'Q1', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', 'Q1', 'Programming (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+Set up skills:
+
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.node.add('Programming', label='PRO')
+
+    >>> manager.ui.skillset.add('Python Environment', '01')
+
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Use the Python shell for interactive evaluation',
+    ...     '01')
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Make Python scripts with a text editor',
+    ...     '02',
+    ...     required=False)
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Programming').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit skillsets"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Done').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> layers_accordion_header = accordion_headers[3]
+    >>> layers_accordion_header.click()
+    >>> layers_accordion_content = accordion_contents[3]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit layers"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+
+Assign the skills to the course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Batch Assign Skills').click()
+    >>> manager.query.name('course_attr').ui.set_value('Course ID')
+    >>> manager.query.name('layer').ui.set_value('Course')
+    >>> manager.query.name('node_attr').ui.set_value('Label')
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.name('ASSIGN_BUTTON').click()
+
+Log in as instructor and grade some skills in the first term section:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '01', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '3')
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  | 3  |
+    | Tejada, Mario    | 4  | 3  |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+Now, let's go to the following terms section and see the most recent
+grades:
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q2')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  | 3  |
+    | Tejada, Mario    | 4  | 3  |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q4')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  | 3  |
+    | Tejada, Mario    | 4  | 3  |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+Let's go to the Q3 term and grade some skills there:
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q3')
+    >>> teacher.wait(lambda: page.expired)
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '')
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  | 3  |
+    | Tejada, Mario    | 4  |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+
+
+If we go back to the Q4 section, we'll see some grades from the Q1
+section and some from the Q3 section:
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q4')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  | 3  |
+    | Tejada, Mario    | 4  |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+
