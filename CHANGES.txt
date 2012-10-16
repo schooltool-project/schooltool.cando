@@ -2,10 +2,12 @@
 CHANGES
 =======
 
-0.2.2 (unreleased)
-------------------
+0.3 (unreleased)
+----------------
 
-- Nothing changed yet.
+- Section skills are now copies, not proxies of global skills.
+- Allow users to add existing skills to projects gradebook
+- Allow users to move/delete project skills
 
 
 0.2.1 (2012-09-27)
