@@ -15,7 +15,7 @@
        permission="schooltool.edit"
        group="School"
        description="Export global skills data for the school."
-       title="Skill Data"
+       title="Skills Export"
        file_type="xls"
        link="request_global_skills_export.html"
        />
