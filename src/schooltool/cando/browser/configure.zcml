@@ -787,6 +787,20 @@
 
   </configure>
 
+  <flourish:viewlet
+      name="what-is-this"
+      class="schooltool.skin.flourish.page.Related"
+      template="templates/f_import_related.pt"
+      view=".importer.GlobalSkillsMegaImporter"
+      manager="schooltool.skin.flourish.page.IPageRelatedManager"
+      permission="schooltool.edit"
+      />
+
+  <resource
+      name="empty_skills_data.xls" file="resources/empty_skills_data.xls"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
   <include file="document.zcml" />
   <include file="report.zcml" />
   <include file="gradebook.zcml" />
