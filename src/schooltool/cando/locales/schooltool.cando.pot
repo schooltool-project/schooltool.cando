@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2012-10-16 20:02+0300\n"
+"POT-Creation-Date: 2012-10-19 02:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -629,7 +629,7 @@ msgid "School"
 msgstr ""
 
 #: /src/schooltool/cando/browser/report.zcml:10
-msgid "Skill Data"
+msgid "Skills Export"
 msgstr ""
 
 #: /src/schooltool/cando/browser/skill.py:87

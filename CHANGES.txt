@@ -2,12 +2,13 @@
 CHANGES
 =======
 
-0.3 (unreleased)
+0.3 (2012-10-19)
 ----------------
 
-- Section skills are now copies, not proxies of global skills.
+- New sections don't get existing course skills (https://launchpad.net/bugs/1065128)
 - Allow users to add existing skills to projects gradebook
 - Allow users to move/delete project skills
+- Show previous scores in multiple term section gradebooks
 
 
 0.2.1 (2012-09-27)
