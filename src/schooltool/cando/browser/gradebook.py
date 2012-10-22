@@ -205,6 +205,14 @@ class SkillsGradebookOverview(CanDoGradebookOverviewBase,
         else:
             return _('Enter Skills')
 
+    @Lazy
+    def filtered_activity_info(self):
+        result = super(SkillsGradebookOverview, self).filtered_activity_info
+        collator = ICollator(self.request.locale)
+        return sorted(result,
+                      key=lambda activity:activity['shortTitle'],
+                      cmp=collator.cmp)
+
 
 class ProjectsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
 

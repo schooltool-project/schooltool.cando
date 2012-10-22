@@ -1,0 +1,118 @@
+Skills sorted by label in skills gradebook
+==========================================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+Set up a multiple term section:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', '2012', 'Programming')
+    >>> manager.ui.section.instructors.add('2012', '2012', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', '2012', 'Programming (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+Set up skills:
+
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.node.add('Programming', label='PRO')
+
+    >>> manager.ui.skillset.add('Data Types, Statements, and Expressions', '01')
+
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Recognize int, float, str, list, tuple, and dict.',
+    ...     '06')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use type(...) to determine the data type of a given value.',
+    ...     '03')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use assignment statements to assign names (variables) to values.',
+    ...     '04')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use the input function to read user input.',
+    ...     '05')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Define keyword and recognize keywords in Python.',
+    ...     '02')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Create legal variable names and recognize illegal ones.',
+    ...     '01',
+    ...     required=False)
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Programming').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit skillsets"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Done').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> layers_accordion_header = accordion_headers[3]
+    >>> layers_accordion_header.click()
+    >>> layers_accordion_content = accordion_contents[3]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit layers"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+
+Assign the skills to the course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Batch Assign Skills').click()
+    >>> manager.query.name('course_attr').ui.set_value('Course ID')
+    >>> manager.query.name('layer').ui.set_value('Course')
+    >>> manager.query.name('node_attr').ui.set_value('Label')
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.name('ASSIGN_BUTTON').click()
+
+Log in as instructor and print the skills gradebook:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +-----------------------------------------------+
+    | *01: Data Types, Statements, and Expressions* |
+    +-----------------------------------------------+
+    +------------------+----+----+----+----+----+----+
+    | Name             | 01 | 02 | 03 | 04 | 05 | 06 |
+    |                  | 4  | 4  | 4  | 4  | 4  | 4  |
+    +------------------+----+----+----+----+----+----+
+    | Cerna, Camila    |    |    |    |    |    |    |
+    | Tejada, Mario    |    |    |    |    |    |    |
+    | Vividor, Liliana |    |    |    |    |    |    |
+    +------------------+----+----+----+----+----+----+
