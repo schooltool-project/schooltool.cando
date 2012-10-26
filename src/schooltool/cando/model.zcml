@@ -107,4 +107,15 @@
 
   <adapter factory=".model.getDocumentContainer" />
 
+  <adapter
+      factory=".model.NodeCatalog"
+      name="schooltool.cando.model.NodeCatalog" />
+
+  <adapter
+      for=".interfaces.INodeContainer"
+      provides="zope.catalog.interfaces.ICatalog"
+      factory=".model.getNodeCatalog" />
+
+  <adapter factory=".model.SearchableTextNode" />
+
 </configure>

@@ -145,10 +145,19 @@
 
   <flourish:viewlet
       name="table"
-      class=".gradebook.SkillSearchTable"
+      class=".gradebook.AggregateNodesSkillsSearchTable"
       for="schooltool.cando.interfaces.INodeContainer"
       manager="schooltool.skin.flourish.interfaces.IAJAXParts"
       view=".gradebook.ProjectSkillSearchView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class=".gradebook.AggregateNodesTableFilter"
+      render="template"
+      manager=".gradebook.AggregateNodesSkillsSearchTable"
+      search_index="text"
       permission="schooltool.view"
       />
 

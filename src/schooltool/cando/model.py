@@ -20,6 +20,7 @@
 import itertools
 
 from persistent import Persistent
+from zope.catalog.text import TextIndex
 from zope.container.btree import BTreeContainer
 from zope.container.contained import Contained
 from zope.component import adapts, adapter
@@ -33,6 +34,8 @@ from zope.security.proxy import removeSecurityProxy
 
 from schooltool.app.app import InitBase, StartUpBase
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.app.catalog import AttributeCatalog
+from zope.index.text.interfaces import ISearchableText
 from schooltool.cando import interfaces
 from schooltool.cando.skill import URISkillSet
 from schooltool.relationship import URIObject
@@ -40,6 +43,7 @@ from schooltool.relationship import RelationshipSchema, RelationshipProperty
 from schooltool.relationship.interfaces import InvalidRelationship
 from schooltool.relationship.interfaces import IBeforeRelationshipEvent
 from schooltool.relationship.interfaces import IBeforeRemovingRelationshipEvent
+from schooltool.table.catalog import ConvertingSetIndex
 
 
 URILayer = URIObject(
@@ -531,3 +535,45 @@ class DocumentStartUp(StartUpBase):
         if 'schooltool.cando.document' not in self.app:
             self.app['schooltool.cando.document'] = DocumentContainer()
 
+
+def get_node_layer_names(node):
+    return [l.__name__ for l in node.layers]
+
+
+def get_node_layer_titles(node):
+    return [l.title for l in node.layers]
+
+
+class NodeCatalog(AttributeCatalog):
+
+    version = '1 - attributes and text indexes'
+    interface = interfaces.INode
+    attributes = ('title', 'label', 'description',
+                  'required', 'retired')
+
+    def setIndexes(self, catalog):
+        super(NodeCatalog, self).setIndexes(catalog)
+        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        catalog['layers'] = ConvertingSetIndex(converter=get_node_layer_names)
+        catalog['layer_titles'] = ConvertingSetIndex(converter=get_node_layer_titles)
+
+
+getNodeCatalog = NodeCatalog.get
+
+
+class SearchableTextNode(object):
+
+    adapts(interfaces.INode)
+    implements(ISearchableText)
+
+    def __init__(self, context):
+        self.context = context
+
+    def getSearchableText(self):
+        result = [
+            self.context.title,
+            self.context.label or '',
+            self.context.description or '',
+            ]
+        result.extend([l.title for l in self.context.layers])
+        return ' '.join(result)
