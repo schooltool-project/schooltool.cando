@@ -21,11 +21,12 @@ CanDo view components.
 """
 
 import pytz
+from xml.sax.saxutils import quoteattr
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
-from zope.component import getUtility
+from zope.component import getMultiAdapter
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
 from zope.i18n.interfaces.locales import ICollator
@@ -59,10 +60,12 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
+from schooltool.gradebook.browser.gradebook import FlourishGradebookValidateScoreView
 from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
 from schooltool.requirement.scoresystem import ScoreValidationError
+from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.skin import flourish
 from schooltool import table
 
@@ -926,11 +929,8 @@ class MySkillsGradesTertiaryNavigationManager(
         return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
 
 
-class CanDoGradeStudent(flourish.page.Page):
+class CanDoGradeStudentBase(flourish.page.Page):
 
-    content_template = ViewPageTemplateFile('templates/grade_student.pt')
-    activities_header = _('Skill')
-    grades_header = _('Score')
     container_class = 'container widecontainer'
 
     @property
@@ -939,96 +939,242 @@ class CanDoGradeStudent(flourish.page.Page):
 
     @property
     def subtitle(self):
-        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
-        return gradebook.section.title
+        return self.gradebook.section.title
 
-    @property
-    def timezone(self):
-        app = ISchoolToolApplication(None)
-        prefs = IApplicationPreferences(app)
-        timezone_name = prefs.timezone
-        return pytz.timezone(timezone_name)
+    @Lazy
+    def student(self):
+        return proxy.removeSecurityProxy(self.context.student)
 
-    def update(self):
-        if 'CANCEL' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        timezone = self.timezone
-        evaluator = getName(IPerson(self.request.principal))
-        skillsets = []
-        worksheets = self.context.__parent__.__parent__.__parent__
-        student = proxy.removeSecurityProxy(self.context.student)
-        gradebook = self.context.gradebook
-        if ISkillsGradebook.providedBy(gradebook):
-            gradebook_adapter = ISkillsGradebook
-        else:
-            gradebook_adapter = IProjectsGradebook
-        for worksheet in worksheets.values():
-            gradebook = gradebook_adapter(worksheet)
-            skills = []
-            for skill in gradebook.activities:
-                title = skill.title
-                css_class = not skill.required and 'optional' or None
-                skill_flag = skill.required and _('Yes') or _('No')
-                cell_name = self.getId(skill)
-                if cell_name in self.request:
-                    value = self.request[cell_name]
-                    try:
-                        if value is None or value == '':
-                            score = gradebook.getScore(student, skill)
-                            if score:
-                                gradebook.removeEvaluation(student, skill,
-                                                           evaluator=evaluator)
-                        else:
-                            score_value = skill.scoresystem.fromUnicode(value)
-                            gradebook.evaluate(student, skill, score_value,
-                                               evaluator)
-                    except ScoreValidationError:
-                        pass
-                score = gradebook.getScore(student, skill)
-                grade = None
-                date = None
-                if score:
-                    grade = score.value
-                    time_utc = pytz.utc.localize(score.time)
-                    time = time_utc.astimezone(timezone)
-                    date = time.date()
-                scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
-                scores = dict([(s[2], s[1]) for s in scoresystem.scores])
-                rating = scores.get(scoresystem.scoresDict().get(grade), '-')
-                skills.append({
-                        'label': skill.label,
-                        'name': cell_name,
-                        'title': title,
-                        'grade': grade,
-                        'flag': skill_flag,
-                        'date': date,
-                        'rating': rating,
-                        'css_class': css_class,
-                        })
-            skillsets.append({
-                    'form_url': '%s/gradebook' % absoluteURL(worksheet,
-                                                             self.request),
-                    'label': self.getWorksheetLabel(worksheet),
-                    'title': worksheet.title,
-                    'skills': sorted(skills, key=lambda x:x['label']),
-                    })
-        if 'SUBMIT_BUTTON' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        self.skillsets = skillsets
+    @Lazy
+    def gradebook(self):
+        return proxy.removeSecurityProxy(self.context.gradebook)
 
-    def getWorksheetLabel(self, worksheet):
-        if ISkillsGradebook.providedBy(self.context):
-            unproxied = proxy.removeSecurityProxy(worksheet)
-            return unproxied.label
+    @Lazy
+    def isSkillsGradebook(self):
+        return ISkillsGradebook.providedBy(self.gradebook)
 
-    def getId(self, skill):
+
+class CanDoGradeStudentTableViewlet(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <div tal:content="structure view/view/providers/ajax/view/context/student_grades_table" />
+    ''')
+
+
+class CanDoGradeStudent(CanDoGradeStudentBase):
+
+    @Lazy
+    def evaluator(self):
+        person = IPerson(self.request.principal, None)
+        if person is not None:
+            return getName(person)
+
+
+class CanDoGradeStudentTableFormatterBase(table.ajax.AJAXFormSortFormatter):
+
+    def renderHeaders(self):
+        result = []
+        old_css_class = self.cssClasses.get('th')
+        for col in self.visible_columns:
+            self.cssClasses['th'] = col.name.replace('_', '-')
+            result.append(self.renderHeader(col))
+        self.cssClasses['th'] = old_css_class
+        return ''.join(result)
+
+    def renderRows(self):
+        current_skillset = None
+        result = []
+        for item in self.getItems():
+            skillset = item['skillset']
+            if skillset != current_skillset:
+                result.append(self.renderSubHeader(skillset))
+                current_skillset = skillset
+            result.append(self.renderRow(item))
+        return ''.join(result)
+
+    def renderSubHeader(self, skillset):
+        title = label_title_formatter(skillset, None, None)
+        return '<th colspan="%d">%s</th>' % (len(self.visible_columns), title)
+
+
+class CanDoGradeStudentTableFormatter(CanDoGradeStudentTableFormatterBase):
+
+    def renderCell(self, item, column):
+        klass = self.cssClasses.get('td', '')
+        if column.name == 'student-score':
+            if klass:
+                klass += ' '
+            klass += 'student-score'
+        if column.name == 'skill' and not item['skill'].required:
+            if klass:
+                klass += ' '
+            klass += 'optional'
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<td id="%s"%s>%s</td>' % (
+            item['skill_id'], klass, self.getCell(item, column),)
+
+    def renderRow(self, item):
+        klass = self.cssClasses.get('tr', '')
+        if klass:
+            klass += ' '
+        klass += '%s/gradebook' % absoluteURL(item['skillset'], self.request)
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<tr%s>%s</tr>' % (
+            klass, self.renderCells(item))
+
+
+def label_title_formatter(obj, item, formatter):
+    title = obj.title
+    label = getattr(obj, 'label')
+    if label is not None:
+        title = '%s: %s' % (label, title)
+    return title
+
+
+def get_skill_skillset(item, formatter):
+    return label_title_formatter(item['skillset'], item, formatter)
+
+
+def skill_score_formatter(score, item, formatter):
+    if score is not None and score.value is not UNSCORED:
+        return score.value
+    return ''
+
+
+def get_skill_score(item, formatter):
+    student = formatter.context.student
+    skill = item['skill']
+    gradebook = item['gradebook']
+    return gradebook.getScore(student, skill)
+
+
+class CanDoGradeStudentTableBase(table.ajax.Table):
+
+    batch_size = 0
+
+    def getSkillId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
 
-    def nextURL(self):
-        return absoluteURL(self.context.__parent__, self.request)
+    def items(self):
+        result = []
+        worksheets = self.context.__parent__.__parent__.__parent__
+        for worksheet in worksheets.values():
+            if self.view.isSkillsGradebook:
+                gradebook = ISkillsGradebook(worksheet)
+            else:
+                gradebook = IProjectsGradebook(worksheet)
+            for activity in gradebook.activities:
+                result.append({
+                        'gradebook': gradebook,
+                        'skillset': proxy.removeSecurityProxy(worksheet),
+                        'skill': activity,
+                        'skill_id': self.getSkillId(activity),
+                        })
+        return result
+
+    def renderTable(self):
+        if self._table_formatter is None:
+            return ''
+        formatter = self._table_formatter(
+            self.source, self.request, self._items,
+            visible_column_names=self.visible_column_names,
+            columns=self._columns,
+            batch_start=self.batch.start, batch_size=self.batch.size,
+            sort_on=self._sort_on,
+            prefix=self.prefix,
+            ignore_request=self.ignoreRequest,
+            )
+        formatter.html_id = self.html_id
+        formatter.cssClasses.update(self.css_classes)
+        return formatter()
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': self.css_classes})
+
+
+class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
+
+    css_classes = 'grade-student'
+    table_formatter = CanDoGradeStudentTableFormatter
+    visible_column_names = ['skill', 'student-score']
+    buttons = (
+        {'name': 'SAVE', 'label': _('Save'), 'klass': 'button-ok'},
+        {'name': 'CANCEL', 'label': _('Cancel'), 'klass': 'button-cancel'},
+        )
+
+    def columns(self):
+        skillset = table.column.LocaleAwareGetterColumn(
+            name='skillset',
+            title=_('Skill Set'),
+            getter=get_skill_skillset)
+        skill = zc.table.column.GetterColumn(
+            name='skill',
+            title=_('Skill'),
+            getter=lambda item, formatter: item['skill'],
+            cell_formatter=label_title_formatter)
+        score = zc.table.column.GetterColumn(
+            name='student-score',
+            title=_('Score'),
+            getter=get_skill_score,
+            cell_formatter=skill_score_formatter)
+        return [skillset, skill, score]
+
+    def sortOn(self):
+        return (('skillset', False), ('skill', False))
+
+    def update(self):
+        super(CanDoGradeStudentTable, self).update()
+        saved = False
+        if 'SAVE' in self.request:
+            self.updateGrades()
+            saved = True
+        if 'CANCEL' in self.request or saved:
+            url = absoluteURL(self.view.gradebook, self.request)
+            self.request.response.redirect(url)
+            return
+
+    def updateGrades(self):
+        for item in self._items:
+            skill = item['skill']
+            gradebook = item['gradebook']
+            cell_name = self.getSkillId(skill)
+            if cell_name in self.request:
+                value = self.request[cell_name]
+                try:
+                    if value is None or value == '':
+                        score = gradebook.getScore(self.view.student, skill)
+                        if score:
+                            gradebook.removeEvaluation(self.view.student,
+                                                       skill,
+                                                       self.view.evaluator)
+                    else:
+                        score_value = skill.scoresystem.fromUnicode(value)
+                        gradebook.evaluate(self.view.student,
+                                           skill,
+                                           score_value,
+                                           self.view.evaluator)
+                except ScoreValidationError:
+                    pass
+
+
+class CanDoGradeStudentTableButtons(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <div class="buttons" i18n:domain="schooltool">
+        <tal:loop repeat="action view/manager/buttons">
+          <input type="submit"
+                 tal:attributes="name action/name;
+                                 value action/label;
+                                 class action/klass;"
+                 />
+        </tal:loop>
+      </div>
+    ''')
 
 
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
@@ -1036,12 +1182,116 @@ class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
     pass
 
 
-class StudentCompetencyRecordView(CanDoGradeStudent):
+class StudentCompetencyRecordView(CanDoGradeStudentBase):
 
-    content_template = ViewPageTemplateFile(
-        'templates/student_competency_record.pt')
+    @Lazy
+    def timezone(self):
+        app = ISchoolToolApplication(None)
+        prefs = IApplicationPreferences(app)
+        timezone_name = prefs.timezone
+        return pytz.timezone(timezone_name)
+
+
+def score_date_formatter(timezone):
+    def formatter(score, item, formatter):
+        if score is not None:
+            time_utc = pytz.utc.localize(score.time)
+            time = time_utc.astimezone(timezone)
+            date = time.date()
+            view = getMultiAdapter((date, formatter.request),
+                                   name='mediumDate')
+            return view()
+        return ''
+    return formatter
+
+
+def score_rating_formatter(score, item, formatter):
+    result = '-'
+    skill = item['skill']
+    if score is not None:
+        grade = score.value
+        scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
+        scores = dict([(s[2], s[1]) for s in scoresystem.scores])
+        result = scores.get(scoresystem.scoresDict().get(grade), '-')
+    return result
+
+
+class StudentCompetencyRecordTableFormatter(CanDoGradeStudentTableFormatterBase):
+
+    def renderCell(self, item, column):
+        klass = self.cssClasses.get('td', '')
+        if column.name == 'required':
+            if klass:
+                klass += ' '
+            klass += 'flag'
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<td%s>%s</td>' % (klass, self.getCell(item, column),)
+
+
+class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
+
+    css_classes = 'data student-scr'
+    table_formatter = StudentCompetencyRecordTableFormatter
+    visible_column_names = ['label', 'required', 'skill', 'date', 'rating']
+
+    def columns(self):
+        skillset = table.column.LocaleAwareGetterColumn(
+            name='skillset',
+            title=_('Skill Set'),
+            getter=get_skill_skillset)
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title='',
+            getter=lambda item, formatter: item['skill'].label or '')
+        required = zc.table.column.GetterColumn(
+            name='required',
+            title=_('Required'),
+            getter=lambda item, formatter: item['skill'].required,
+            cell_formatter=lambda v, i, f: v and _('Yes') or _('No'))
+        skill = zc.table.column.GetterColumn(
+            name='skill',
+            title=_('Skill'),
+            getter=lambda item, formatter: item['skill'].title)
+        date = zc.table.column.GetterColumn(
+            name='date',
+            title=_('Date'),
+            getter=get_skill_score,
+            cell_formatter=score_date_formatter(self.view.timezone))
+        rating = zc.table.column.GetterColumn(
+            name='rating',
+            title=_('Rating'),
+            getter=get_skill_score,
+            cell_formatter=score_rating_formatter)
+        return [skillset, label, required, skill, date, rating]
+
+    def sortOn(self):
+        return (('skillset', False), ('label', False))
+
+
+class StudentCompetencyRecordDoneLink(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <h3 i18n:domain="schooltool" class="done-link">
+        <a tal:attributes="href context/gradebook/@@absolute_url"
+           i18n:translate="">Done</a>
+      </h3>
+    ''')
 
 
 class ProjectEditView(FlourishWorksheetEditView):
 
     fields = field.Fields(IProject).select('title')
+
+
+class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
+
+    def result(self):
+        result = {'is_valid': True, 'is_extracredit': False}
+        score = self.request.get('score')
+        if score:
+            scoresystem = querySkillScoreSystem()
+            try:
+                score = scoresystem.fromUnicode(score)
+            except (ScoreValidationError,):
+                result['is_valid'] = False
+        return result

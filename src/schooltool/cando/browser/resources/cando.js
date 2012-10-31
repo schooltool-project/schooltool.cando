@@ -83,7 +83,7 @@ $(document).ready(function() {
         e.preventDefault();
     });
     // student gradebook
-    grades = $('#grade-student');
+    grades = $('table.grade-student');
     grades.on('click', 'tbody td.student-score', function() {
         var td = $(this);
         if (isScorable(td)) {
@@ -113,7 +113,7 @@ $(document).ready(function() {
                 'activity_id': cellInputName(td).split('.')[1],
                 'score': input.val()
             };
-            var url = tr.attr('class') + '/validate_score';
+            var url = tr.attr('class') + '/validate_student_score';
             this.timer = setTimeout(function () {
                 $.ajax({
                     url: url,
