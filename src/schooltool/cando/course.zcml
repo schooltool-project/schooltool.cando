@@ -58,11 +58,6 @@
       handler=".course.updateSectionSkillsOnCourseChange"
       />
 
-  <subscriber
-      for="schooltool.relationship.interfaces.IRelationshipRemovedEvent"
-      handler=".course.updateSectionSkillsOnCourseChange"
-      />
-
   <class class=".course.SectionSkills">
     <require
         permission="schooltool.edit"
