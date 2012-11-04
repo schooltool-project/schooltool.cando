@@ -74,14 +74,17 @@ from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import IProjectsGradebook
 from schooltool.cando.interfaces import ISkill, ISkillSet
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
+from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.gradebook import ensureAtLeastOneProject
 from schooltool.cando.browser.model import NodesTable
 from schooltool.cando.project import Project
 from schooltool.cando.model import getNodeCatalog
+from schooltool.cando.model import getOrderedByHierarchy
 from schooltool.cando.skill import getSkillCatalog, getSkillSetCatalog
 from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
@@ -824,8 +827,8 @@ def get_node_documents(node):
     if not layers:
         parents = NodeLink.query(child=node)
         for parent in parents:
-            documents = get_node_documents(parent)
-            for doc in documents:
+            parent_docs = get_node_documents(parent)
+            for doc in parent_docs:
                 documents[doc.__name__] = doc
     else:
         for layer in layers:
@@ -867,21 +870,121 @@ def get_aggregated_layers(item, formatter):
     return ''
 
 
+def get_skillset_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 2:
+            layers.add(hierarchy_layers[-2])
+    return tuple(layers)
+
+
+def get_skill_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 1:
+            layers.add(hierarchy_layers[-1])
+    return layers
+
+
 class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
+
+    template = ViewPageTemplateFile('templates/aggregate_filter.pt')
+    skill_layer_id = '__SKILL__'
+    skillset_layer_id = '__SKILLSET__'
+
+    @property
+    def search_id(self):
+        return self.manager.html_id+'-search'
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+'-title'
+
+    @property
+    def search_layer_ids(self):
+        return self.manager.html_id+"-layers"
+
+    def layerContainer(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    def layers(self):
+        result = []
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        skillset_layers = get_skillset_level_layers()
+        skill_layers = get_skill_level_layers()
+
+        items = [(l.__name__, l.title) for l in layers
+                 if l not in skillset_layers and l not in skill_layers]
+        skillset_title = _('Skill Set')
+        if skillset_layers:
+            layer_titles = ', '.join([l.title for l in skillset_layers])
+            skillset_title += ' (%s)' % layer_titles
+        items.append((self.skillset_layer_id, skillset_title))
+        skill_title = _('Skill')
+        if skill_layers:
+            layer_titles = ', '.join([l.title for l in skill_layers])
+            skill_title += ' (%s)' % layer_titles
+        items.append((self.skill_layer_id, skill_title))
+
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        for id, title in items:
+            checked = (not self.manager.fromPublication or
+                       id in request_layer_ids)
+            result.append({'id': id,
+                           'title': title,
+                           'checked': checked})
+        return result
 
     def filter(self, items):
         if 'SEARCH' not in self.request or 'CLEAR_SEARCH' in self.request:
             self.request.form['SEARCH'] = ''
             return items
-        query = buildQueryString(self.request['SEARCH'])
-        if not query:
-            return items
+
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        request_layer_ids = list(request_layer_ids)
 
         found_ids = set()
-        for catalog in self.catalog:
-            index = catalog[self.search_index]
-            found_in_catalog = index.apply(query)
+        query = buildQueryString(self.request.get('SEARCH', ''))
+
+        if self.skill_layer_id in request_layer_ids:
+            catalog = getSkillCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
             found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skill_layer_id)
+
+        if self.skillset_layer_id in request_layer_ids:
+            catalog = getSkillSetCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
+            found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skillset_layer_id)
+
+        catalog = getNodeCatalog()
+        if query:
+            index = catalog['text']
+            found_in_catalog = set(index.apply(query))
+        else:
+            found_in_catalog = set(catalog.extent)
+        index = getNodeCatalog()['layers']
+        found_by_layers = index.apply({'any_of': request_layer_ids})
+        found_in_catalog.intersection_update(found_by_layers)
+        found_ids.update(found_in_catalog)
 
         result = filter(lambda i: i['id'] in found_ids, items)
         return result
