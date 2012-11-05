@@ -945,12 +945,19 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
     def filter(self, items):
         if 'SEARCH' not in self.request or 'CLEAR_SEARCH' in self.request:
             self.request.form['SEARCH'] = ''
-            return items
-
-        request_layer_ids = self.request.get(self.search_layer_ids, [])
-        if not isinstance(request_layer_ids, list):
-            request_layer_ids = [request_layer_ids]
-        request_layer_ids = list(request_layer_ids)
+            layers = getOrderedByHierarchy(self.layerContainer().values())
+            skillset_layers = get_skillset_level_layers()
+            skill_layers = get_skill_level_layers()
+            request_layer_ids = [l.__name__ for l in layers
+                                 if l not in skillset_layers
+                                 and l not in skill_layers]
+            request_layer_ids.append(self.skill_layer_id)
+            request_layer_ids.append(self.skillset_layer_id)
+        else:
+            request_layer_ids = self.request.get(self.search_layer_ids, [])
+            if not isinstance(request_layer_ids, list):
+                request_layer_ids = [request_layer_ids]
+            request_layer_ids = list(request_layer_ids)
 
         found_ids = set()
         query = buildQueryString(self.request.get('SEARCH', ''))
