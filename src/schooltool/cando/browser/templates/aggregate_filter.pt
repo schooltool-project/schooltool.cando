@@ -1,6 +1,7 @@
 <script>ST.state.push()</script>
 <tal:script tal:replace="structure scriptlocal:container_id view/manager/html_id" />
 
+<input type="hidden" name="aggregate_filter_submitted">
 <tal:block i18n:domain="schooltool" define="batch nocall:view/manager/batch|nothing">
 
   <tal:if condition="batch">
