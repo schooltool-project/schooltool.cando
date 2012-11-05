@@ -1078,6 +1078,39 @@ class AggregateNodesSkillsSearchTable(table.ajax.IndexedTable):
         return results
 
 
+class NodesSearchTable(AggregateNodesSkillsSearchTable):
+
+    def columns(self):
+        label = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='label',
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or ''
+            )
+
+        title = table.column.IndexedLocaleAwareGetterColumn(
+            index='title',
+            name='title',
+            cell_formatter=table.ajax.url_cell_formatter,
+            title=_(u'Title'),
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
+
+        layers = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='layers',
+            name='layer_titles',
+            title=_(u'Layers'),
+            getter=get_aggregated_layers,
+            )
+
+        return [label, title, layers]
+
+
+class NodesSearchTableFilter(AggregateNodesTableFilter):
+    pass
+
+
 class NodeChildrenTable(SkillSearchTable):
 
     batch_size = 0
