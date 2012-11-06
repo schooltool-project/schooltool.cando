@@ -83,7 +83,7 @@ $(document).ready(function() {
         e.preventDefault();
     });
     // student gradebook
-    grades = $('table.grade-student');
+    grades = $('table.grade-student').closest('.content');
     grades.on('click', 'tbody td.student-score', function() {
         var td = $(this);
         if (isScorable(td)) {
