@@ -976,7 +976,6 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
             request_layer_ids.remove(self.skillset_layer_id)
 
         catalog = getNodeCatalog()
-        catalog.updateIndexes()
         if query:
             index = catalog['text']
             found_in_catalog = set(index.apply(query))
