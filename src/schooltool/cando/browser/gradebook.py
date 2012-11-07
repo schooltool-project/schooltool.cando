@@ -895,6 +895,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
     template = ViewPageTemplateFile('templates/aggregate_filter.pt')
     skill_layer_id = '__SKILL__'
     skillset_layer_id = '__SKILLSET__'
+    no_layer_id = '__NOLAYER__'
 
     @property
     def search_id(self):
@@ -930,6 +931,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
             layer_titles = ', '.join([l.title for l in skill_layers])
             skill_title += ' (%s)' % layer_titles
         items.append((self.skill_layer_id, skill_title))
+        items.append((self.no_layer_id, _('No layer assigned')))
 
         request_layer_ids = self.request.get(self.search_layer_ids, [])
         if not isinstance(request_layer_ids, list):
@@ -974,13 +976,20 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
             request_layer_ids.remove(self.skillset_layer_id)
 
         catalog = getNodeCatalog()
+        catalog.updateIndexes()
         if query:
             index = catalog['text']
             found_in_catalog = set(index.apply(query))
         else:
             found_in_catalog = set(catalog.extent)
         index = getNodeCatalog()['layers']
-        found_by_layers = index.apply({'any_of': request_layer_ids})
+        if self.no_layer_id in request_layer_ids:
+            found_no_layers = set(catalog.extent).difference(index.ids())
+            request_layer_ids.remove(self.no_layer_id)
+        else:
+            found_no_layers = []
+        found_by_layers = list(index.apply({'any_of': request_layer_ids}))
+        found_by_layers.extend(found_no_layers)
         found_in_catalog.intersection_update(found_by_layers)
         found_ids.update(found_in_catalog)
 

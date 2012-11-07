@@ -190,8 +190,12 @@ to do that.  We see there are no nodes yet.
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Search').click()
-    >>> print manager.query_all.css('h3')[1].text
-    There are no nodes.
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
+    >>> print manager.query_all.xpath('//table//a').get_attribute('href')
+    http://localhost/skills/Basic%20Al1
+    http://localhost/skills/Basic%20Ca3
+    http://localhost/skills/Continui2
+    http://localhost/skills/Continui4
 
 We'll add some nodes for the Math cluster.
 
@@ -204,6 +208,7 @@ Let's look at the Math node.  It has no parents, children, layers or skillsets.
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Search').click()
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> manager.query.link('Math').click()
     >>> print_node_attrs()
     Title: Math
@@ -354,6 +359,7 @@ or skillsets, but we see the children and the layer.
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Search').click()
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> manager.query.link('Math').click()
     >>> print manager.query_all.css('#parents p')
     <p i18:translate="">
@@ -375,6 +381,7 @@ We see that there are not any there yet.
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Search').click()
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> manager.query.link('Algebra I').click()
     >>> print manager.query_all.css('#skillsets p')
     <p i18:translate="">
@@ -434,4 +441,4 @@ there now.
     >>> print manager.query_all.css('#skillsets .data a').get_attribute('href')
     http://localhost/skills/Basic%20Al1
     http://localhost/skills/Continui2
-
+    

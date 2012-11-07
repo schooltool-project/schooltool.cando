@@ -96,6 +96,7 @@ Set up skills:
     ...     required=False)
 
     >>> manager.query.link('Search').click()
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> manager.query.link('Programming').click()
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
@@ -147,18 +148,21 @@ Set up three skills in the default project:
     >>> teacher.query.css('ul.gradebook-modes #projects').click()
 
     >>> teacher.query.link('Skill').click()
+    >>> teacher.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> teacher.query.link('Programming').click()
     >>> teacher.query.link('Python Environment').click()
     >>> teacher.query.name('Python E1.Use the 1').click()
     >>> teacher.query.name('SUBMIT').click()
 
     >>> teacher.query.link('Skill').click()
+    >>> teacher.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> teacher.query.link('Programming').click()
     >>> teacher.query.link('Errors').click()
     >>> teacher.query.name('Errors-3.Recogniz1').click()
     >>> teacher.query.name('SUBMIT').click()
 
     >>> teacher.query.link('Skill').click()
+    >>> teacher.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> teacher.query.link('Programming').click()
     >>> teacher.query.link('Strings').click()
     >>> teacher.query.name('Strings-4.Use the 4').click()

@@ -109,55 +109,15 @@ It has three layers in its heirarchy.
     http://localhost/layers/branch
     http://localhost/layers/topic
 
-There are six nodes.
+The search view returns nodes mixed with skillsets and skills.
 
     >>> manager.open('http://localhost/nodes')
+    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
     >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
     http://localhost/nodes/carpentry
-    http://localhost/nodes/conventional
-    http://localhost/nodes/creative
-    http://localhost/nodes/hammering
-    http://localhost/nodes/pounding
-    http://localhost/nodes/whacking
-
-    >>> manager.query.link('Carpentry').click()
-    >>> print_attrs()
-    Title: Carpentry
-    Description: Carpentry has a description.
-    Label: carp
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Conventional').click()
-    >>> print_attrs()
-    Title: Conventional
-    Description:
-    Label:
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Creative').click()
-    >>> print_attrs()
-    Title: Creative
-    Description:
-    Label: creat
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Hammering').click()
-    >>> print_attrs()
-    Title: Hammering
-    Description:
-    Label:
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Pounding').click()
-    >>> print_attrs()
-    Title: Pounding
-    Description:
-    Label:
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Whacking').click()
-    >>> print_attrs()
-    Title: Whacking
-    Description:
-    Label:
+    http://localhost/skills/carpentry
+    http://localhost/skills/carpentry/hammering
+    http://localhost/skills/carpentry/pounding
+    http://localhost/documents/sample
+    http://localhost/skills/carpentry/whacking
 
