@@ -2,10 +2,13 @@
 CHANGES
 =======
 
-0.4 (unreleased)
-----------------
+0.3.1 (2012-11-08)
+------------------
 
-- Nothing changed yet.
+- Sorted skills by label in the skills gradebook
+- Fixed validation in score student view
+- Removed subscriber that prevented section deleting
+- Restore scores that disappeared after upgrade to 0.3
 
 
 0.3 (2012-10-19)
