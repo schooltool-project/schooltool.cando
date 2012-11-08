@@ -32,6 +32,7 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.relationships import CourseSections
 from schooltool.cando.course import getSectionSkills
 from schooltool.cando.course import SectionSkillSet, SectionSkill
+from schooltool.term.interfaces import ITerm
 
 COURSE_SKILLS_KEY = 'schooltool.cando.project.courseskills'
 EVALUATIONS_KEY = "schooltool.evaluations"
@@ -71,7 +72,27 @@ def reassignScoreSkill(section_worksheets, evaluations, score):
                 return
 
 
+def pick_section(score, sections):
+    date = score.time.date()
+    before, after = [], []
+    for section in sections:
+        term = ITerm(section)
+        if date in term:
+            return section
+        if date > term.last:
+            before.append((term.last, section))
+        if date < term.first:
+            after.append((term.first, section))
+    if before:
+        return max(before)[1]
+    if after:
+        return min(after)[1]
+    return None
+
+
 def evolveCourse(app, course):
+    int_ids = getUtility(IIntIds)
+
     annotations = IAnnotations(course)
     if COURSE_SKILLS_KEY not in annotations:
         return
@@ -83,17 +104,24 @@ def evolveCourse(app, course):
         return
 
     instructor_sections = {}
+    student_sections = {}
     students = {}
     evaluations = {}
     for section in course_sections:
+        sid = int_ids.getId(section)
         for student in section.members:
             if student not in students:
                 students[student.__name__] = students
             annotations = IAnnotations(student)
             if EVALUATIONS_KEY in annotations:
                 evaluations[student.__name__] = annotations[EVALUATIONS_KEY]
+            if student.__name__ not in student_sections:
+                student_sections[student.__name__] = {}
+            student_sections[student.__name__][sid] = section
         for instructor in section.instructors:
-            instructor_sections[instructor.__name__] = section
+            if instructor.__name__ not in instructor_sections:
+                instructor_sections[instructor.__name__] = {}
+            instructor_sections[instructor.__name__][sid] = section
 
     for course_skillset in courseskills.values():
         deploySkillSet(course_skillset, course_sections)
@@ -108,11 +136,29 @@ def evolveCourse(app, course):
                 if not scores:
                     continue
                 for score in scores.values():
-                    target_section = instructor_sections.get(score.evaluator)
+                    sections_taught = instructor_sections.get(
+                        score.evaluator, {})
+                    sections_attended = student_sections.get(
+                        score.evaluatee.__name__, {})
+
+                    # Try picking sections of this course attended by evaluatee
+                    # and taught by evaluator.
+                    likely_sections = [
+                        sections_attended[sid]
+                        for sid in  set(sections_taught).intersection(sections_attended)]
+                    target_section = pick_section(score, likely_sections)
+
+                    if target_section is None:
+                        # Maybe evaulator has changed. Try picking sections
+                        # of this course attended by evaluatee
+                        target_section = pick_section(score, sections_attended.values())
+                    if target_section is None:
+                        # Try picking sections of this course taught by evaluator
+                        target_section = pick_section(score, sections_taught.values())
                     if target_section is None:
                         continue
                     if id(target_section) not in worksheet_cache:
-                        worksheet_cache[id(target_section)] = getSectionSkills(section)
+                        worksheet_cache[id(target_section)] = getSectionSkills(target_section)
                     reassignScoreSkill(worksheet_cache[id(target_section)],
                                        student_evaluations, score)
 

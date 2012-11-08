@@ -211,7 +211,7 @@ class SectionSkill(Skill):
 
     @property
     def section(self):
-        if self.section_id is None:
+        if self.section_intid is None:
             return None
         int_ids = getUtility(IIntIds)
         section = int_ids.queryObject(self.section_intid)

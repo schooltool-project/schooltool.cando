@@ -24,7 +24,12 @@ database that did not have generations.
 """
 
 import evolve1
+import evolve2
 
 
 def evolve(context):
     evolve1.evolve(context)
+    # Do not run evolve 2 on install, because it fixes data
+    # that were misplaced by older version of evolve1.
+    # Now evolve1 does the job.
+    #evolve2.evolve(context)
