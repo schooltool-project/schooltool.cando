@@ -126,6 +126,8 @@ def replayScore(evaluations, score, skill):
             evaluations[skill] = score
         else:
             evaluations.appendToHistory(skill, score)
+        return
+
     evaluations._history[skill_ref].insert(insert_before, score)
 
 
@@ -142,7 +144,8 @@ def fixSkillScores(app, person):
         skill = ref()
         if not isinstance(skill, SectionSkill):
             continue
-        if ref in evaluations._history:
+        if (evaluations._history is not None and
+            ref in evaluations._history):
             for n, score in enumerate(evaluations._history[ref]):
                 if (score is None or
                     not isinstance(score.requirement, SectionSkill)):
@@ -165,7 +168,8 @@ def fixSkillScores(app, person):
                     if skill is not None:
                         misplaced_scores.append((score, skill))
                         del evaluations._btree[ref]
-                        if (ref in evaluations._history and
+                        if (evaluations._history is not None and
+                            ref in evaluations._history and
                             evaluations._history[ref]):
                             evaluations._btree[ref] = evaluations._history.pop()
 
