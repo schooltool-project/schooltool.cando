@@ -20,16 +20,12 @@
 import itertools
 
 from persistent import Persistent
+import zope.lifecycleevent
 from zope.catalog.text import TextIndex
 from zope.container.btree import BTreeContainer
 from zope.container.contained import Contained
 from zope.component import adapts, adapter
-from zope.component import getUtility
 from zope.interface import implements, implementer
-from zope.intid import addIntIdSubscriber
-from zope.intid.interfaces import IIntIds
-from zope.lifecycleevent import ObjectAddedEvent
-from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from zope.security.proxy import removeSecurityProxy
 
 from schooltool.app.app import InitBase, StartUpBase
@@ -479,6 +475,13 @@ def removingLayerDoesntViolateModel(event):
             child_nodes=child_nodes_in_model)
 
 
+def nodeModifiedOnNodeLayerChange(event):
+    match = event.match(NodeLayer)
+    if match is None:
+        return
+    zope.lifecycleevent.modified(match.node)
+
+
 def getOrderedByHierarchy(layers):
     layers = list(layers)
     orphans = []
@@ -546,7 +549,7 @@ def get_node_layer_titles(node):
 
 class NodeCatalog(AttributeCatalog):
 
-    version = '1 - attributes and text indexes'
+    version = '1.1 - update layers and layer titles'
     interface = interfaces.INode
     attributes = ('title', 'label', 'description',
                   'required', 'retired')
