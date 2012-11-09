@@ -45,7 +45,7 @@ Set up skills:
     ...     required=False)
 
     >>> manager.query.link('Search').click()
-    >>> manager.query.xpath('//input[@name="SEARCH_BUTTON"]').click()
+    >>> manager.query.button('Search').click()
     >>> manager.query.link('Programming').click()
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
