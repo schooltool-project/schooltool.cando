@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-0.4 (unreleased)
-----------------
+0.3.2 (2012-11-09)
+------------------
 
-- Nothing changed yet.
+- Fix for the missing scores fix
 
 
 0.3.1 (2012-11-08)
