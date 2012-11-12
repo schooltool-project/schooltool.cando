@@ -15,6 +15,22 @@ We'll define a helper function for printing the form fields of any object.
     ...         value = row.query.xpath('td[2]').text
     ...         print '%s: %s' % (label, value)
 
+    >>> from schooltool.testing.util import format_table
+    >>> def print_table(manager, xpath):
+    ...     table = manager.query.xpath(xpath)
+    ...     nheader = len(table.query_all.xpath('./thead/tr'))
+    ...     nrows = len(table.query_all.xpath('./tbody/tr|./tr'))
+    ...     rows = []
+    ...     row = []
+    ...     cells = table.query_all.xpath('.//th|.//td')
+    ...     ncols = len(cells) / (nheader + nrows)
+    ...     for n, cell in enumerate(cells):
+    ...         row.append(cell.text)
+    ...         if (n+1) % ncols == 0:
+    ...             rows.append(row)
+    ...             row = []
+    ...     print format_table(rows, header_rows=nheader)
+
 Let's import a file containing all the skill object types:
 
     >>> import os
@@ -30,134 +46,120 @@ There should be no errors so we should be back at the School tab view:
 Let's check the data.  There is one skillset called Carpentry.
 
     >>> manager.open('http://localhost/skills')
-    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/skills/carpentry
 
-    >>> manager.query.link('Carpentry').click()
-    >>> print_attrs()
-    Full description: ext_carp
-    Label: Carp label
+    >>> print_table(manager, '//table[@class="data"]')
+    +------------+-----------+--------+
+    | Label      | Title     | Skills |
+    +------------+-----------+--------+
+    | Carp label | Carpentry | 3      |
+    +------------+-----------+--------+
 
 It has three skills.
 
-    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/skills/carpentry/hammering
-    http://localhost/skills/carpentry/pounding
-    http://localhost/skills/carpentry/whacking
+    >>> manager.query.link('Carpentry').click()
 
-    >>> manager.query.link('Pounding').click()
-    >>> print_attrs()
-    Full description:
-    Short label:
-    Required: Yes
-    External ID: ext_123
+    >>> print_table(manager, '//table[@class="form-fields"]')
+    +------------------+------------+
+    | Full description | ext_carp   |
+    | Label            | Carp label |
+    +------------------+------------+
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Hammering').click()
-    >>> print_attrs()
-    Full description: This is hammering.
-    Short label: Label
-    Required: No
-    External ID:
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Whacking').click()
-    >>> print_attrs()
-    Full description: Whacking desc.
-    Short label:
-    Required: No
-    External ID:
-
-There are three layers.
+There are five layers.
 
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Layers').click()
-    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/layers/branch
-    http://localhost/layers/craft
-    http://localhost/layers/topic
 
-    >>> manager.query.link('Branch').click()
-    >>> print_attrs()
-    Title: Branch
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Topic').click()
-    >>> print_attrs()
-    Title: Topic
-
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Craft').click()
-    >>> print_attrs()
-    Title: Craft
+    >>> print_table(manager, '//table[@class="data"]')
+    +--------------+---------------+---------------+
+    | Title        | Parents       | Children      |
+    +--------------+---------------+---------------+
+    | Branch       | Craft         | Topic         |
+    | Competencies |               |               |
+    | Competency   |               |               |
+    | Craft        |               | Branch, Topic |
+    | Topic        | Branch, Craft |               |
+    +--------------+---------------+---------------+
 
 There is a single sample document.
 
     >>> manager.query.link('School').click()
     >>> manager.query.link('Skills').click()
     >>> manager.query.link('Documents').click()
-    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/documents/sample
 
-It has three layers in its heirarchy.
+    >>> print_table(manager, '//table[@class="data"]')
+    +------------+
+    | Title      |
+    +------------+
+    | Sample Doc |
+    +------------+
+
+It has five layers in its heirarchy: top three are for use with nodes,
+bottom two are only used to name skills and skillsets.
 
     >>> manager.query.link('Sample Doc').click()
     >>> manager.query.link('Layer Hierarchy').click()
-    >>> print manager.query_all.xpath('//table//a').get_attribute('href')
-    http://localhost/layers/craft
-    http://localhost/layers/branch
-    http://localhost/layers/topic
 
-There are six nodes.
+    >>> print_table(manager, '//table[@class="data relationships-table"]')
+    +--------------+---------------+---------------+--------+
+    | Title        | Parents       | Children      | Remove |
+    +--------------+---------------+---------------+--------+
+    | Craft        |               | Branch, Topic |        |
+    | Branch       | Craft         | Topic         |        |
+    | Topic        | Branch, Craft |               |        |
+    | Competencies |               |               |        |
+    | Competency   |               |               |        |
+    +--------------+---------------+---------------+--------+
+
+The search view returns nodes mixed with skillsets and skills.
 
     >>> manager.open('http://localhost/nodes')
-    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
-    http://localhost/nodes/carpentry
-    http://localhost/nodes/conventional
-    http://localhost/nodes/creative
-    http://localhost/nodes/hammering
-    http://localhost/nodes/pounding
-    http://localhost/nodes/whacking
 
-    >>> manager.query.link('Carpentry').click()
-    >>> print_attrs()
-    Title: Carpentry
-    Description: Carpentry has a description.
-    Label: carp
+    >>> def searchAndPrintTable(manager):
+    ...     table = manager.query.xpath('//table[@class="data"]')
+    ...     manager.query.button('Search').click()
+    ...     manager.wait(lambda: table.expired)
+    ...     print_table(manager, '//table[@class="data"]')
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Conventional').click()
-    >>> print_attrs()
-    Title: Conventional
-    Description:
-    Label:
+    >>> searchAndPrintTable(manager)
+    +------------+--------------+---------------+
+    | Label      | Title        | Layers        |
+    +------------+--------------+---------------+
+    | carp       | Carpentry    | Craft         |
+    | Carp label | Carpentry    | Competencies  |
+    |            | Conventional | Branch        |
+    | creat      | Creative     | Branch        |
+    |            | Hammering    | Topic, Branch |
+    | Label      | Hammering    | Competency    |
+    |            | Pounding     | Topic         |
+    |            | Pounding     | Competency    |
+    |            | Sample Doc   |               |
+    |            | Whacking     | Topic         |
+    |            | Whacking     | Competency    |
+    +------------+--------------+---------------+
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Creative').click()
-    >>> print_attrs()
-    Title: Creative
-    Description:
-    Label: creat
+We can filter out some of the layers.
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Hammering').click()
-    >>> print_attrs()
-    Title: Hammering
-    Description:
-    Label:
+    >>> print '\n'.join([e.text for e in manager.query_all.xpath('//fieldset//div[@class="row"]//label')])
+    Search
+    Craft
+    Branch
+    Topic
+    Skill Set (Competencies)
+    Skill (Competency)
+    No layer assigned
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Pounding').click()
-    >>> print_attrs()
-    Title: Pounding
-    Description:
-    Label:
+    >>> manager.query.xpath('//label[contains(., "Competency")]').click()
+    >>> manager.query.xpath('//label[contains(., "Branch")]').click()
+    >>> manager.query.xpath('//label[contains(., "Craft")]').click()
 
-    >>> manager.query.link('Done').click()
-    >>> manager.query.link('Whacking').click()
-    >>> print_attrs()
-    Title: Whacking
-    Description:
-    Label:
-
+    >>> searchAndPrintTable(manager)
+    +------------+------------+---------------+
+    | Label      | Title      | Layers        |
+    +------------+------------+---------------+
+    | Carp label | Carpentry  | Competencies  |
+    |            | Hammering  | Topic, Branch |
+    |            | Pounding   | Topic         |
+    |            | Sample Doc |               |
+    |            | Whacking   | Topic         |
+    +------------+------------+---------------+

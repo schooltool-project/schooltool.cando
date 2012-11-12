@@ -27,6 +27,9 @@ always come at the end, sorted by title.
     layer4
     layer5
     layer6
+    __SKILLSET__
+    __SKILL__
+    __NOLAYER__
 
 First, we'll make layer4 the parent of layer2.
 
@@ -46,6 +49,9 @@ orphans, sorted by title.
     layer3
     layer5
     layer6
+    __SKILLSET__
+    __SKILL__
+    __NOLAYER__
 
 Next, we'll make layer2 the parent of layer5.
 
@@ -65,6 +71,9 @@ layer2's child, layer5, then the orphans, sorted by title.
     layer1
     layer3
     layer6
+    __SKILLSET__
+    __SKILL__
+    __NOLAYER__
 
 Now we'll get cute and add a parent to a layer that already has one.  Layer6
 will also have layer5 as a child.
@@ -84,6 +93,9 @@ Now layer6 comes before layer5 in the sort.
     layer5
     layer1
     layer3
+    __SKILLSET__
+    __SKILL__
+    __NOLAYER__
 
 Finally, we make Layer3 the parent of layer6.
 
@@ -103,4 +115,7 @@ our last remaining orphan at the end.
     layer6
     layer5
     layer1
+    __SKILLSET__
+    __SKILL__
+    __NOLAYER__
 

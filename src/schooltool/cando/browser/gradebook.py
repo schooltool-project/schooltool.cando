@@ -27,6 +27,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
 from zope.i18n.interfaces.locales import ICollator
@@ -37,7 +38,7 @@ from zope.traversing.api import getName
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
 from zope.proxy import sameProxiedObjects
-import zc.table.column
+from zc.catalog.interfaces import IExtentCatalog
 from zc.table.interfaces import ISortableColumn
 
 from z3c.form import form, field, button
@@ -66,20 +67,30 @@ from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
+import schooltool.table.catalog
 from schooltool.skin import flourish
 from schooltool import table
 
+from schooltool.cando.model import NodeLink, NodeLayer, NodeSkillSets
+from schooltool.cando.model import DocumentHierarchy
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import IProjectsGradebook
+from schooltool.cando.interfaces import ISkill, ISkillSet
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ILayerContainer
+from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
+from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.gradebook import ensureAtLeastOneProject
 from schooltool.cando.browser.model import NodesTable
 from schooltool.cando.project import Project
+from schooltool.cando.model import getNodeCatalog
+from schooltool.cando.model import getOrderedByHierarchy
+from schooltool.cando.skill import getSkillCatalog, getSkillSetCatalog
 from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
 from schooltool.cando import CanDoMessage as _
@@ -661,7 +672,8 @@ class ProjectSkillSearchView(flourish.page.Page):
     third_step_template = InlineViewPageTemplate('''
       <tal:block i18n:domain="schooltool.cando"
                  define="skills view/skills;">
-        <h3 tal:content="view/node/title" />
+        <h3 tal:content="view/node/title"
+            tal:condition="python: view.node is not None"/>
         <h3 tal:content="view/skillset/title" />
         <form method="post" tal:condition="skills"
               tal:attributes="action request/URL">
@@ -683,7 +695,8 @@ class ProjectSkillSearchView(flourish.page.Page):
                 <td tal:content="skill/title" />
                 <td>
                   <input type="checkbox" value="1"
-                         tal:attributes="name skill/input_name" />
+                         tal:attributes="name skill/input_name;
+                                         checked skill/checked" />
                 </td>
               </tr>
             </tbody>
@@ -703,9 +716,9 @@ class ProjectSkillSearchView(flourish.page.Page):
 
     @property
     def content_template(self):
+        if self.skillset is not None:
+            return self.third_step_template
         if self.node is not None:
-            if self.skillset is not None:
-                return self.third_step_template
             return self.second_step_template
         return self.first_step_template
 
@@ -732,10 +745,13 @@ class ProjectSkillSearchView(flourish.page.Page):
     def skills(self):
         result = []
         for skill in self.skillset.values():
+            input_name = self.getSkillId(skill)
+            checked = self.request.get(input_name) and 'checked' or None
             result.append({
                     'label': skill.label,
                     'title': skill.title,
-                    'input_name': self.getSkillId(skill),
+                    'input_name': input_name,
+                    'checked': checked,
                     'obj': skill,
                     })
         return result
@@ -790,6 +806,320 @@ class SkillSearchTable(NodesTable):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+def aggregate_search_title_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        if INode.providedBy(item):
+            return '<a href="%s?node=%s">%s</a>' % (
+                view_url, item.__name__, value)
+        elif ISkillSet.providedBy(item):
+            node = formatter.request.get('node', '')
+            return '<a href="%s?node=%s&skillset=%s">%s</a>' % (
+                view_url, node, item.__name__, value)
+        elif ISkill.providedBy(item):
+            node = formatter.request.get('node', '')
+            skill_field_id = '%s.%s' % (item.__parent__.__name__, item.__name__)
+            return '<a href="%s?node=%s&skillset=%s&%s=selected">%s</a>' % (
+                view_url, node, item.__parent__.__name__, skill_field_id, value)
+        return '<span>%s</span>' % value
+    return cell_formatter
+
+
+def get_node_documents(node):
+    layers = NodeLayer.query(node=node)
+    documents = {}
+    if not layers:
+        parents = NodeLink.query(child=node)
+        for parent in parents:
+            parent_docs = get_node_documents(parent)
+            for doc in parent_docs:
+                documents[doc.__name__] = doc
+    else:
+        for layer in layers:
+            layer_docs = DocumentHierarchy.query(layer=layer)
+            for doc in layer_docs:
+                documents[doc.__name__] = doc
+    return tuple(documents.values())
+
+
+def get_skillset_documents(skillset):
+    documents = {}
+    nodes = NodeSkillSets.query(skillset=skillset)
+    for node in nodes:
+        node_docs = get_node_documents(node)
+        for doc in node_docs:
+            documents[doc.__name__] = doc
+    return tuple(documents.values())
+
+
+def get_skillset_document_layers(skillset, index=-1):
+    documents = get_skillset_documents(skillset)
+    layers = []
+    for document in documents:
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= index:
+            layers.append(hierarchy_layers[index])
+    return layers
+
+
+def get_aggregated_layers(item, formatter):
+    if ISkill.providedBy(item):
+        layers = get_skillset_document_layers(item.__parent__, -1)
+        return u', '.join([l.title for l in layers])
+    if ISkillSet.providedBy(item):
+        layers = get_skillset_document_layers(item, -2)
+        return u', '.join([l.title for l in layers])
+    if INode.providedBy(item):
+        return u', '.join([l.title for l in item.layers])
+    return ''
+
+
+def get_skillset_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 2:
+            layers.add(hierarchy_layers[-2])
+    return tuple(layers)
+
+
+def get_skill_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 1:
+            layers.add(hierarchy_layers[-1])
+    return layers
+
+
+class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
+
+    template = ViewPageTemplateFile('templates/aggregate_filter.pt')
+    skill_layer_id = '__SKILL__'
+    skillset_layer_id = '__SKILLSET__'
+    no_layer_id = '__NOLAYER__'
+
+    @property
+    def search_id(self):
+        return self.manager.html_id+'-search'
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+'-title'
+
+    @property
+    def search_layer_ids(self):
+        return self.manager.html_id+"-layers"
+
+    def layerContainer(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    def layers(self):
+        result = []
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        skillset_layers = get_skillset_level_layers()
+        skill_layers = get_skill_level_layers()
+
+        items = [(l.__name__, l.title) for l in layers
+                 if l not in skillset_layers and l not in skill_layers]
+        skillset_title = _('Skill Set')
+        if skillset_layers:
+            layer_titles = ', '.join([l.title for l in skillset_layers])
+            skillset_title += ' (%s)' % layer_titles
+        items.append((self.skillset_layer_id, skillset_title))
+        skill_title = _('Skill')
+        if skill_layers:
+            layer_titles = ', '.join([l.title for l in skill_layers])
+            skill_title += ' (%s)' % layer_titles
+        items.append((self.skill_layer_id, skill_title))
+        items.append((self.no_layer_id, _('No layer assigned')))
+
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        for id, title in items:
+            checked = (not self.manager.fromPublication or
+                       id in request_layer_ids)
+            result.append({'id': id,
+                           'title': title,
+                           'checked': checked})
+        return result
+
+    def filter(self, items):
+        if 'aggregate_filter_submitted' not in self.request:
+            return []
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        request_layer_ids = list(request_layer_ids)
+
+        found_ids = set()
+        query = buildQueryString(self.request.get('SEARCH', ''))
+
+        if self.skill_layer_id in request_layer_ids:
+            catalog = getSkillCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
+            found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skill_layer_id)
+
+        if self.skillset_layer_id in request_layer_ids:
+            catalog = getSkillSetCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
+            found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skillset_layer_id)
+
+        catalog = getNodeCatalog()
+        if query:
+            index = catalog['text']
+            found_in_catalog = set(index.apply(query))
+        else:
+            found_in_catalog = set(catalog.extent)
+        index = getNodeCatalog()['layers']
+        if self.no_layer_id in request_layer_ids:
+            found_no_layers = set(catalog.extent).difference(index.ids())
+            request_layer_ids.remove(self.no_layer_id)
+        else:
+            found_no_layers = []
+        found_by_layers = list(index.apply({'any_of': request_layer_ids}))
+        found_by_layers.extend(found_no_layers)
+        found_in_catalog.intersection_update(found_by_layers)
+        found_ids.update(found_in_catalog)
+
+        result = filter(lambda i: i['id'] in found_ids, items)
+        return result
+
+
+class AggregateNodesSkillsSearchTable(table.ajax.IndexedTable):
+
+    @Lazy
+    def catalog(self):
+        catalogs = (getNodeCatalog(), getSkillSetCatalog(), getSkillCatalog())
+        return catalogs
+
+    def columns(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+
+        label = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='label',
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or ''
+            )
+
+        title = table.column.IndexedLocaleAwareGetterColumn(
+            index='title',
+            name='title',
+            cell_formatter=aggregate_search_title_formatter(view_url),
+            title=_(u'Title'),
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
+
+        layers = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='layers',
+            name='layer_titles',
+            title=_(u'Layers'),
+            getter=get_aggregated_layers,
+            )
+
+        return [label, title, layers]
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+    def items(self):
+        ids = set()
+        items = []
+        for catalog in self.catalog:
+            new_ids = set()
+            if IExtentCatalog.providedBy(catalog):
+                new_ids.update(set(catalog.extent).difference(ids))
+            else:
+                for index in catalog.values():
+                    new_ids.update(
+                        set(index.documents_to_values.keys()).difference(ids))
+            items += [{'id': id, 'catalog': catalog}
+                      for id in new_ids]
+            ids.update(new_ids)
+        return items
+
+    def indexItems(self, items):
+        """Convert a list of objects to a list of index dicts"""
+        int_ids = getUtility(IIntIds)
+        item_ids = [int_ids.getId(item) for item in items]
+        catalogs = list(self.catalog)
+        results = []
+        for item_id in item_ids:
+            indexed = None
+            for catalog in catalogs:
+                if IExtentCatalog.providedBy(catalog):
+                    if item_id in catalog.extent:
+                        indexed = {
+                            'id': int_ids.getId(item),
+                            'catalog': catalog,
+                            }
+                else:
+                    for index in catalog.values():
+                        if item_id in index.documents_to_values:
+                            indexed = {
+                                'id': int_ids.getId(item),
+                                'catalog': catalog,
+                                }
+                            break
+                if indexed is not None:
+                    results.append(indexed)
+                    break
+        return results
+
+
+class NodesSearchTable(AggregateNodesSkillsSearchTable):
+
+    def columns(self):
+        label = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='label',
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or ''
+            )
+
+        title = table.column.IndexedLocaleAwareGetterColumn(
+            index='title',
+            name='title',
+            cell_formatter=table.ajax.url_cell_formatter,
+            title=_(u'Title'),
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
+
+        layers = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='layers',
+            name='layer_titles',
+            title=_(u'Layers'),
+            getter=get_aggregated_layers,
+            )
+
+        return [label, title, layers]
+
+
+class NodesSearchTableFilter(AggregateNodesTableFilter):
+    pass
 
 
 class NodeChildrenTable(SkillSearchTable):

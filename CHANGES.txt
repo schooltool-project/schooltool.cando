@@ -5,6 +5,9 @@ CHANGES
 0.4 (unreleased)
 ----------------
 
+- Created NodeCatalog and SkillSetCatalog
+- New indexed AggregateNodesTable that mixes nodes with skillsets and skills
+- Got rid of skill layers from nodes-only table filter
 
 
 0.3.2 (2012-11-09)

@@ -66,6 +66,12 @@
       />
 
   <adapter
+      factory=".skill.SkillSetCatalog"
+      name="schooltool.cando.skill.SkillSetCatalog" />
+
+  <adapter factory=".skill.SearchableTextSkillSet" />
+
+  <adapter
       factory=".skill.SkillCatalog"
       name="schooltool.cando.skill.SkillCatalog" />
 
