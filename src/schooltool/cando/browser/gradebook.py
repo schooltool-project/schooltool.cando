@@ -38,6 +38,7 @@ from zope.traversing.api import getName
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
 from zope.proxy import sameProxiedObjects
+import zc.table.column
 from zc.catalog.interfaces import IExtentCatalog
 from zc.table.interfaces import ISortableColumn
 
