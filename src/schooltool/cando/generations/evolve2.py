@@ -146,6 +146,7 @@ def fixSkillScores(app, person):
             continue
         if (evaluations._history is not None and
             ref in evaluations._history):
+            remove_idx = []
             for n, score in enumerate(evaluations._history[ref]):
                 if (score is None or
                     not isinstance(score.requirement, SectionSkill)):
@@ -157,7 +158,9 @@ def fixSkillScores(app, person):
                 if skill is None:
                     continue
                 misplaced_scores.append((score, skill))
-                evaluations._history.pop(n)
+                remove_idx.append(n)
+            for n in reversed(remove_idx):
+                evaluations._history[ref].pop(n)
         if ref in evaluations._btree:
             score = evaluations._btree[ref]
             if (score is not None and
@@ -171,7 +174,7 @@ def fixSkillScores(app, person):
                         if (evaluations._history is not None and
                             ref in evaluations._history and
                             evaluations._history[ref]):
-                            evaluations._btree[ref] = evaluations._history.pop()
+                            evaluations._btree[ref] = evaluations._history[ref].pop()
 
     for score, skill in misplaced_scores:
         replayScore(evaluations, score, skill)
