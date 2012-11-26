@@ -26,9 +26,6 @@ from zope.i18n import translate
 from zope.i18n.interfaces.locales import ICollator
 from zope.interface import directlyProvides
 from zope.traversing.browser.absoluteurl import absoluteURL
-import z3c.form.form
-import z3c.form.field
-import z3c.form.button
 import zc.table.column
 from zc.table.interfaces import ISortableColumn
 

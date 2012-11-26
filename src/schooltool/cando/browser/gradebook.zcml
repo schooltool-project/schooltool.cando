@@ -3,6 +3,8 @@
            xmlns:zope="http://namespaces.zope.org/zope"
            xmlns:flourish="http://schooltool.org/flourish"
            xmlns:report="http://namespaces.schooltool.org/report"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           zcml:condition="have schooltool.skin.flourish"
            i18n_domain="schooltool.cando">
 
   <flourish:breadcrumb
