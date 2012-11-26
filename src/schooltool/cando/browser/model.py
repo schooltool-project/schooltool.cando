@@ -649,3 +649,39 @@ class EditNodeSkillSetsView(EditRelationships):
         return [p for p in container.values()
                 if p not in selected_items]
 
+
+def skillset_title_formatter(value, item, formatter):
+    return '<a href="%s">%s</a>' % (absoluteURL(item, formatter.request),
+                                    value)
+
+
+class NodeSkillSetsTable(table.ajax.Table):
+    
+    batch_size = 0
+
+    def items(self):
+        return self.context.skillsets
+
+    def columns(self):
+        label = table.column.LocaleAwareGetterColumn(
+            name='label',
+            title=_('Label'),
+            getter=lambda i, f: i.label or '',
+            subsort=True)
+        title = table.column.LocaleAwareGetterColumn(
+            name='title',
+            title=_('Title'),
+            getter=lambda i, f: i.title,
+            cell_formatter=skillset_title_formatter,
+            subsort=True)
+        return [label, title]
+
+    def sortOn(self):
+        return (('label', False), ('title', False))
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})

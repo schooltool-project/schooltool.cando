@@ -705,6 +705,22 @@
       permission="schooltool.view"
       />
 
+  <flourish:viewlet
+      name="node_skillsets_table"
+      class=".model.NodeSkillSetsTable"
+      for="schooltool.cando.interfaces.INode"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.NodeView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".model.NodeSkillSetsTable"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="edit.html"
       for="schooltool.cando.interfaces.INode"

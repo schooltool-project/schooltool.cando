@@ -78,8 +78,8 @@ of skills for Basic Algebra.
     >>> manager.ui.skill.add('Basic Algebra', 'Solve for multiple variables',
     ...                      label='L2', external_id='ext', required=False)
     >>> print manager.query_all.css('.data a').text
-    Solve for multiple variables
     Solve for one variable
+    Solve for multiple variables
 
 We'll look at the skills and see their attributes.
 
@@ -124,6 +124,5 @@ When we return to the skillset view, we see the change in the list.
 
     >>> manager.query.link('Done').click()
     >>> print manager.query_all.css('.data a').text
-    Solve for more than one variable
     Solve for one variable
-
+    Solve for more than one variable

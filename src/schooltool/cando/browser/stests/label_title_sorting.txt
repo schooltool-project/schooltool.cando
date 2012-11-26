@@ -1,0 +1,422 @@
+Sorting components by label and title
+=====================================
+
+We'll test the views that list nodes, skillsets and skills and verify
+that everything is sorted by label + title.
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up a schoolyear:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+
+Add a document with layers:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Document').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Virginia CTE')
+    >>> manager.query.id('add-button').click()
+    >>> manager.query.name('row2').ui.set_value('Course')
+    >>> manager.query.id('add-button').click()
+    >>> manager.query.name('row3').ui.set_value('Cluster')
+    >>> manager.query.id('form-buttons-add').click()
+
+Add some skill sets (removing the label for two of them):
+
+    >>> manager.ui.skillset.add('Fractions', '01')
+    >>> manager.ui.skillset.add('Percents', '02')
+    >>> manager.ui.skillset.add('Pre-algebra', '04')
+    >>> manager.ui.skillset.add('Geometry', '03')
+    >>> manager.ui.skillset.add('Arithmetic of Decimals')
+    >>> manager.query.link('Arithmetic of Decimals').click()
+    >>> manager.query.css('a[title="Edit this skill set"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.ui.skillset.add('Nouns and Adjective', '01')
+    >>> manager.ui.skillset.add('Function Words', '02')
+    >>> manager.ui.skillset.add('Verb Tenses', '03')
+    >>> manager.ui.skillset.add('Essential Verbs', '04')
+    >>> manager.ui.skillset.add('Word Classes')
+    >>> manager.query.link('Word Classes').click()
+    >>> manager.query.css('a[title="Edit this skill set"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+Print labels and titles of the skill sets:
+
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title, skills = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Arithmetic of Decimals
+    , Word Classes
+    01, Fractions
+    01, Nouns and Adjective
+    02, Function Words
+    02, Percents
+    03, Geometry
+    03, Verb Tenses
+    04, Essential Verbs
+    04, Pre-algebra
+
+Add skills to one skill set (removing the label in two of them):
+
+    >>> manager.ui.skill.add('Fractions', 'Multiply two fractions.', '01')
+    >>> manager.ui.skill.add('Fractions',
+    ...                      'Divide a fraction by a mixed number.', '02')
+    >>> manager.ui.skill.add('Fractions',
+    ...                      'Divide a fraction by a whole number.', '03')
+    >>> manager.ui.skill.add('Fractions', 'Read and write fractions.')
+    >>> manager.ui.skill.add('Fractions',
+    ...                      'Convert mixed numbers to improper fractions.')
+
+    >>> manager.query.link('Read and write fractions.').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+    >>> manager.query.link('Convert mixed numbers to improper fractions.').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+Print labels and titles of the skills:
+
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Convert mixed numbers to improper fractions.
+    , Read and write fractions.
+    01, Multiply two fractions.
+    02, Divide a fraction by a mixed number.
+    03, Divide a fraction by a whole number.
+
+Create a node and associate the Fractions skill set, so later it can
+be assigned to a SchoolTool course:
+
+    >>> manager.ui.node.add('Math')
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = 'a[title="Edit skillsets"]'
+    >>> manager.query.css(sel).click()
+    >>> manager.query.name('add_item.Fraction1').click()
+
+Add some clusters:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Virginia CTE').click()
+
+    >>> manager.query.link('Cluster').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Human Services')
+    >>> manager.query.id('form-widgets-label').ui.set_value('03')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.query.link('Cluster').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Marketing')
+    >>> manager.query.id('form-widgets-label').ui.set_value('01')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.query.link('Cluster').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Information Technology')
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Information Technology').click()
+    >>> manager.query.css('a[title="Edit this Document"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+    >>> manager.query.link('Cluster').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Finance')
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Finance').click()
+    >>> manager.query.css('a[title="Edit this Document"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+Print label and titles of the clusters:
+
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Finance
+    , Information Technology
+    01, Marketing
+    03, Human Services
+
+Add some courses to the Finance cluster:
+
+    >>> manager.query.link('Finance').click()
+    >>> cluster_url = manager.url
+    >>> manager.query.link('Course').click()
+    >>> add_course_url = manager.url
+
+    >>> manager.open(add_course_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Business Law')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.open(add_course_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Accounting')
+    >>> manager.query.id('form-widgets-label').ui.set_value('01')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.open(add_course_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Accounting, Advanced')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.open(add_course_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Notetaking')
+    >>> manager.query.id('form-widgets-label').ui.set_value('00')
+    >>> manager.query.id('form-buttons-add').click()
+
+Print labels and titles of the courses of the cluster:
+
+    >>> manager.open(cluster_url)
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Accounting, Advanced
+    , Business Law
+    00, Notetaking
+    01, Accounting
+
+Add some skill sets to the Business Law course:
+
+    >>> manager.query.link('Business Law').click()
+    >>> course_url = manager.url
+    >>> manager.query.link('SkillSet').click()
+    >>> add_skillset_url = manager.url
+
+    >>> manager.open(add_skillset_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Identifying Contracts')
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.css('a[title="Edit this skill set"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.open(add_skillset_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Exploring Tort Law')
+    >>> manager.query.id('form-widgets-label').ui.set_value('01')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.open(add_skillset_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Analyzing Types of Business Organizations')
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.css('a[title="Edit this skill set"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.open(add_skillset_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Preparing for Business Law Careers')
+    >>> manager.query.id('form-widgets-label').ui.set_value('00')
+    >>> manager.query.id('form-buttons-add').click()
+
+Print labels and titles of the skill sets of the course:
+
+    >>> manager.open(course_url)
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Analyzing Types of Business Organizations
+    , Identifying Contracts
+    00, Preparing for Business Law Careers
+    01, Exploring Tort Law
+
+Add some skills to the Identifying Contracts skill set:
+
+    >>> manager.query.link('Identifying Contracts').click()
+    >>> skillset_url = manager.url
+    >>> manager.query.link('Skill').click()
+    >>> add_skill_url = manager.url
+
+    >>> manager.open(add_skill_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Analyze the need for a contract')
+    >>> manager.query.id('form-widgets-required-0').click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Analyze the need for a contract').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.open(add_skill_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Compare types of contracts')
+    >>> manager.query.id('form-widgets-required-1').click()
+    >>> manager.query.id('form-widgets-label').ui.set_value('01')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.open(add_skill_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Explain elements of a contract')
+    >>> manager.query.id('form-widgets-required-0').click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Explain elements of a contract').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.open(add_skill_url)
+    >>> manager.query.id('form-widgets-title').ui.set_value('Explain the Statute of Frauds')
+    >>> manager.query.id('form-widgets-required-1').click()
+    >>> manager.query.id('form-widgets-label').ui.set_value('00')
+    >>> manager.query.id('form-buttons-add').click()
+
+Print labels and titles and requirement of the skills of the skill
+set:
+
+    >>> manager.open(skillset_url)
+    >>> sel = 'table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title, required = row.query_all.tag('td')
+    ...     print "%s, %s, %s" % (label.text, title.query.tag('a').text, required.text)
+    , Analyze the need for a contract, Yes
+    , Explain elements of a contract, Yes
+    00, Explain the Statute of Frauds, No
+    01, Compare types of contracts, No
+
+Let's visit the Business Law course node:
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.link('Business Law').click()
+    >>> print manager.query.css('.page .header h1').text
+    Business Law
+    >>> print manager.query.css('.page .header h2').text
+    View Node
+
+Print the skill sets in the SkillSets accordion:
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '#skillsets table.data tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     label, title = row.query_all.tag('td')
+    ...     print "%s, %s" % (label.text, title.query.tag('a').text)
+    , Analyzing Types of Business Organizations
+    , Identifying Contracts
+    00, Preparing for Business Law Careers
+    01, Exploring Tort Law
+
+Now, let's test the skills view for SchoolTool courses. We'll add a
+course:
+
+    >>> manager.ui.course.add('2012', 'Business law')
+
+And assign the skill sets from the Business law course node:
+
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Assign Skills').click()
+    >>> manager.query.id('business-law').click()
+
+Skill sets should be sorted by label:
+
+    >>> dialog = manager.query.css('.ui-dialog')
+    >>> sel = '#business-law-container table tbody h2'
+    >>> for title in dialog.query_all.css(sel):
+    ...     print title.text
+    Analyzing Types of Business Organizations
+    Identifying Contracts
+    00: Preparing for Business Law Careers
+    01: Exploring Tort Law
+
+    >>> manager.wait_page(dialog.query.name('SUBMIT_BUTTON').click)
+
+The assigned skills view should be sorted the same:
+
+    >>> sel = '.courseskills-table tbody h2'
+    >>> for title in manager.query_all.css(sel):
+    ...     print title.text
+    Analyzing Types of Business Organizations
+    Identifying Contracts
+    00: Preparing for Business Law Careers
+    01: Exploring Tort Law
+
+Same in the Remove skills view:
+
+    >>> manager.query.link('Remove Skills').click()
+    >>> sel = 'table tbody h2'
+    >>> for title in manager.query_all.css(sel):
+    ...     print title.text
+    Analyzing Types of Business Organizations
+    Identifying Contracts
+    00: Preparing for Business Law Careers
+    01: Exploring Tort Law
+
+    >>> manager.query.name('CANCEL').click()
+
+and the Set Required/Visible view:
+
+    >>> manager.query.link('Set Required/Visible').click()
+    >>> sel = 'table tbody th'
+    >>> for title in manager.query_all.css(sel):
+    ...     print title.text
+    Analyzing Types of Business Organizations
+    Identifying Contracts
+    00: Preparing for Business Law Careers
+    01: Exploring Tort Law
+
+Create a Math course and assign the Fractions skill set and check the
+order of the skills displayed:
+
+    >>> manager.ui.course.add('2012', 'Math')
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Assign Skills').click()
+    >>> manager.query.id('math').click()
+
+    >>> dialog = manager.query.css('.ui-dialog')
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> math_accordion_content = accordion_contents[0]
+    >>> math_accordion_header = accordion_headers[0]
+    >>> manager.wait_no(math_accordion_header.click)
+    >>> for item in math_accordion_content.query_all.tag('li'):
+    ...     print item.text
+    Convert mixed numbers to improper fractions.
+    Read and write fractions.
+    01: Multiply two fractions.
+    02: Divide a fraction by a mixed number.
+    03: Divide a fraction by a whole number.
+
+    >>> manager.wait_page(dialog.query.name('SUBMIT_BUTTON').click)
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> math_accordion_content = accordion_contents[0]
+    >>> math_accordion_header = accordion_headers[0]
+    >>> manager.wait_no(math_accordion_header.click)
+    >>> for item in math_accordion_content.query_all.tag('li'):
+    ...     print item.text
+    Convert mixed numbers to improper fractions.
+    Read and write fractions.
+    01: Multiply two fractions.
+    02: Divide a fraction by a mixed number.
+    03: Divide a fraction by a whole number.

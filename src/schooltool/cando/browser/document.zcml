@@ -95,6 +95,28 @@
       permission="schooltool.view"
       />
 
+  <flourish:viewlet
+      name="document_nodes_table"
+      class=".document.DocumentNodesTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".document.DocumentNodesTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="document_nodes_table_parameters"
+      class=".document.DocumentNodesTableParameters"
+      manager=".document.DocumentNodesTable"
+      permission="schooltool.view"
+      render="template"
+      />
+
   <flourish:page
       name="edit.html"
       for="schooltool.cando.interfaces.IDocument"

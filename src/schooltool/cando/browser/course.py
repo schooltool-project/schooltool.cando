@@ -118,6 +118,7 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
 
 
 def skillset_accordion_formatter(value, item, formatter):
+    collator = ICollator(formatter.request.locale)
     skillset = item.skillset
     cell_template = [
         '<h2>%s</h2>',
@@ -131,7 +132,9 @@ def skillset_accordion_formatter(value, item, formatter):
     if skillset.label:
         title = '%s: %s' % (skillset.label, skillset.title)
     skills = []
-    for skill in item.values():
+    for skill in sorted(item.values(),
+                        key=lambda x:(collator.key(x.label or ''),
+                                      collator.key(x.title))):
         skill_title = skill.title
         if skill.label:
             skill_title = '%s: %s' % (skill.label, skill.title)
@@ -142,6 +145,23 @@ def skillset_accordion_formatter(value, item, formatter):
 class CourseSkillsTable(table.ajax.Table):
 
     batch_size = 0
+    visible_column_names = ['title', 'skills']
+
+    def renderTable(self):
+        if self._table_formatter is None:
+            return ''
+        formatter = self._table_formatter(
+            self.source, self.request, self._items,
+            visible_column_names=self.visible_column_names,
+            columns=self._columns,
+            batch_start=self.batch.start, batch_size=self.batch.size,
+            sort_on=self._sort_on,
+            prefix=self.prefix,
+            ignore_request=self.ignoreRequest,
+            )
+        formatter.html_id = self.html_id
+        formatter.cssClasses.update(self.css_classes)
+        return formatter()
 
     def updateFormatter(self):
         if self._table_formatter is None:
@@ -151,6 +171,16 @@ class CourseSkillsTable(table.ajax.Table):
                        css_classes={'table': 'courseskills-table'})
 
     def columns(self):
+        label = table.column.LocaleAwareGetterColumn(
+            name='label',
+            title=u'Label',
+            getter=lambda i, f: i.skillset.label or '',
+            subsort=True)
+        raw_title = table.column.LocaleAwareGetterColumn(
+            name='raw_title',
+            title=u'Raw Title',
+            getter=lambda i, f: i.title,
+            subsort=True)
         title = zc.table.column.GetterColumn(
             name='title',
             title=_('Title'),
@@ -161,10 +191,10 @@ class CourseSkillsTable(table.ajax.Table):
             name='skills',
             title=_(u'Skills'),
             getter=lambda i, f: str(len(i)))
-        return [title, skills]
+        return [label, raw_title, title, skills]
 
     def sortOn(self):
-        return None
+        return (('label', False), ('raw_title', False))
 
 
 class CourseSkillsLinks(flourish.page.RefineLinksViewlet):
@@ -410,6 +440,7 @@ class CourseRemoveSkillsView(flourish.page.Page):
         return self.context.__parent__.title
 
     def update(self):
+        collator = ICollator(self.request.locale)
         if 'CANCEL' in self.request:
             self.request.response.redirect(self.nextURL())
             return
@@ -420,7 +451,9 @@ class CourseRemoveSkillsView(flourish.page.Page):
         for course_skillset in self.context.values():
             skillset = course_skillset.skillset
             skills = []
-            for skill in skillset.values():
+            for skill in sorted(skillset.values(),
+                                key=lambda x:(collator.key(x.label or ''),
+                                              collator.key(x.title))):
                 course_skill = course_skillset[skill.__name__]
                 title = skill.title
                 if skill.label:
@@ -437,7 +470,9 @@ class CourseRemoveSkillsView(flourish.page.Page):
                     'id': skillset.__name__,
                     'checked': skillset.__name__ in selected_skillsets,
                     })
-        self.skillsets = skillsets
+        self.skillsets = sorted(skillsets,
+                                key=lambda x:(collator.key(x['label'] or ''),
+                                              collator.key(x['title'])))
         if 'SUBMIT_BUTTON' in self.request:
             for course_skillset in self.context.values():
                 if course_skillset.skillset.__name__ in selected_skillsets:
@@ -470,6 +505,7 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
         return INodeContainer(app)
 
     def update(self):
+        collator = ICollator(self.request.locale)
         flourish.form.Dialog.update(self)
         node_id = self.request.get('node_id')
         node = self.nodeContainer().get(node_id)
@@ -480,12 +516,16 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
         if node is not None:
             for skillset in node.skillsets:
                 skills = []
-                for skill in skillset.values():
+                for skill in sorted(skillset.values(),
+                                    key=lambda x:(collator.key(x.label or ''),
+                                                  collator.key(x.title))):
                     title = skill.title
                     if skill.label:
                         title = '%s: %s' % (skill.label, title)
                     css_class = not skill.required and 'optional' or None
                     skills.append({
+                            'label': skill.label,
+                            'raw_title': skill.title,
                             'title': title,
                             'css_class': css_class,
                             })
@@ -496,7 +536,9 @@ class CourseAssignSkillSetsDialog(flourish.form.Dialog):
                         'id': skillset.__name__,
                         'checked': skillset.__name__ in selected_skillsets or 'SUBMIT_BUTTON' not in self.request,
                         })
-        self.skillsets = skillsets
+        self.skillsets = sorted(skillsets,
+                                key=lambda x:(collator.key(x['label'] or ''),
+                                              collator.key(x['title'])))
         if 'SUBMIT_BUTTON' in self.request:
             if not selected_skillsets:
                 return
@@ -697,6 +739,8 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                         'visible_name': visible_name,
                         })
             skillsets.append({
+                    'label': skillset.label,
+                    'raw_title': skillset.title,
                     'title': title,
                     'skills': skills,
                     })
@@ -705,7 +749,10 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         if self.submitted:
             self.request.response.redirect(self.nextURL())
             return
-        self.skillsets = skillsets
+        collator = ICollator(self.request.locale)
+        self.skillsets = sorted(skillsets,
+                                key=lambda x:(collator.key(x['label'] or ''),
+                                              collator.key(x['raw_title'])))
 
     def getId(self, skill):
         skillset = skill.__parent__

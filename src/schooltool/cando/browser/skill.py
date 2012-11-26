@@ -75,11 +75,15 @@ class SkillSetTable(table.ajax.Table):
             name='skills',
             title=_(u'Skills'),
             getter=lambda i, f: str(len(i)))
-        label = zc.table.column.GetterColumn(
+        label = table.column.LocaleAwareGetterColumn(
             name='label',
             title=_(u'Label'),
-            getter=lambda i, f: i.label or '')
+            getter=lambda i, f: i.label or '',
+            subsort=True)
         return [label] + default + [skills]
+
+    def sortOn(self):
+        return (('label', False), ('title', False))
 
 
 class SkillSetTableFilter(table.ajax.TableFilter, table.table.FilterWidget):
@@ -200,14 +204,15 @@ class SkillSetSkillTable(table.ajax.Table):
                        css_classes={'table': 'data'})
 
     def sortOn(self):
-        return (("title", False),)
+        return (('label', False), ('title', False))
 
     def columns(self):
         default = table.ajax.Table.columns(self)
-        label = zc.table.column.GetterColumn(
+        label = table.column.LocaleAwareGetterColumn(
             name='label',
             title=_(u'Label'),
-            getter=lambda i, f: i.label or '')
+            getter=lambda i, f: i.label or '',
+            subsort=True)
         return [label] + default
 
 

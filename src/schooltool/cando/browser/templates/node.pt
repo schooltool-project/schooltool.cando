@@ -203,23 +203,8 @@
            i18n:attributes="alt" />
     </a>
     </h3>
-    <table class="data" i18n:domain="schooltool">
-      <thead>
-        <tr>
-          <th>
-            <span i18n:translate="">Title</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr tal:repeat="skillset skillsets">
-          <td>
-            <a tal:attributes="href string:${skillset/@@absolute_url}"
-               tal:content="skillset/title" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div tal:condition="skillsets"
+         tal:content="structure context/schooltool:content/ajax/node_skillsets_table" />
     <p tal:condition="not: skillsets" i18:translate="">
       There are none.
     </p>

@@ -443,6 +443,57 @@ class DocumentView(flourish.form.DisplayForm, DocumentMixin):
         return '%s/documents' % absoluteURL(app, self.request)
 
 
+def document_node_title_formatter(value, item, formatter):
+    return '<a href="%s">%s</a>' % (item['url'], value)
+
+
+class DocumentNodesTable(table.ajax.Table):
+
+    batch_size = 0
+
+    def items(self):
+        return self.view.items
+
+    def columns(self):
+        label = table.column.LocaleAwareGetterColumn(
+            name='label',
+            title=_('Label'),
+            getter=lambda i, f: i['obj'].label or '',
+            subsort=True)
+        title = table.column.LocaleAwareGetterColumn(
+            name='title',
+            title=_('Title'),
+            getter=lambda i, f: i['obj'].title,
+            cell_formatter=document_node_title_formatter,
+            subsort=True)
+        return [label, title]
+
+    def sortOn(self):
+        return (('label', False), ('title', False))
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+
+class DocumentNodesTableParameters(flourish.viewlet.Viewlet):
+
+    parameters = ['document', 'layer', 'node']
+
+    template = InlineViewPageTemplate('''
+      <tal:block repeat="parameter view/parameters">
+        <input type="hidden" tal:define="value python:request.get(parameter)"
+               tal:condition="value"
+               tal:attributes="name parameter;
+                               value value;"
+               />
+      </tal:block>
+    ''')
+
+
 class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(IDocument)
     fields = fields.select('title', 'description')
@@ -854,7 +905,7 @@ class DocumentSkillSetSkillTable(table.ajax.Table, DocumentSkillSetMixin):
                        css_classes={'table': 'data'})
 
     def sortOn(self):
-        return (("required", True), ("title", False))
+        return (("label", False), ("title", False))
 
     def title_url_formatter(self, value, item, formatter):
         query_string = self.build_query_string(layer=self.get_next_layer(),
@@ -868,18 +919,20 @@ class DocumentSkillSetSkillTable(table.ajax.Table, DocumentSkillSetMixin):
             name='title',
             title=_(u"Title"),
             cell_formatter=lambda v, i, f: self.title_url_formatter(v, i, f),
-            getter=lambda i, f: i.title)
+            getter=lambda i, f: i.title,
+            subsort=True)
         directlyProvides(title, zc.table.interfaces.ISortableColumn)
         required = zc.table.column.GetterColumn(
             name='required',
             title=_(u'Required'),
-            getter=lambda i, f: i.required and _('required') or _('optional'))
+            getter=lambda i, f: i.required and _('Yes') or _('No'))
         directlyProvides(required, zc.table.interfaces.ISortableColumn)
-        label = zc.table.column.GetterColumn(
+        label = table.column.LocaleAwareGetterColumn(
             name='label',
             title=_(u'Label'),
-            getter=lambda i, f: i.label or '')
-        return [required, label, title]
+            getter=lambda i, f: i.label or '',
+            subsort=True)
+        return [label, title, required]
 
 
 class DocumentSkillSetEditView(SkillSetEditView, DocumentSkillSetMixin):

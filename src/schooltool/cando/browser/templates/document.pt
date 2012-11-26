@@ -24,29 +24,8 @@
   <h3>
     <tal:block content="view/legend" />
   </h3>
-  <table class="data" i18n:domain="schooltool">
-    <thead>
-      <tr>
-        <th>
-          <span i18n:translate="">Label</span>
-        </th>
-        <th>
-          <span i18n:translate="">Title</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr tal:repeat="item items">
-        <td>
-          <span tal:content="item/obj/label" />
-        </td>
-        <td>
-          <a tal:attributes="href item/url"
-             tal:content="item/obj/title" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div tal:condition="items"
+       tal:content="structure context/schooltool:content/ajax/document_nodes_table" />
   <h3 tal:condition="not: items">There are none.</h3>
 
   <h3 class="done-link" i18n:domain="schooltool">
