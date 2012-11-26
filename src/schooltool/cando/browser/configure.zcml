@@ -376,6 +376,15 @@
       />
 
   <flourish:viewlet
+      name="done"
+      after="table batch"
+      manager=".course.SkillsetNodesTable"
+      class=".course.SkillsetNodesTableDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="cando-resources"
       view=".course.CourseAssignSkillsView"
       manager="schooltool.skin.flourish.page.IPageContentManager"
@@ -630,6 +639,35 @@
       permission="schooltool.view"
       />
 
+   <flourish:viewlet
+      name="table"
+      class=".gradebook.NodesSearchTable"
+      for="schooltool.cando.interfaces.INodeContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".model.NodesView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".gradebook.NodesSearchTableFilter"
+      manager=".gradebook.NodesSearchTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done"
+      before="table batch"
+      after="filter"
+      manager=".gradebook.NodesSearchTable"
+      view=".model.NodesView"
+      class="schooltool.app.browser.app.ManageItemDoneLink"
+      render="template"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="nodes-add-links"
       manager="schooltool.skin.flourish.page.IPageRefineManager"
@@ -777,6 +815,20 @@
        permission="schooltool.edit" />
 
   </configure>
+
+  <flourish:viewlet
+      name="what-is-this"
+      class="schooltool.skin.flourish.page.Related"
+      template="templates/f_import_related.pt"
+      view=".importer.GlobalSkillsMegaImporter"
+      manager="schooltool.skin.flourish.page.IPageRelatedManager"
+      permission="schooltool.edit"
+      />
+
+  <resource
+      name="empty_skills_data.xls" file="resources/empty_skills_data.xls"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
 
   <include file="document.zcml" />
   <include file="report.zcml" />

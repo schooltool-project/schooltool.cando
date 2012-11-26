@@ -20,6 +20,7 @@ from decimal import Decimal
 import rwproperty
 
 from zope.annotation.interfaces import IAnnotations
+import zc.catalog.extentcatalog
 from zope.catalog.text import TextIndex
 from zope.index.text.interfaces import ISearchableText
 from zope.interface import implements, implementer
@@ -111,7 +112,8 @@ class Skill(Requirement):
     def copy(self):
         return Skill(title=self.title,
                      required=self.required,
-                     external_id=self.external_id)
+                     external_id=self.external_id,
+                     label=self.label)
 
     def __repr__(self):
         desc = unicode(self.title)
@@ -221,12 +223,33 @@ def setDefaultSkillScoreSystem(person, scoresystem):
     ann[DEFAULT_SCORESYSTEM_KEY] = scoresystem
 
 
+def is_global_skillset(index, docid, item):
+    if (not interfaces.ISkillSet.providedBy(item) or
+        not interfaces.ISkillSetContainer.providedBy(item.__parent__) or
+        not ISchoolToolApplication.providedBy(item.__parent__.__parent__)):
+        return False
+    return True
+
+
+def is_global_skill(index, docid, item):
+    if (not interfaces.ISkill.providedBy(item) or
+        not interfaces.ISkillSet.providedBy(item.__parent__) or
+        not interfaces.ISkillSetContainer.providedBy(item.__parent__.__parent__) or
+        not ISchoolToolApplication.providedBy(item.__parent__.__parent__.__parent__)):
+        return False
+    return True
+
+
 class SkillCatalog(AttributeCatalog):
 
-    version = '1 - attributes and text indexes'
+    version = '1.1 - index only global skills'
     interface = interfaces.ISkill
     attributes = ('title', 'external_id', 'label', 'description',
                   'required', 'retired')
+
+    def createCatalog(self):
+        return zc.catalog.extentcatalog.Catalog(
+            zc.catalog.extentcatalog.FilterExtent(is_global_skill))
 
     def setIndexes(self, catalog):
         super(SkillCatalog, self).setIndexes(catalog)
@@ -248,6 +271,41 @@ class SearchableTextSkill(object):
         result = [
             self.context.title,
             self.context.external_id or '',
+            self.context.label or '',
+            self.context.description or '',
+            ]
+        return ' '.join(result)
+
+
+class SkillSetCatalog(AttributeCatalog):
+
+    version = '1 - attributes and text indexes'
+    interface = interfaces.ISkillSet
+    attributes = ('title', 'label', 'description',)
+
+    def createCatalog(self):
+        return zc.catalog.extentcatalog.Catalog(
+            zc.catalog.extentcatalog.FilterExtent(is_global_skillset))
+
+    def setIndexes(self, catalog):
+        super(SkillSetCatalog, self).setIndexes(catalog)
+        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+
+
+getSkillSetCatalog = SkillSetCatalog.get
+
+
+class SearchableTextSkillSet(object):
+
+    adapts(interfaces.ISkillSet)
+    implements(ISearchableText)
+
+    def __init__(self, context):
+        self.context = context
+
+    def getSearchableText(self):
+        result = [
+            self.context.title,
             self.context.label or '',
             self.context.description or '',
             ]

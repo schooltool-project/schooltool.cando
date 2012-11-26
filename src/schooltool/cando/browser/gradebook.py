@@ -21,9 +21,12 @@ CanDo view components.
 """
 
 import pytz
+from xml.sax.saxutils import quoteattr
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
+from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
@@ -36,6 +39,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
 from zope.proxy import sameProxiedObjects
 import zc.table.column
+from zc.catalog.interfaces import IExtentCatalog
 from zc.table.interfaces import ISortableColumn
 
 from z3c.form import form, field, button
@@ -58,22 +62,36 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigati
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
+from schooltool.gradebook.browser.gradebook import FlourishGradebookValidateScoreView
+from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
 from schooltool.requirement.scoresystem import ScoreValidationError
+from schooltool.requirement.scoresystem import UNSCORED
+import schooltool.table.catalog
 from schooltool.skin import flourish
 from schooltool import table
 
+from schooltool.cando.model import NodeLink, NodeLayer, NodeSkillSets
+from schooltool.cando.model import DocumentHierarchy
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import IProjectsGradebook
+from schooltool.cando.interfaces import ISkill, ISkillSet
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import ILayerContainer
+from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
+from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.gradebook import ensureAtLeastOneProject
+from schooltool.cando.browser.model import NodesTable
 from schooltool.cando.project import Project
+from schooltool.cando.model import getNodeCatalog
+from schooltool.cando.model import getOrderedByHierarchy
+from schooltool.cando.skill import getSkillCatalog, getSkillSetCatalog
 from schooltool.cando.skill import querySkillScoreSystem
 from schooltool.cando.browser.skill import SkillAddView
 from schooltool.cando import CanDoMessage as _
@@ -201,6 +219,14 @@ class SkillsGradebookOverview(CanDoGradebookOverviewBase,
             return _('No Visible Skill Sets')
         else:
             return _('Enter Skills')
+
+    @Lazy
+    def filtered_activity_info(self):
+        result = super(SkillsGradebookOverview, self).filtered_activity_info
+        collator = ICollator(self.request.locale)
+        return sorted(result,
+                      key=lambda activity:activity['shortTitle'],
+                      cmp=collator.cmp)
 
 
 class ProjectsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
@@ -371,11 +397,23 @@ class SkillPopupMenuView(FlourishActivityPopupMenuView):
         if activity_id is not None and activity_id in worksheet:
             activity = worksheet[activity_id]
             info = self.getActivityInfo(activity)
-            info.update({
-                    'canDelete': False,
-                    'moveLeft': False,
-                    'moveRight': False,
-                    })
+            if ISkillsGradebook.providedBy(self.context):
+                info.update({
+                        'canDelete': False,
+                        'moveLeft': False,
+                        'moveRight': False,
+                        })
+            else:
+                info.update({
+                        'canDelete': True,
+                        'moveLeft': True,
+                        'moveRight': True,
+                        })
+                keys = worksheet.keys()
+                if keys[0] == activity.__name__:
+                    info['moveLeft'] = False
+                if keys[-1] == activity.__name__:
+                    info['moveRight'] = False
             result['header'] = info['longTitle']
             result['options'] = self.options(info, worksheet)
         return result
@@ -452,8 +490,8 @@ class CanDoGradebookTertiaryNavigationManager(
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
-               worksheet.skillset.label:
-                title = '%s: %s' % (worksheet.skillset.label, title)
+               worksheet.label:
+                title = '%s: %s' % (worksheet.label, title)
             url = '%s/gradebook' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -463,7 +501,10 @@ class CanDoGradebookTertiaryNavigationManager(
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 'title': title,
                 })
-        return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
+        # XXX: split into separate adapters for each gradebook
+        if ISkillsGradebook.providedBy(self.context):
+            result.sort(key=lambda x:x['title'], cmp=collator.cmp)
+        return result
 
 
 class CanDoNavigationViewletBase(object):
@@ -555,8 +596,8 @@ class GradebookSkillsView(flourish.form.Dialog):
 
     def getWorksheetLabel(self, worksheet):
         if ISkillsGradebook.providedBy(self.context):
-            skillset = proxy.removeSecurityProxy(worksheet).skillset
-            return skillset.label
+            unproxied = proxy.removeSecurityProxy(worksheet)
+            return unproxied.label
 
 
 class ScoreSystemHelpView(flourish.form.Dialog):
@@ -605,11 +646,516 @@ class ColorCodesHelpView(flourish.form.Dialog):
             }
 
 
-class ProjectSkillBrowseView(flourish.page.Page):
+class ProjectSkillSearchView(flourish.page.Page):
 
-    content_template = InlineViewPageTemplate('''
-      <div tal:content="structure context/schooltool:content/ajax/table" />
+    # XXX: use a step approach similar to timetable wizard!
+
+    first_step_template = InlineViewPageTemplate('''
+      <div tal:content="structure context/schooltool:content/ajax/view/container/table" />
     ''')
+
+    second_step_template = InlineViewPageTemplate('''
+      <tal:block i18n:domain="schooltool.cando"
+                 define="children view/node/children;
+                         skillsets view/node/skillsets;">
+        <h3 tal:content="view/node/title" />
+        <tal:block condition="children">
+          <h3 i18n:translate="">Child nodes</h3>
+          <div tal:content="structure context/schooltool:content/ajax/view/node/children_table" />
+        </tal:block>
+        <tal:block condition="skillsets">
+          <h3 i18n:translate="">SkillSets</h3>
+          <div tal:content="structure context/schooltool:content/ajax/view/node/skillsets_table" />
+        </tal:block>
+      </tal:block>
+    ''')
+
+    third_step_template = InlineViewPageTemplate('''
+      <tal:block i18n:domain="schooltool.cando"
+                 define="skills view/skills;">
+        <h3 tal:content="view/node/title"
+            tal:condition="python: view.node is not None"/>
+        <h3 tal:content="view/skillset/title" />
+        <form method="post" tal:condition="skills"
+              tal:attributes="action request/URL">
+          <input type="hidden" name="node"
+                 tal:attributes="value request/node|nothing" />
+          <input type="hidden" name="skillset"
+                 tal:attributes="value request/skillset|nothing" />
+          <table class="data">
+            <thead>
+              <tr>
+                <th i18n:translate="">Label</th>
+                <th i18n:translate="">Title</th>
+                <th i18n:translate="">Add</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="skill skills">
+                <td tal:content="skill/label" />
+                <td tal:content="skill/title" />
+                <td>
+                  <input type="checkbox" value="1"
+                         tal:attributes="name skill/input_name;
+                                         checked skill/checked" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="buttons">
+            <input type="submit" class="button-ok" value="Submit"
+                   name="SUBMIT" i18n:attributes="value" />
+            <input type="submit" class="button-cancel" value="Cancel"
+                   name="CANCEL" i18n:attributes="value" />
+          </div>
+        </form>
+        <p i18n:translate="" tal:condition="not:skills">
+          There are no skills.
+        </p>
+      </tal:block>
+    ''')
+
+    @property
+    def content_template(self):
+        if self.skillset is not None:
+            return self.third_step_template
+        if self.node is not None:
+            return self.second_step_template
+        return self.first_step_template
+
+    @Lazy
+    def container(self):
+        app = ISchoolToolApplication(None)
+        return INodeContainer(app)
+
+    @Lazy
+    def skillset_container(self):
+        app = ISchoolToolApplication(None)
+        return ISkillSetContainer(app)
+
+    @Lazy
+    def node(self):
+        node = self.request.get('node')
+        return self.container.get(node)
+
+    @Lazy
+    def skillset(self):
+        skillset = self.request.get('skillset')
+        return self.skillset_container.get(skillset)
+
+    def skills(self):
+        result = []
+        for skill in self.skillset.values():
+            input_name = self.getSkillId(skill)
+            checked = self.request.get(input_name) and 'checked' or None
+            result.append({
+                    'label': skill.label,
+                    'title': skill.title,
+                    'input_name': input_name,
+                    'checked': checked,
+                    'obj': skill,
+                    })
+        return result
+
+    def getSkillId(self, skill):
+        skillset = skill.__parent__
+        return '%s.%s' % (skillset.__name__, skill.__name__)
+
+    def update(self):
+        if 'CANCEL' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        if 'SUBMIT' in self.request:
+            chooser = INameChooser(self.context)
+            for skill in self.skills():
+                if skill['input_name'] in self.request:
+                    skill_copy = skill['obj'].copy()
+                    name = chooser.chooseName('', skill_copy)
+                    self.context[name] = skill_copy
+                    skill_copy.equivalent.add(skill['obj'])
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        return '%s/gradebook' % absoluteURL(self.context, self.request)
+
+
+def title_cell_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        return '<a href="%s?node=%s">%s</a>' % (
+            view_url, item.__name__, value)
+    return cell_formatter
+
+
+def skillset_title_cell_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        node = formatter.request.get('node', '')
+        return '<a href="%s?node=%s&skillset=%s">%s</a>' % (
+            view_url, node, item.__name__, value)
+    return cell_formatter
+
+
+class SkillSearchTable(NodesTable):
+
+    def updateFormatter(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+        if self._table_formatter is None:
+            self.setUp(formatters=[lambda v,i,f: v,
+                                   title_cell_formatter(view_url),
+                                   lambda v,i,f: v,],
+                       table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+
+def aggregate_search_title_formatter(view_url):
+    def cell_formatter(value, item, formatter):
+        if INode.providedBy(item):
+            return '<a href="%s?node=%s">%s</a>' % (
+                view_url, item.__name__, value)
+        elif ISkillSet.providedBy(item):
+            node = formatter.request.get('node', '')
+            return '<a href="%s?node=%s&skillset=%s">%s</a>' % (
+                view_url, node, item.__name__, value)
+        elif ISkill.providedBy(item):
+            node = formatter.request.get('node', '')
+            skill_field_id = '%s.%s' % (item.__parent__.__name__, item.__name__)
+            return '<a href="%s?node=%s&skillset=%s&%s=selected">%s</a>' % (
+                view_url, node, item.__parent__.__name__, skill_field_id, value)
+        return '<span>%s</span>' % value
+    return cell_formatter
+
+
+def get_node_documents(node):
+    layers = NodeLayer.query(node=node)
+    documents = {}
+    if not layers:
+        parents = NodeLink.query(child=node)
+        for parent in parents:
+            parent_docs = get_node_documents(parent)
+            for doc in parent_docs:
+                documents[doc.__name__] = doc
+    else:
+        for layer in layers:
+            layer_docs = DocumentHierarchy.query(layer=layer)
+            for doc in layer_docs:
+                documents[doc.__name__] = doc
+    return tuple(documents.values())
+
+
+def get_skillset_documents(skillset):
+    documents = {}
+    nodes = NodeSkillSets.query(skillset=skillset)
+    for node in nodes:
+        node_docs = get_node_documents(node)
+        for doc in node_docs:
+            documents[doc.__name__] = doc
+    return tuple(documents.values())
+
+
+def get_skillset_document_layers(skillset, index=-1):
+    documents = get_skillset_documents(skillset)
+    layers = []
+    for document in documents:
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= index:
+            layers.append(hierarchy_layers[index])
+    return layers
+
+
+def get_aggregated_layers(item, formatter):
+    if ISkill.providedBy(item):
+        layers = get_skillset_document_layers(item.__parent__, -1)
+        return u', '.join([l.title for l in layers])
+    if ISkillSet.providedBy(item):
+        layers = get_skillset_document_layers(item, -2)
+        return u', '.join([l.title for l in layers])
+    if INode.providedBy(item):
+        return u', '.join([l.title for l in item.layers])
+    return ''
+
+
+def get_skillset_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 2:
+            layers.add(hierarchy_layers[-2])
+    return tuple(layers)
+
+
+def get_skill_level_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 1:
+            layers.add(hierarchy_layers[-1])
+    return layers
+
+
+class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
+
+    template = ViewPageTemplateFile('templates/aggregate_filter.pt')
+    skill_layer_id = '__SKILL__'
+    skillset_layer_id = '__SKILLSET__'
+    no_layer_id = '__NOLAYER__'
+
+    @property
+    def search_id(self):
+        return self.manager.html_id+'-search'
+
+    @property
+    def search_title_id(self):
+        return self.manager.html_id+'-title'
+
+    @property
+    def search_layer_ids(self):
+        return self.manager.html_id+"-layers"
+
+    def layerContainer(self):
+        app = ISchoolToolApplication(None)
+        return ILayerContainer(app)
+
+    def layers(self):
+        result = []
+        layers = getOrderedByHierarchy(self.layerContainer().values())
+        skillset_layers = get_skillset_level_layers()
+        skill_layers = get_skill_level_layers()
+
+        items = [(l.__name__, l.title) for l in layers
+                 if l not in skillset_layers and l not in skill_layers]
+        skillset_title = _('Skill Set')
+        if skillset_layers:
+            layer_titles = ', '.join([l.title for l in skillset_layers])
+            skillset_title += ' (%s)' % layer_titles
+        items.append((self.skillset_layer_id, skillset_title))
+        skill_title = _('Skill')
+        if skill_layers:
+            layer_titles = ', '.join([l.title for l in skill_layers])
+            skill_title += ' (%s)' % layer_titles
+        items.append((self.skill_layer_id, skill_title))
+        items.append((self.no_layer_id, _('No layer assigned')))
+
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        for id, title in items:
+            checked = (not self.manager.fromPublication or
+                       id in request_layer_ids)
+            result.append({'id': id,
+                           'title': title,
+                           'checked': checked})
+        return result
+
+    def filter(self, items):
+        if 'aggregate_filter_submitted' not in self.request:
+            return []
+        request_layer_ids = self.request.get(self.search_layer_ids, [])
+        if not isinstance(request_layer_ids, list):
+            request_layer_ids = [request_layer_ids]
+        request_layer_ids = list(request_layer_ids)
+
+        found_ids = set()
+        query = buildQueryString(self.request.get('SEARCH', ''))
+
+        if self.skill_layer_id in request_layer_ids:
+            catalog = getSkillCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
+            found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skill_layer_id)
+
+        if self.skillset_layer_id in request_layer_ids:
+            catalog = getSkillSetCatalog()
+            if query:
+                index = catalog['text']
+                found_in_catalog = index.apply(query)
+            else:
+                found_in_catalog = tuple(catalog.extent)
+            found_ids.update(found_in_catalog)
+            request_layer_ids.remove(self.skillset_layer_id)
+
+        catalog = getNodeCatalog()
+        if query:
+            index = catalog['text']
+            found_in_catalog = set(index.apply(query))
+        else:
+            found_in_catalog = set(catalog.extent)
+        index = getNodeCatalog()['layers']
+        if self.no_layer_id in request_layer_ids:
+            found_no_layers = set(catalog.extent).difference(index.ids())
+            request_layer_ids.remove(self.no_layer_id)
+        else:
+            found_no_layers = []
+        found_by_layers = list(index.apply({'any_of': request_layer_ids}))
+        found_by_layers.extend(found_no_layers)
+        found_in_catalog.intersection_update(found_by_layers)
+        found_ids.update(found_in_catalog)
+
+        result = filter(lambda i: i['id'] in found_ids, items)
+        return result
+
+
+class AggregateNodesSkillsSearchTable(table.ajax.IndexedTable):
+
+    @Lazy
+    def catalog(self):
+        catalogs = (getNodeCatalog(), getSkillSetCatalog(), getSkillCatalog())
+        return catalogs
+
+    def columns(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+
+        label = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='label',
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or ''
+            )
+
+        title = table.column.IndexedLocaleAwareGetterColumn(
+            index='title',
+            name='title',
+            cell_formatter=aggregate_search_title_formatter(view_url),
+            title=_(u'Title'),
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
+
+        layers = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='layers',
+            name='layer_titles',
+            title=_(u'Layers'),
+            getter=get_aggregated_layers,
+            )
+
+        return [label, title, layers]
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
+
+    def items(self):
+        ids = set()
+        items = []
+        for catalog in self.catalog:
+            new_ids = set()
+            if IExtentCatalog.providedBy(catalog):
+                new_ids.update(set(catalog.extent).difference(ids))
+            else:
+                for index in catalog.values():
+                    new_ids.update(
+                        set(index.documents_to_values.keys()).difference(ids))
+            items += [{'id': id, 'catalog': catalog}
+                      for id in new_ids]
+            ids.update(new_ids)
+        return items
+
+    def indexItems(self, items):
+        """Convert a list of objects to a list of index dicts"""
+        int_ids = getUtility(IIntIds)
+        item_ids = [int_ids.getId(item) for item in items]
+        catalogs = list(self.catalog)
+        results = []
+        for item_id in item_ids:
+            indexed = None
+            for catalog in catalogs:
+                if IExtentCatalog.providedBy(catalog):
+                    if item_id in catalog.extent:
+                        indexed = {
+                            'id': int_ids.getId(item),
+                            'catalog': catalog,
+                            }
+                else:
+                    for index in catalog.values():
+                        if item_id in index.documents_to_values:
+                            indexed = {
+                                'id': int_ids.getId(item),
+                                'catalog': catalog,
+                                }
+                            break
+                if indexed is not None:
+                    results.append(indexed)
+                    break
+        return results
+
+
+class NodesSearchTable(AggregateNodesSkillsSearchTable):
+
+    def columns(self):
+        label = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='label',
+            name='label',
+            title=_(u'Label'),
+            getter=lambda i, f: i.label or ''
+            )
+
+        title = table.column.IndexedLocaleAwareGetterColumn(
+            index='title',
+            name='title',
+            cell_formatter=table.ajax.url_cell_formatter,
+            title=_(u'Title'),
+            getter=lambda i, f: i.title,
+            subsort=True)
+        directlyProvides(title, ISortableColumn)
+
+        layers = table.column.NoSortIndexedLocaleAwareGetterColumn(
+            index='layers',
+            name='layer_titles',
+            title=_(u'Layers'),
+            getter=get_aggregated_layers,
+            )
+
+        return [label, title, layers]
+
+
+class NodesSearchTableFilter(AggregateNodesTableFilter):
+    pass
+
+
+class NodeChildrenTable(SkillSearchTable):
+
+    batch_size = 0
+
+    def items(self):
+        return self.context.children
+
+
+class NodeSkillSetsTable(SkillSearchTable):
+
+    batch_size = 0
+
+    def columns(self):
+        label, title, layer = super(NodeSkillSetsTable, self).columns()
+        return [label, title]
+
+    def items(self):
+        return self.context.skillsets
+
+    def sortOn(self):
+        return (('label', False),)
+
+    def updateFormatter(self):
+        view_url = '%s/%s' % (absoluteURL(self.view.context, self.request),
+                              self.view.__name__)
+        if self._table_formatter is None:
+            self.setUp(formatters=[lambda v,i,f: v,
+                                   skillset_title_cell_formatter(view_url),
+                                   lambda v,i,f: v,],
+                       table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': 'data'})
 
 
 class SkillAddTertiaryNavigationManager(
@@ -630,8 +1176,8 @@ class SkillAddTertiaryNavigationManager(
         path = self.request['PATH_INFO']
         current = path[path.rfind('/')+1:]
         actions = [
-            ('addSkillBrowse.html', _('XXX Browse and Select Skill XXX')),
-            ('addSkillCreate.html', _('XXX Create New Skill XXX')),
+            ('addSkillSearch.html', _('Search Skills')),
+            ('addSkillCreate.html', _('New Skill')),
             ]
         for action, title in actions:
             url = '%s/%s' % (absoluteURL(self.context, self.request), action)
@@ -641,91 +1187,6 @@ class SkillAddTertiaryNavigationManager(
                 'viewlet': u'<a href="%s">%s</a>' % (url, title),
                 })
         return result
-
-
-class SkillsTable(table.ajax.IndexedTable):
-
-    @property
-    def source(self):
-        app = ISchoolToolApplication(None)
-        return ISkillSetContainer(app)
-
-    def columns(self):
-        default = table.ajax.Table.columns(self)
-        label = zc.table.column.GetterColumn(
-            name='label',
-            title=_(u'Label'),
-            getter=lambda i, f: i.label or '')
-        directlyProvides(label, ISortableColumn)
-        return [label] + default
-
-    def sortOn(self):
-        return (('label', False), ("title", False),)
-
-
-class SkillsTableFilter(table.ajax.IndexedTableFilter):
-
-    template = ViewPageTemplateFile('templates/project_skill_table_filter.pt')
-    title = _('Skill title, label, external ID and/or description')
-
-    @property
-    def search_title_id(self):
-        return self.manager.html_id+"-title"
-
-    @property
-    def search_group_id(self):
-        return self.manager.html_id+"-group"
-
-    @property
-    def parameters(self):
-        return (self.search_title_id, self.search_group_id)
-
-    def filter(self, items):
-        if self.ignoreRequest:
-            return items
-        if self.search_group_id in self.request:
-            group = self.groupContainer().get(self.request[self.search_group_id])
-            if group:
-                int_ids = getUtility(IIntIds)
-                keys = set()
-                for skillset in group.skillsets:
-                    for skill in skillset.values():
-                        keys.add(int_ids.queryId(skill))
-                items = [item for item in items
-                         if item['id'] in keys]
-        if self.search_title_id in self.request:
-            searchstr = self.request[self.search_title_id]
-            query = buildQueryString(searchstr)
-            if query:
-                app = ISchoolToolApplication(None)
-                container = ISkillSetContainer(app)
-                catalog = ICatalog(container)
-                result = catalog['text'].apply(query)
-                items = [item for item in items
-                         if item['id'] in result]
-        return items
-
-    def groupContainer(self):
-        # XXX must know which group container to pick
-        app = ISchoolToolApplication(None)
-        return INodeContainer(app, {})
-
-    def groups(self):
-        groups = []
-        container = self.groupContainer()
-        collator = ICollator(self.request.locale)
-        group_items = sorted(container.items(),
-                             cmp=collator.cmp,
-                             key=lambda (gid, g): g.title)
-        for id, group in group_items:
-            skills = []
-            for skillset in group.skillsets:
-                for skill in skillset.values():
-                    skills.append(skill)
-            if len(skills) > 0:
-                groups.append({'id': id,
-                               'title': "%s (%s)" % (group.title, len(skills))})
-        return groups
 
 
 class MySkillsGradesView(FlourishMyGradesView):
@@ -785,8 +1246,8 @@ class MySkillsGradesTertiaryNavigationManager(
         for worksheet in gradebook.worksheets:
             title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
-               worksheet.skillset.label:
-                title = '%s: %s' % (worksheet.skillset.label, title)
+               worksheet.label:
+                title = '%s: %s' % (worksheet.label, title)
             url = '%s/mygrades' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -799,11 +1260,8 @@ class MySkillsGradesTertiaryNavigationManager(
         return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
 
 
-class CanDoGradeStudent(flourish.page.Page):
+class CanDoGradeStudentBase(flourish.page.Page):
 
-    content_template = ViewPageTemplateFile('templates/grade_student.pt')
-    activities_header = _('Skill')
-    grades_header = _('Score')
     container_class = 'container widecontainer'
 
     @property
@@ -812,96 +1270,242 @@ class CanDoGradeStudent(flourish.page.Page):
 
     @property
     def subtitle(self):
-        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
-        return gradebook.section.title
+        return self.gradebook.section.title
 
-    @property
-    def timezone(self):
-        app = ISchoolToolApplication(None)
-        prefs = IApplicationPreferences(app)
-        timezone_name = prefs.timezone
-        return pytz.timezone(timezone_name)
+    @Lazy
+    def student(self):
+        return proxy.removeSecurityProxy(self.context.student)
 
-    def update(self):
-        if 'CANCEL' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        timezone = self.timezone
-        evaluator = getName(IPerson(self.request.principal))
-        skillsets = []
-        worksheets = self.context.__parent__.__parent__.__parent__
-        student = proxy.removeSecurityProxy(self.context.student)
-        gradebook = self.context.gradebook
-        if ISkillsGradebook.providedBy(gradebook):
-            gradebook_adapter = ISkillsGradebook
-        else:
-            gradebook_adapter = IProjectsGradebook
-        for worksheet in worksheets.values():
-            gradebook = gradebook_adapter(worksheet)
-            skills = []
-            for skill in gradebook.activities:
-                title = skill.title
-                css_class = not skill.required and 'optional' or None
-                skill_flag = skill.required and _('Yes') or _('No')
-                cell_name = self.getId(skill)
-                if cell_name in self.request:
-                    value = self.request[cell_name]
-                    try:
-                        if value is None or value == '':
-                            score = gradebook.getScore(student, skill)
-                            if score:
-                                gradebook.removeEvaluation(student, skill,
-                                                           evaluator=evaluator)
-                        else:
-                            score_value = skill.scoresystem.fromUnicode(value)
-                            gradebook.evaluate(student, skill, score_value,
-                                               evaluator)
-                    except ScoreValidationError:
-                        pass
-                score = gradebook.getScore(student, skill)
-                grade = None
-                date = None
-                if score:
-                    grade = score.value
-                    time_utc = pytz.utc.localize(score.time)
-                    time = time_utc.astimezone(timezone)
-                    date = time.date()
-                scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
-                scores = dict([(s[2], s[1]) for s in scoresystem.scores])
-                rating = scores.get(scoresystem.scoresDict().get(grade), '-')
-                skills.append({
-                        'label': skill.label,
-                        'name': cell_name,
-                        'title': title,
-                        'grade': grade,
-                        'flag': skill_flag,
-                        'date': date,
-                        'rating': rating,
-                        'css_class': css_class,
-                        })
-            skillsets.append({
-                    'form_url': '%s/gradebook' % absoluteURL(worksheet,
-                                                             self.request),
-                    'label': self.getWorksheetLabel(worksheet),
-                    'title': worksheet.title,
-                    'skills': sorted(skills, key=lambda x:x['label']),
-                    })
-        if 'SUBMIT_BUTTON' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        self.skillsets = skillsets
+    @Lazy
+    def gradebook(self):
+        return proxy.removeSecurityProxy(self.context.gradebook)
 
-    def getWorksheetLabel(self, worksheet):
-        if ISkillsGradebook.providedBy(self.context):
-            skillset = proxy.removeSecurityProxy(worksheet).skillset
-            return skillset.label
+    @Lazy
+    def isSkillsGradebook(self):
+        return ISkillsGradebook.providedBy(self.gradebook)
 
-    def getId(self, skill):
+
+class CanDoGradeStudentTableViewlet(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <div tal:content="structure view/view/providers/ajax/view/context/student_grades_table" />
+    ''')
+
+
+class CanDoGradeStudent(CanDoGradeStudentBase):
+
+    @Lazy
+    def evaluator(self):
+        person = IPerson(self.request.principal, None)
+        if person is not None:
+            return getName(person)
+
+
+class CanDoGradeStudentTableFormatterBase(table.ajax.AJAXFormSortFormatter):
+
+    def renderHeaders(self):
+        result = []
+        old_css_class = self.cssClasses.get('th')
+        for col in self.visible_columns:
+            self.cssClasses['th'] = col.name.replace('_', '-')
+            result.append(self.renderHeader(col))
+        self.cssClasses['th'] = old_css_class
+        return ''.join(result)
+
+    def renderRows(self):
+        current_skillset = None
+        result = []
+        for item in self.getItems():
+            skillset = item['skillset']
+            if skillset != current_skillset:
+                result.append(self.renderSubHeader(skillset))
+                current_skillset = skillset
+            result.append(self.renderRow(item))
+        return ''.join(result)
+
+    def renderSubHeader(self, skillset):
+        title = label_title_formatter(skillset, None, None)
+        return '<th colspan="%d">%s</th>' % (len(self.visible_columns), title)
+
+
+class CanDoGradeStudentTableFormatter(CanDoGradeStudentTableFormatterBase):
+
+    def renderCell(self, item, column):
+        klass = self.cssClasses.get('td', '')
+        if column.name == 'student-score':
+            if klass:
+                klass += ' '
+            klass += 'student-score'
+        if column.name == 'skill' and not item['skill'].required:
+            if klass:
+                klass += ' '
+            klass += 'optional'
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<td id="%s"%s>%s</td>' % (
+            item['skill_id'], klass, self.getCell(item, column),)
+
+    def renderRow(self, item):
+        klass = self.cssClasses.get('tr', '')
+        if klass:
+            klass += ' '
+        klass += '%s/gradebook' % absoluteURL(item['skillset'], self.request)
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<tr%s>%s</tr>' % (
+            klass, self.renderCells(item))
+
+
+def label_title_formatter(obj, item, formatter):
+    title = obj.title
+    label = getattr(obj, 'label')
+    if label is not None:
+        title = '%s: %s' % (label, title)
+    return title
+
+
+def get_skill_skillset(item, formatter):
+    return label_title_formatter(item['skillset'], item, formatter)
+
+
+def skill_score_formatter(score, item, formatter):
+    if score is not None and score.value is not UNSCORED:
+        return score.value
+    return ''
+
+
+def get_skill_score(item, formatter):
+    student = formatter.context.student
+    skill = item['skill']
+    gradebook = item['gradebook']
+    return gradebook.getScore(student, skill)
+
+
+class CanDoGradeStudentTableBase(table.ajax.Table):
+
+    batch_size = 0
+
+    def getSkillId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
 
-    def nextURL(self):
-        return absoluteURL(self.context.__parent__, self.request)
+    def items(self):
+        result = []
+        worksheets = self.context.__parent__.__parent__.__parent__
+        for worksheet in worksheets.values():
+            if self.view.isSkillsGradebook:
+                gradebook = ISkillsGradebook(worksheet)
+            else:
+                gradebook = IProjectsGradebook(worksheet)
+            for activity in gradebook.activities:
+                result.append({
+                        'gradebook': gradebook,
+                        'skillset': proxy.removeSecurityProxy(worksheet),
+                        'skill': activity,
+                        'skill_id': self.getSkillId(activity),
+                        })
+        return result
+
+    def renderTable(self):
+        if self._table_formatter is None:
+            return ''
+        formatter = self._table_formatter(
+            self.source, self.request, self._items,
+            visible_column_names=self.visible_column_names,
+            columns=self._columns,
+            batch_start=self.batch.start, batch_size=self.batch.size,
+            sort_on=self._sort_on,
+            prefix=self.prefix,
+            ignore_request=self.ignoreRequest,
+            )
+        formatter.html_id = self.html_id
+        formatter.cssClasses.update(self.css_classes)
+        return formatter()
+
+    def updateFormatter(self):
+        if self._table_formatter is None:
+            self.setUp(table_formatter=self.table_formatter,
+                       batch_size=self.batch_size,
+                       prefix=self.__name__,
+                       css_classes={'table': self.css_classes})
+
+
+class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
+
+    css_classes = 'grade-student'
+    table_formatter = CanDoGradeStudentTableFormatter
+    visible_column_names = ['skill', 'student-score']
+    buttons = (
+        {'name': 'SAVE', 'label': _('Save'), 'klass': 'button-ok'},
+        {'name': 'CANCEL', 'label': _('Cancel'), 'klass': 'button-cancel'},
+        )
+
+    def columns(self):
+        skillset = table.column.LocaleAwareGetterColumn(
+            name='skillset',
+            title=_('Skill Set'),
+            getter=get_skill_skillset)
+        skill = zc.table.column.GetterColumn(
+            name='skill',
+            title=_('Skill'),
+            getter=lambda item, formatter: item['skill'],
+            cell_formatter=label_title_formatter)
+        score = zc.table.column.GetterColumn(
+            name='student-score',
+            title=_('Score'),
+            getter=get_skill_score,
+            cell_formatter=skill_score_formatter)
+        return [skillset, skill, score]
+
+    def sortOn(self):
+        return (('skillset', False), ('skill', False))
+
+    def update(self):
+        super(CanDoGradeStudentTable, self).update()
+        saved = False
+        if 'SAVE' in self.request:
+            self.updateGrades()
+            saved = True
+        if 'CANCEL' in self.request or saved:
+            url = absoluteURL(self.view.gradebook, self.request)
+            self.request.response.redirect(url)
+            return
+
+    def updateGrades(self):
+        for item in self._items:
+            skill = item['skill']
+            gradebook = item['gradebook']
+            cell_name = self.getSkillId(skill)
+            if cell_name in self.request:
+                value = self.request[cell_name]
+                try:
+                    if value is None or value == '':
+                        score = gradebook.getScore(self.view.student, skill)
+                        if score:
+                            gradebook.removeEvaluation(self.view.student,
+                                                       skill,
+                                                       self.view.evaluator)
+                    else:
+                        score_value = skill.scoresystem.fromUnicode(value)
+                        gradebook.evaluate(self.view.student,
+                                           skill,
+                                           score_value,
+                                           self.view.evaluator)
+                except ScoreValidationError:
+                    pass
+
+
+class CanDoGradeStudentTableButtons(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <div class="buttons" i18n:domain="schooltool">
+        <tal:loop repeat="action view/manager/buttons">
+          <input type="submit"
+                 tal:attributes="name action/name;
+                                 value action/label;
+                                 class action/klass;"
+                 />
+        </tal:loop>
+      </div>
+    ''')
 
 
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
@@ -909,7 +1513,116 @@ class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
     pass
 
 
-class StudentCompetencyRecordView(CanDoGradeStudent):
+class StudentCompetencyRecordView(CanDoGradeStudentBase):
 
-    content_template = ViewPageTemplateFile(
-        'templates/student_competency_record.pt')
+    @Lazy
+    def timezone(self):
+        app = ISchoolToolApplication(None)
+        prefs = IApplicationPreferences(app)
+        timezone_name = prefs.timezone
+        return pytz.timezone(timezone_name)
+
+
+def score_date_formatter(timezone):
+    def formatter(score, item, formatter):
+        if score is not None:
+            time_utc = pytz.utc.localize(score.time)
+            time = time_utc.astimezone(timezone)
+            date = time.date()
+            view = getMultiAdapter((date, formatter.request),
+                                   name='mediumDate')
+            return view()
+        return ''
+    return formatter
+
+
+def score_rating_formatter(score, item, formatter):
+    result = '-'
+    skill = item['skill']
+    if score is not None:
+        grade = score.value
+        scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
+        scores = dict([(s[2], s[1]) for s in scoresystem.scores])
+        result = scores.get(scoresystem.scoresDict().get(grade), '-')
+    return result
+
+
+class StudentCompetencyRecordTableFormatter(CanDoGradeStudentTableFormatterBase):
+
+    def renderCell(self, item, column):
+        klass = self.cssClasses.get('td', '')
+        if column.name == 'required':
+            if klass:
+                klass += ' '
+            klass += 'flag'
+        klass = klass and ' class=%s' % quoteattr(klass) or ''
+        return '<td%s>%s</td>' % (klass, self.getCell(item, column),)
+
+
+class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
+
+    css_classes = 'data student-scr'
+    table_formatter = StudentCompetencyRecordTableFormatter
+    visible_column_names = ['label', 'required', 'skill', 'date', 'rating']
+
+    def columns(self):
+        skillset = table.column.LocaleAwareGetterColumn(
+            name='skillset',
+            title=_('Skill Set'),
+            getter=get_skill_skillset)
+        label = zc.table.column.GetterColumn(
+            name='label',
+            title='',
+            getter=lambda item, formatter: item['skill'].label or '')
+        required = zc.table.column.GetterColumn(
+            name='required',
+            title=_('Required'),
+            getter=lambda item, formatter: item['skill'].required,
+            cell_formatter=lambda v, i, f: v and _('Yes') or _('No'))
+        skill = zc.table.column.GetterColumn(
+            name='skill',
+            title=_('Skill'),
+            getter=lambda item, formatter: item['skill'].title)
+        date = zc.table.column.GetterColumn(
+            name='date',
+            title=_('Date'),
+            getter=get_skill_score,
+            cell_formatter=score_date_formatter(self.view.timezone))
+        rating = zc.table.column.GetterColumn(
+            name='rating',
+            title=_('Rating'),
+            getter=get_skill_score,
+            cell_formatter=score_rating_formatter)
+        return [skillset, label, required, skill, date, rating]
+
+    def sortOn(self):
+        return (('skillset', False), ('label', False))
+
+
+class StudentCompetencyRecordDoneLink(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <h3 i18n:domain="schooltool" class="done-link">
+        <a tal:attributes="href context/gradebook/@@absolute_url"
+           i18n:translate="">Done</a>
+      </h3>
+    ''')
+
+
+class ProjectEditView(FlourishWorksheetEditView):
+
+    fields = field.Fields(IProject).select('title')
+
+
+class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
+
+    def result(self):
+        result = {'is_valid': True, 'is_extracredit': False}
+        score = self.request.get('score')
+        if score:
+            scoresystem = querySkillScoreSystem()
+            try:
+                score = scoresystem.fromUnicode(score)
+            except (ScoreValidationError,):
+                result['is_valid'] = False
+        return result

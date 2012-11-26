@@ -19,6 +19,7 @@
 """
 Course skill views.
 """
+import zope.lifecycleevent
 from zope.cachedescriptors.property import Lazy
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.i18n import translate
@@ -105,7 +106,7 @@ class CourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
       <div class="skillsets-selection skillsets-selection-courseskills">
         <div tal:content="structure context/schooltool:content/ajax/table" />
       </div>
-      <h3>
+      <h3 i18n:domain="schooltool" class="done-link">
         <a tal:attributes="href context/__parent__/@@absolute_url"
            i18n:translate="">Done</a>
       </h3>
@@ -349,7 +350,6 @@ class SkillsetNodesTableFilter(table.ajax.TableFilter):
                            'checked': checked})
         return result
 
-
     def filter(self, items):
         if self.ignoreRequest:
             return items
@@ -375,6 +375,16 @@ class SkillsetNodesTableFilter(table.ajax.TableFilter):
                      searchstr in getattr(item, 'label', '').lower() or
                      searchstr in getattr(item, 'description', '').lower()]
         return items
+
+
+class SkillsetNodesTableDoneLink(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+    <h3 class="done-link" i18n:domain="schooltool">
+      <a tal:attributes="href context/@@absolute_url"
+         i18n:translate="">Done</a>
+    </h3>
+    ''')
 
 
 class CourseAssignSkillsView(flourish.page.Page):
@@ -653,6 +663,7 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         required_prefix = 'required.'
         visible_prefix = 'visible.'
         for course_skillset_id in self.context:
+            skillset_modified = False
             course_skillset = self.context[course_skillset_id]
             skillset = course_skillset.skillset
             title = skillset.title
@@ -672,9 +683,11 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     required = required_name in self.request
                     if course_skill.required != required:
                         course_skill.required = required
+                        skillset_modified = True
                     hidden = not visible_name in self.request
                     if course_skill.retired != hidden:
                         course_skill.retired = hidden
+                        skillset_modified = True
                 skills.append({
                         'id': skill_id,
                         'title': skill_title,
@@ -687,6 +700,8 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     'title': title,
                     'skills': skills,
                     })
+            if skillset_modified:
+                zope.lifecycleevent.modified(course_skillset)
         if self.submitted:
             self.request.response.redirect(self.nextURL())
             return

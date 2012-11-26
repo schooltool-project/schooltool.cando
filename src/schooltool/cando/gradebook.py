@@ -45,7 +45,7 @@ from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
 from schooltool.cando.interfaces import ISectionSkills
 from schooltool.cando.interfaces import ISkillsGradebook
-from schooltool.cando.interfaces import ICourseSkillSet
+from schooltool.cando.interfaces import ISectionSkillSet
 from schooltool.cando.interfaces import ISkill
 from schooltool.cando.interfaces import ICanDoStudentGradebook
 from schooltool.cando.project import Project
@@ -117,11 +117,37 @@ class ProjectsGradebook(Gradebook):
         worksheet = proxy.removeSecurityProxy(worksheet)
         worksheets.setCurrentWorksheet(person, worksheet)
 
+    def filterEquivalent(self, equivalent):
+        # select only equivalent skills that belong to this section
+        return filter(
+            lambda e: ISection(e.__parent__, None) is self.section,
+            equivalent)
+
+    def evaluate(self, student, activity, score, evaluator=None):
+        super(ProjectsGradebook, self).evaluate(
+            student, activity, score, evaluator)
+        equivalent = self.filterEquivalent(activity.findAllEquivalent())
+        for skill in equivalent:
+            worksheet = skill.__parent__
+            gradebook = ISkillsGradebook(worksheet, None)
+            if gradebook is not None:
+                gradebook.evaluate(student, skill, score, evaluator)
+
+    def removeEvaluation(self, student, activity, evaluator=None):
+        super(ProjectsGradebook, self).removeEvaluation(
+            student, activity, evaluator)
+        equivalent = self.filterEquivalent(activity.findAllEquivalent())
+        for skill in equivalent:
+            worksheet = skill.__parent__
+            gradebook = ISkillsGradebook(worksheet, None)
+            if gradebook is not None:
+                gradebook.removeEvaluation(student, skill, evaluator)
+
 
 class SkillsGradebook(Gradebook):
 
     implements(ISkillsGradebook)
-    adapts(ICourseSkillSet)
+    adapts(ISectionSkillSet)
 
     # XXX: Merge with Gradebook and GradebookBase
     def __init__(self, context):
@@ -150,11 +176,48 @@ class SkillsGradebook(Gradebook):
         worksheet = proxy.removeSecurityProxy(worksheet)
         worksheets.setCurrentWorksheet(person, worksheet)
 
+    def getScore(self, student, activity):
+        score = super(SkillsGradebook, self).getScore(student, activity)
+        if score is not None:
+            return score
+        return self.getPreviousScore(student, activity)
+
+    def getPreviousScore(self, student, activity):
+        equivalent = activity.findAllEquivalent()
+        previous = self.getPreviousSections(self.section)
+        for section in previous:
+            filtered = self.filterEquivalent(equivalent, section)
+            if filtered:
+                # XXX: could there be more than one equivalent
+                #      in a linked section?
+                skill = proxy.removeSecurityProxy(filtered[0])
+                worksheet = skill.__parent__
+                gradebook = ISkillsGradebook(worksheet, None)
+                if gradebook is not None:
+                    score = gradebook.getScore(student, skill)
+                    if score is not None:
+                        return score
+
+    def getPreviousSections(self, section):
+        result = []
+        previous = section.previous
+        while previous:
+            result.append(previous)
+            previous = previous.previous
+        return result
+
+    def filterEquivalent(self, equivalent, section):
+        # select only equivalent skills that belong to this section
+        equivalent = [proxy.removeSecurityProxy(e) for e in equivalent]
+        return filter(
+            lambda e: ISection(e.__parent__, None) is section,
+            equivalent)
+
 
 class MySkillsGrades(SkillsGradebook):
 
     implements(IMySkillsGrades)
-    adapts(ICourseSkillSet)
+    adapts(ISectionSkillSet)
 
     def __init__(self, context):
         super(MySkillsGrades, self).__init__(context)

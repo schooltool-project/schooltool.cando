@@ -50,6 +50,7 @@ from schooltool.cando.browser.skill import SkillSetTable
 from schooltool.cando.interfaces import ILayerContainer, ILayer
 from schooltool.cando.interfaces import INodeContainer, INode
 from schooltool.cando.interfaces import ISkillSetContainer
+from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.model import Layer, LayerLink
 from schooltool.cando.model import Node, NodeLink
 from schooltool.cando.model import _expand_nodes, getOrderedByHierarchy
@@ -449,6 +450,18 @@ class NodesTable(table.ajax.Table):
                        css_classes={'table': 'data'})
 
 
+def get_skill_layers():
+    layers = set()
+    documents = IDocumentContainer(ISchoolToolApplication(None))
+    for document in documents.values():
+        hierarchy_layers = list(document.getOrderedHierarchy())
+        if len(hierarchy_layers) >= 2:
+            layers.add(hierarchy_layers[-2])
+        if len(hierarchy_layers) >= 1:
+            layers.add(hierarchy_layers[-1])
+    return tuple(layers)
+
+
 class NodesTableFilter(table.ajax.TableFilter):
 
     search_title = _("ID, title, label or description")
@@ -472,8 +485,10 @@ class NodesTableFilter(table.ajax.TableFilter):
 
     def layers(self):
         result = []
+        skill_layers = get_skill_layers()
         layers = getOrderedByHierarchy(self.layerContainer().values())
-        items = [(l.__name__, l) for l in layers]
+        items = [(l.__name__, l) for l in layers
+                 if l not in skill_layers]
         for id, layer in items:
             checked = not self.manager.fromPublication
             if self.search_layer_ids in self.request:

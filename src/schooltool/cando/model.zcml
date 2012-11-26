@@ -73,6 +73,16 @@
       handler=".model.preventLayerCycles"
     />
 
+  <subscriber
+      for="schooltool.relationship.interfaces.IRelationshipAddedEvent"
+      handler=".model.nodeModifiedOnNodeLayerChange"
+    />
+
+  <subscriber
+      for="schooltool.relationship.interfaces.IRelationshipRemovedEvent"
+      handler=".model.nodeModifiedOnNodeLayerChange"
+    />
+
   <!-- documents -->
 
   <class class=".model.DocumentContainer">
@@ -106,5 +116,16 @@
       name="schooltool.cando.document" />
 
   <adapter factory=".model.getDocumentContainer" />
+
+  <adapter
+      factory=".model.NodeCatalog"
+      name="schooltool.cando.model.NodeCatalog" />
+
+  <adapter
+      for=".interfaces.INodeContainer"
+      provides="zope.catalog.interfaces.ICatalog"
+      factory=".model.getNodeCatalog" />
+
+  <adapter factory=".model.SearchableTextNode" />
 
 </configure>

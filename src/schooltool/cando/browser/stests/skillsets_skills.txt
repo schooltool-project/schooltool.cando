@@ -86,7 +86,7 @@ We'll look at the skills and see their attributes.
     >>> manager.query.link('Solve for one variable').click()
     >>> print_attrs()
     Title: Solve for one variable
-    Scoresystem: Letter Grade
+    Scoresystem: Competency
     Full description: 
     Short label: 01
     Required: Yes
@@ -96,7 +96,7 @@ We'll look at the skills and see their attributes.
     >>> manager.query.link('Solve for multiple variables').click()
     >>> print_attrs()
     Title: Solve for multiple variables
-    Scoresystem: Letter Grade
+    Scoresystem: Competency
     Full description: 
     Short label: L2
     Required: No
@@ -117,7 +117,7 @@ We can edit the attributes of one of the skills and see them change in the view.
     >>> manager.wait(lambda: page.expired)
     >>> print_attrs()
     Title: Solve for more than one variable
-    Scoresystem: Letter Grade
+    Scoresystem: Competency
     Full description: 
     Short label: 02
     Required: Yes

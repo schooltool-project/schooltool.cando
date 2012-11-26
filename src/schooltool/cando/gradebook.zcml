@@ -27,7 +27,7 @@
       />
 
   <adapter
-      for=".interfaces.ICourseSkillSet"
+      for=".interfaces.ISectionSkillSet"
       provides=".interfaces.ISkillsGradebook"
       factory="schooltool.cando.gradebook.SkillsGradebook"
       trusted="true"
@@ -42,13 +42,13 @@
       factory=".gradebook.ProjectGradebookTraverser" />
 
   <adapter
-      for=".interfaces.ICourseSkillSet
+      for=".interfaces.ISectionSkillSet
            zope.publisher.interfaces.http.IHTTPRequest"
       provides="zope.publisher.interfaces.IPublishTraverse"
       factory=".gradebook.SkillsGradebookTraverser" />
 
   <adapter
-      for=".interfaces.ICourseSkillSet"
+      for=".interfaces.ISectionSkillSet"
       provides="schooltool.course.interfaces.ISection"
       factory=".gradebook.getCourseSkillSetSection"
       />
@@ -60,7 +60,7 @@
   </class>
 
   <adapter
-      for=".interfaces.ICourseSkillSet"
+      for=".interfaces.ISectionSkillSet"
       provides=".interfaces.IMySkillsGrades"
       factory=".gradebook.MySkillsGrades"
       trusted="true"

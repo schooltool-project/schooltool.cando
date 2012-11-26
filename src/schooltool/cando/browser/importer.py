@@ -246,7 +246,7 @@ class DocumentsImporter(ImporterBase):
                 if part not in layers:
                     self.error(row, 4, ERROR_INVALID_LAYERS)
                     break
-                document.hierarchy.add(removeSecurityProxy(layers[part]))    
+                document.hierarchy.add(removeSecurityProxy(layers[part]))
 
 
 class NodesImporter(ImporterBase):

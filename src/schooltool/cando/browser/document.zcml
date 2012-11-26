@@ -50,8 +50,7 @@
 
   <flourish:viewlet
       name="done"
-      before="table batch"
-      after="filter"
+      after="*"
       manager=".document.DocumentsTable"
       view=".document.DocumentsView"
       class="schooltool.app.browser.app.ManageItemDoneLink"

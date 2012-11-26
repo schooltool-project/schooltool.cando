@@ -37,7 +37,7 @@ default, one the user hasn't even chosen yet.
 
     >>> manager.query.link('Skill').click()
     >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
-    letter-grade-
+    SkillScoreSystem-
 
 We'll change it to 'Extended Letter Grade' before submitting it.
 

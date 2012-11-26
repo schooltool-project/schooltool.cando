@@ -2,11 +2,44 @@
 CHANGES
 =======
 
-0.2.1 (unreleased)
+0.4 (unreleased)
+----------------
+
+- Created NodeCatalog and SkillSetCatalog
+- New indexed AggregateNodesTable that mixes nodes with skillsets and skills
+- Got rid of skill layers from nodes-only table filter
+
+
+0.3.2 (2012-11-09)
 ------------------
 
-- edit document hierarchy view now sorts by hierarchy order
-- nodes table filter now orders layer checkboxes by hierarchy order
+- Fix for the missing scores fix
+
+
+0.3.1 (2012-11-08)
+------------------
+
+- Sorted skills by label in the skills gradebook
+- Fixed validation in score student view
+- Removed subscriber that prevented section deleting
+- Restore scores that disappeared after upgrade to 0.3
+
+
+0.3 (2012-10-19)
+----------------
+
+- New sections don't get existing course skills (https://launchpad.net/bugs/1065128)
+- Allow users to add existing skills to projects gradebook
+- Allow users to move/delete project skills
+- Show previous scores in multiple term section gradebooks
+
+
+0.2.1 (2012-09-27)
+------------------
+
+- Sorted worksheets in third-nav of the gradebook views
+- Edit document hierarchy view now sorts by hierarchy order
+- Nodes table filter now orders layer checkboxes by hierarchy order
 - I can't set a node label through the web (https://launchpad.net/bugs/1049442)
 - added scoresystem attribute to Skill object, views and import
 
