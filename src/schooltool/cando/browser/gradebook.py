@@ -225,8 +225,8 @@ class SkillsGradebookOverview(CanDoGradebookOverviewBase,
         result = super(SkillsGradebookOverview, self).filtered_activity_info
         collator = ICollator(self.request.locale)
         return sorted(result,
-                      key=lambda activity:activity['shortTitle'],
-                      cmp=collator.cmp)
+                      key=lambda x:(collator.key(x['object'].label or ''),
+                                    collator.key(x['object'].title)))
 
 
 class ProjectsBreadcrumbs(flourish.breadcrumbs.Breadcrumbs):
@@ -488,10 +488,12 @@ class CanDoGradebookTertiaryNavigationManager(
         current = gradebook.context.__name__
         collator = ICollator(self.request.locale)
         for worksheet in gradebook.worksheets:
-            title = worksheet.title
+            label = None
+            title = raw_title = worksheet.title
             if ISkillsGradebook.providedBy(self.context) and \
                worksheet.label:
                 title = '%s: %s' % (worksheet.label, title)
+                label = worksheet.label
             url = '%s/gradebook' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -500,10 +502,13 @@ class CanDoGradebookTertiaryNavigationManager(
                 'class': classes and ' '.join(classes) or None,
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 'title': title,
+                'label': label,
+                'raw_title': raw_title,
                 })
         # XXX: split into separate adapters for each gradebook
         if ISkillsGradebook.providedBy(self.context):
-            result.sort(key=lambda x:x['title'], cmp=collator.cmp)
+            result.sort(key=lambda x:(collator.key(x['label'] or ''),
+                                      collator.key(x['raw_title'])))
         return result
 
 
@@ -570,6 +575,7 @@ class GradebookSkillsView(flourish.form.Dialog):
         self.ajax_settings['dialog']['maxHeight'] = 640
 
     def update(self):
+        collator = ICollator(self.request.locale)
         flourish.form.Dialog.update(self)
         worksheets = self.context.__parent__.__parent__
         skillsets = []
@@ -581,6 +587,8 @@ class GradebookSkillsView(flourish.form.Dialog):
                     title = '%s: %s' % (skill.label, title)
                 css_class = not skill.required and 'optional' or None
                 skills.append({
+                        'label': skill.label,
+                        'raw_title': skill.title,
                         'title': title,
                         'css_class': css_class,
                         })
@@ -590,8 +598,13 @@ class GradebookSkillsView(flourish.form.Dialog):
                     'css_class': css_class,
                     'label': self.getWorksheetLabel(worksheet),
                     'title': worksheet.title,
-                    'skills': skills,
+                    'skills': sorted(skills,
+                                     key=lambda x:(collator.key(x['label'] or ''),
+                                                   collator.key(x['raw_title']))),
                     })
+        if ISkillsGradebook.providedBy(self.context):
+            skillsets.sort(key=lambda x:(collator.key(x['label'] or ''),
+                                         collator.key(x['title'])))
         self.skillsets = skillsets
 
     def getWorksheetLabel(self, worksheet):
