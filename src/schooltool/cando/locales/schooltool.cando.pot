@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2012-10-19 02:59+0300\n"
+"POT-Creation-Date: 2012-11-27 01:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -398,12 +398,14 @@ msgstr ""
 msgid "Change information"
 msgstr ""
 
-#: /src/schooltool/cando/browser/document.py:876
-msgid "optional"
+#: /src/schooltool/cando/browser/document.py:928
+#: /src/schooltool/cando/browser/gradebook.py:1594
+msgid "No"
 msgstr ""
 
-#: /src/schooltool/cando/browser/document.py:876
-msgid "required"
+#: /src/schooltool/cando/browser/document.py:928
+#: /src/schooltool/cando/browser/gradebook.py:1594
+msgid "Yes"
 msgstr ""
 
 #: /src/schooltool/cando/browser/document.zcml:35
@@ -487,30 +489,39 @@ msgstr ""
 msgid "Color Codes Help"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:837
-#: /src/schooltool/cando/browser/gradebook.zcml:138
+#: /src/schooltool/cando/browser/gradebook.py:953
+msgid "No layer assigned"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1192
+#: /src/schooltool/cando/browser/gradebook.zcml:140
 msgid "Search Skills"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:925
+#: /src/schooltool/cando/browser/gradebook.py:1450
+msgid "Save"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1466
 #: /src/schooltool/cando/browser/templates/scoresystem_help.pt:5
 msgid "Score"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:964
-msgid "No"
+#: /src/schooltool/cando/browser/gradebook.py:1601
+msgid "Date"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:964
-msgid "Yes"
+#: /src/schooltool/cando/browser/gradebook.py:1606
+#: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
+msgid "Rating"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.zcml:8
-#: /src/schooltool/cando/browser/gradebook.zcml:24
-#: /src/schooltool/cando/browser/gradebook.zcml:126
-#: /src/schooltool/cando/browser/gradebook.zcml:212
-#: /src/schooltool/cando/browser/gradebook.zcml:310
-#: /src/schooltool/cando/browser/gradebook.zcml:420
+#: /src/schooltool/cando/browser/gradebook.zcml:10
+#: /src/schooltool/cando/browser/gradebook.zcml:26
+#: /src/schooltool/cando/browser/gradebook.zcml:128
+#: /src/schooltool/cando/browser/gradebook.zcml:223
+#: /src/schooltool/cando/browser/gradebook.zcml:321
+#: /src/schooltool/cando/browser/gradebook.zcml:431
 msgid "CanDo"
 msgstr ""
 
@@ -770,18 +781,6 @@ msgstr ""
 msgid "Visible"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/grade_student.pt:36
-msgid "S"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/grade_student.pt:36
-msgid "Save"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/grade_student.pt:36
-msgid "Shortcut: Alt-S"
-msgstr ""
-
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:33
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:43
 msgid "There are no skills."
@@ -858,17 +857,8 @@ msgstr ""
 msgid "Edit this project"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
-#: /src/schooltool/cando/browser/templates/student_competency_record.pt:11
-msgid "Rating"
-msgstr ""
-
 #: /src/schooltool/cando/browser/templates/skillsets.pt:5
 msgid "Reorder or Hide Skill Sets"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/student_competency_record.pt:10
-msgid "Date"
 msgstr ""
 
 #: /src/schooltool/cando/course.py:184
