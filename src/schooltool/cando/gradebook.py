@@ -21,7 +21,7 @@
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts, adapter, queryMultiAdapter
 from zope.component import getMultiAdapter
-from zope.interface import implements, implementer
+from zope.interface import implements, implementer, implementsOnly
 from zope.location.location import LocationProxy
 from zope.publisher.interfaces import IPublishTraverse
 from zope.security import proxy
@@ -216,7 +216,7 @@ class SkillsGradebook(Gradebook):
 
 class MySkillsGrades(SkillsGradebook):
 
-    implements(IMySkillsGrades)
+    implementsOnly(IMySkillsGrades)
     adapts(ISectionSkillSet)
 
     def __init__(self, context):
