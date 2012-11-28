@@ -20,7 +20,9 @@
 Skills importer.
 """
 
+import zope.lifecycleevent
 from zope.security.proxy import removeSecurityProxy
+from zope.proxy import sameProxiedObjects
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 from schooltool.app.interfaces import ISchoolToolApplication
@@ -52,6 +54,34 @@ def breakupIds(ids):
     return [p.strip() for p in ids.split(',') if p.strip()]
 
 
+class Changer(object):
+
+    changed = False
+    ignore = False
+
+    def __init__(self, obj, ignore=False):
+        self.obj = obj
+
+    def __setitem__(self, attr, val):
+        if (not hasattr(self.obj, attr) or
+            getattr(self.obj, attr) != val):
+            setattr(self.obj, attr, val)
+            if not self.ignore:
+                self.changed = True
+
+    def __nonzero__(self):
+        return self.changed
+
+    def change(self, changes=None):
+        self.changed = self.changed or bool(changes)
+
+    def notify(self):
+        if self.changed:
+            zope.lifecycleevent.modified(self.obj)
+
+        self.changed = False
+
+
 class SkillSetsImporter(ImporterBase):
 
     sheet_name = 'SkillSets'
@@ -74,11 +104,14 @@ class SkillSetsImporter(ImporterBase):
 
             if name in skillsets:
                 skillset = skillsets[name]
-                skillset.title = title
+                changes = Changer(skillset)
+                changes['title'] = title
             else:
                 skillset = skillsets[name] = SkillSet(title)
-            skillset.description = description
-            skillset.label = label
+                changes = Changer(skillset, ignore=True)
+            changes['description'] = description
+            changes['label'] = label
+            changes.notify()
 
 
 class SkillsImporter(ImporterBase):
@@ -89,6 +122,8 @@ class SkillsImporter(ImporterBase):
         sh = self.sheet
         skillsets = ISkillSetContainer(self.context)
         skillset = None
+
+        skillset_changes = dict([(k, Changer(v)) for k, v in skillsets.items()])
 
         for row in range(1, sh.nrows):
             if (sh.cell_value(rowx=row, colx=0) == '' and
@@ -118,16 +153,22 @@ class SkillsImporter(ImporterBase):
 
             if name in skillset:
                 skill = skillset[name]
-                skill.title = title
+                changes = Changer(skill)
+                changes['title'] = title
             else:
                 skill = skillset[name] = Skill(title)
-            skill.description = description
-            skill.external_id = external_id
-            skill.label = label
-            skill.required = bool(required)
-            skill.retired = bool(retired)
+                changes = Changer(skill)
+            changes['description'] = description
+            changes['external_id'] = external_id
+            changes['label'] = label
+            changes['required'] = bool(required)
+            changes['retired'] = bool(retired)
+            skillset_changes[skillset.__name__].change(changes)
 
         skillset = None
+
+        for changes in skillset_changes.values():
+            changes.notify()
 
         for row in range(1, sh.nrows):
             if (sh.cell_value(rowx=row, colx=0) == '' and

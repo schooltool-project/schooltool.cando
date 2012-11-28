@@ -19,6 +19,7 @@
 """Integration with SchoolTool course"""
 
 from persistent.dict import PersistentDict
+import zope.lifecycleevent
 from zope.annotation.interfaces import IAnnotations
 from zope.event import notify
 from zope.interface import implements, implementer
@@ -40,11 +41,13 @@ from schooltool.app.relationships import URISectionOfCourse, URICourse
 from schooltool.cando.interfaces import ICourseSkills
 from schooltool.cando.interfaces import ICourseSkillSet, ICourseSkill
 from schooltool.cando.interfaces import ISectionSkills, ISectionSkillSet
-from schooltool.cando.interfaces import ISkillSetContainer
-from schooltool.cando.skill import Skill
+from schooltool.cando.interfaces import ISkillSetContainer, ISkillSet, ISkill
+from schooltool.cando.skill import Skill, is_global_skillset
 from schooltool.course.interfaces import ISection, ICourse
+from schooltool.course.interfaces import ICourseContainer
 from schooltool.gradebook.activity import Worksheets, GenericWorksheet
 from schooltool.requirement.requirement import Requirement
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
 from schooltool.schoolyear.subscriber import ObjectEventAdapterSubscriber
 
 from schooltool.cando import CanDoMessage as _
@@ -256,6 +259,55 @@ class CourseWorksheetRemoved(CourseWorksheetEventSubscriber):
                 del worksheets[skillset.__name__]
 
 
+class GlobalSkillSetUpdateMixin(object):
+
+    def yearsToUpdate(self):
+        app = ISchoolToolApplication(None)
+        syc = ISchoolYearContainer(app)
+        active = syc.getActiveSchoolYear()
+        if active is None:
+            return list(syc.values())
+
+        idx = removeSecurityProxy(syc.sorted_schoolyears).index(removeSecurityProxy(active))
+        years = syc.sorted_schoolyears[idx:]
+        return years
+
+    def updateSkillSet(self, skillset):
+        years = self.yearsToUpdate()
+        for year in years:
+            courses = ICourseContainer(year)
+            for course in courses.values():
+                annotations = IAnnotations(course)
+                if COURSE_SKILLS_KEY not in annotations:
+                    continue
+                course_skills = annotations[COURSE_SKILLS_KEY]
+                for course_skillset in course_skills.values():
+                    if course_skillset.__name__ == skillset.__name__:
+                        zope.lifecycleevent.modified(course_skillset)
+
+
+class GlobalSkillSetModified(ObjectEventAdapterSubscriber,
+                             GlobalSkillSetUpdateMixin):
+    adapts(IObjectModifiedEvent, ISkillSet)
+
+    def __call__(self):
+        skillset = self.object
+        if not is_global_skillset(None, None, skillset):
+            return
+        self.updateSkillSet(skillset)
+
+
+class GlobalSkillModified(ObjectEventAdapterSubscriber,
+                          GlobalSkillSetUpdateMixin):
+    adapts(IObjectModifiedEvent, ISkill)
+
+    def __call__(self):
+        skillset = self.object.__parent__
+        if not is_global_skillset(None, None, skillset):
+            return
+        self.updateSkillSet(skillset)
+
+
 def updateCourseSkillSet(skillset, section):
     int_ids = getUtility(IIntIds)
     worksheets = ISectionSkills(section)
@@ -277,7 +329,7 @@ def updateCourseSkillSet(skillset, section):
                 delete_skills.remove(skill_name)
             target_skill = worksheet[skill_name]
 
-        for attr in ('external_id', 'label', 'description',
+        for attr in ('external_id', 'label', 'description', 'title',
                      'required', 'retired'):
             val = getattr(skill, attr, None)
             if getattr(target_skill, attr, None) != val:
@@ -301,6 +353,7 @@ class CourseSkillSetModified(CourseWorksheetEventSubscriber):
 
     def __call__(self):
         skillset = self.object
+        skillset.title = skillset.skillset.title
         for section in self.sections:
             updateCourseSkillSet(skillset, section)
 
