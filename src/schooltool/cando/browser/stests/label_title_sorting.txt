@@ -514,3 +514,93 @@ Now, let's list skill sets and skills in the Skills popup dialog:
     01: Multiply two fractions.
     02: Divide a fraction by a mixed number.
     03: Divide a fraction by a whole number.
+
+    >>> teacher.query.css('.ui-dialog-titlebar-close').click()
+
+Let's test the Score student view for Camila:
+
+    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
+    >>> teacher.query.link('Cerna, Camila').click()
+    >>> camila_menu.query.link('Score').click()
+
+    >>> sel = '.grade-student tbody tr th'
+    >>> for th in teacher.query_all.css(sel):
+    ...     print th.text
+    Arithmetic of Decimals
+    01: Fractions
+    02: Percents
+
+    >>> sel = '.grade-student tbody tr td:first-child'
+    >>> for td in teacher.query_all.css(sel):
+    ...     print td.text
+    01: Add two decimal numbers.
+    02: Subtract two decimal numbers.
+    03: Add a group of decimal numbers.
+    Convert mixed numbers to improper fractions.
+    Read and write fractions.
+    01: Multiply two fractions.
+    02: Divide a fraction by a mixed number.
+    03: Divide a fraction by a whole number.
+    01: Write fractions as percents.
+    02: Write percents as decimal numbers.
+    03: Write decimal numbers as percents.
+
+    >>> teacher.query.name('CANCEL').click()
+
+Now her Student Competency Report:
+
+    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
+    >>> teacher.query.link('Cerna, Camila').click()
+    >>> camila_menu.query.link('Report').click()
+
+    >>> sel = 'table tbody tr th'
+    >>> for th in teacher.query_all.css(sel):
+    ...     print th.text
+    Arithmetic of Decimals
+    01: Fractions
+    02: Percents
+
+    >>> sel = 'table tbody tr'
+    >>> for tr in teacher.query_all.css(sel):
+    ...     tds = tr.query_all.tag('td')
+    ...     if tds:
+    ...         print '%s, %s' % (tds[0].text, tds[2].text)
+    01, Add two decimal numbers.
+    02, Subtract two decimal numbers.
+    03, Add a group of decimal numbers.
+    , Convert mixed numbers to improper fractions.
+    , Read and write fractions.
+    01, Multiply two fractions.
+    02, Divide a fraction by a mixed number.
+    03, Divide a fraction by a whole number.
+    01, Write fractions as percents.
+    02, Write percents as decimal numbers.
+    03, Write decimal numbers as percents.
+
+Let's log in as Camila and check the sorting of her grades view:
+
+    >>> camila = browsers.camila
+    >>> camila.ui.login('camila', 'pwd')
+    >>> camila.query.link('CanDo').click()
+
+    >>> sel = '.third-nav li a'
+    >>> for a in camila.query_all.css(sel):
+    ...     print a.text
+    Arithmetic of Decimals
+    01: Fractions
+    02: Percents
+
+    >>> sel = 'a[title="01: Fractions"]'
+    >>> link = camila.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> camila.open(link.get_attribute('href'))
+    >>> sel = 'table tbody tr td:first-child'
+    >>> for td in camila.query_all.css(sel):
+    ...     print td.text
+    Convert mixed numbers to improper fractions.
+    Read and write fractions.
+    01: Multiply two fractions.
+    02: Divide a fraction by a mixed number.
+    03: Divide a fraction by a whole number.

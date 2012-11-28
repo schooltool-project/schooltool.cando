@@ -58,6 +58,7 @@ from schooltool.gradebook.browser.gradebook import FlourishActivityPopupMenuView
 from schooltool.gradebook.browser.gradebook import FlourishStudentPopupMenuView
 from schooltool.gradebook.browser.gradebook import GradebookTertiaryNavigationManager
 from schooltool.gradebook.browser.gradebook import MyGradesTertiaryNavigationManager
+from schooltool.gradebook.browser.gradebook import MyGradesTable
 from schooltool.gradebook.browser.gradebook import FlourishGradebookYearNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookTermNavigationViewlet
 from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavigationViewlet
@@ -1227,6 +1228,51 @@ class MySkillsGradesView(FlourishMyGradesView):
         return shortTitle, longTitle, bestScore
 
 
+class SkillSortingColumn(table.column.LocaleAwareGetterColumn):
+
+    def getSortKey(self, item, formatter):
+        collator = ICollator(formatter.request.locale)
+        skill = item['object']
+        return (collator.key(skill.label or ''),
+                collator.key(skill.title))
+
+
+class MySkillsGradesTable(MyGradesTable):
+
+    visible_column_names = ['skill', 'score']
+
+    def columns(self):
+        activity, score = super(MySkillsGradesTable, self).columns()
+        skill_sorting = SkillSortingColumn(
+            name='skill_sorting',
+            title='Skill Sorting Column')
+        skill = zc.table.column.GetterColumn(
+            name='skill',
+            title=_('Skill'),
+            getter=lambda i, f: i['object'],
+            cell_formatter=label_title_formatter)
+        return [skill_sorting, skill, score]
+
+    def sortOn(self):
+        return (('skill_sorting', False),)
+
+    def renderTable(self):
+        if self._table_formatter is None:
+            return ''
+        formatter = self._table_formatter(
+            self.source, self.request, self._items,
+            visible_column_names=self.visible_column_names,
+            columns=self._columns,
+            batch_start=self.batch.start, batch_size=self.batch.size,
+            sort_on=self._sort_on,
+            prefix=self.prefix,
+            ignore_request=self.ignoreRequest,
+            )
+        formatter.html_id = self.html_id
+        formatter.cssClasses.update(self.css_classes)
+        return formatter()
+
+
 class MySkillsGradesYearNavigationViewlet(
     CanDoYearNavigationViewlet):
 
@@ -1257,10 +1303,10 @@ class MySkillsGradesTertiaryNavigationManager(
         current = gradebook.context.__name__
         collator = ICollator(self.request.locale)
         for worksheet in gradebook.worksheets:
-            title = worksheet.title
-            if ISkillsGradebook.providedBy(self.context) and \
-               worksheet.label:
-                title = '%s: %s' % (worksheet.label, title)
+            title = raw_title = worksheet.title
+            label = getattr(worksheet, 'label')
+            if label:
+                title = '%s: %s' % (label, title)
             url = '%s/mygrades' % absoluteURL(worksheet, self.request)
             classes = worksheet.__name__ == current and ['active'] or []
             if worksheet.deployed:
@@ -1269,8 +1315,12 @@ class MySkillsGradesTertiaryNavigationManager(
                 'class': classes and ' '.join(classes) or None,
                 'viewlet': u'<a class="navbar-list-worksheets" title="%s" href="%s">%s</a>' % (title, url, title),
                 'title': title,
+                'label': label,
+                'raw_title': raw_title,
                 })
-        return sorted(result, key=lambda x:x['title'], cmp=collator.cmp)
+        result.sort(key=lambda x:(collator.key(x['label'] or ''),
+                                  collator.key(x['raw_title'])))
+        return result
 
 
 class CanDoGradeStudentBase(flourish.page.Page):
@@ -1375,10 +1425,6 @@ def label_title_formatter(obj, item, formatter):
     return title
 
 
-def get_skill_skillset(item, formatter):
-    return label_title_formatter(item['skillset'], item, formatter)
-
-
 def skill_score_formatter(score, item, formatter):
     if score is not None and score.value is not UNSCORED:
         return score.value
@@ -1406,12 +1452,15 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
         for worksheet in worksheets.values():
             if self.view.isSkillsGradebook:
                 gradebook = ISkillsGradebook(worksheet)
+                skillset_label = worksheet.label
             else:
                 gradebook = IProjectsGradebook(worksheet)
+                skillset_label = None
             for activity in gradebook.activities:
                 result.append({
                         'gradebook': gradebook,
                         'skillset': proxy.removeSecurityProxy(worksheet),
+                        'skillset_label': skillset_label,
                         'skill': activity,
                         'skill_id': self.getSkillId(activity),
                         })
@@ -1441,6 +1490,19 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
                        css_classes={'table': self.css_classes})
 
 
+class SkillSetColumn(zc.table.column.GetterColumn):
+
+    def getSortKey(self, item, formatter):
+        collator = ICollator(formatter.request.locale)
+        skillset = item['skillset']
+        skillset_label = item['skillset_label']
+        skill = item['skill']
+        return (collator.key(skillset_label or ''),
+                collator.key(skillset.title),
+                collator.key(skill.label or ''),
+                collator.key(skill.title))
+
+
 class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
 
     css_classes = 'grade-student'
@@ -1452,10 +1514,9 @@ class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
         )
 
     def columns(self):
-        skillset = table.column.LocaleAwareGetterColumn(
+        skillset = SkillSetColumn(
             name='skillset',
-            title=_('Skill Set'),
-            getter=get_skill_skillset)
+            title='Skill Set')
         skill = zc.table.column.GetterColumn(
             name='skill',
             title=_('Skill'),
@@ -1469,7 +1530,7 @@ class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
         return [skillset, skill, score]
 
     def sortOn(self):
-        return (('skillset', False), ('skill', False))
+        return (('skillset', False),)
 
     def update(self):
         super(CanDoGradeStudentTable, self).update()
@@ -1579,10 +1640,9 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
     visible_column_names = ['label', 'required', 'skill', 'date', 'rating']
 
     def columns(self):
-        skillset = table.column.LocaleAwareGetterColumn(
+        skillset = SkillSetColumn(
             name='skillset',
-            title=_('Skill Set'),
-            getter=get_skill_skillset)
+            title='Skill Set')
         label = zc.table.column.GetterColumn(
             name='label',
             title='',

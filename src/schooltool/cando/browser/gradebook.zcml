@@ -616,6 +616,14 @@
       permission="zope.Public"
       />
 
+  <flourish:viewlet
+      name="grades_table"
+      class=".gradebook.MySkillsGradesTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".gradebook.MySkillsGradesView"
+      permission="schooltool.view"
+      />
+
   <flourish:viewletManager
       name="tertiary_navigation"
       provides="schooltool.skin.flourish.page.ITertiaryNavigationManager"
