@@ -2,10 +2,11 @@
 CHANGES
 =======
 
-0.4.1 (unreleased)
+0.4.1 (2012-11-29)
 ------------------
 
-- Nothing changed yet.
+- Fixed skills sorting in more teacher and student views.
+- Update section worksheets on global skill or skillset change (https://launchpad.net/bugs/1066940)
 
 
 0.4 (2012-11-27)

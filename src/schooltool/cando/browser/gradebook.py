@@ -1516,7 +1516,7 @@ class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
     def columns(self):
         skillset = SkillSetColumn(
             name='skillset',
-            title='Skill Set')
+            title=_('Skill Set'))
         skill = zc.table.column.GetterColumn(
             name='skill',
             title=_('Skill'),
@@ -1642,7 +1642,7 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
     def columns(self):
         skillset = SkillSetColumn(
             name='skillset',
-            title='Skill Set')
+            title=_('Skill Set'))
         label = zc.table.column.GetterColumn(
             name='label',
             title='',
