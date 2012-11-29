@@ -46,7 +46,6 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
         for index, skillset in enumerate(skillsets.values()):
             self.write(ws, index + 1, 0, skillset.__name__)
             self.write(ws, index + 1, 1, skillset.title)
-            self.write(ws, index + 1, 2, skillset.external_id)
             self.write(ws, index + 1, 3, skillset.label)
 
     def export_skills(self, wb):

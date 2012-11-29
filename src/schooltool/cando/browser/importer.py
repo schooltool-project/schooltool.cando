@@ -189,8 +189,6 @@ class SkillsImporter(ImporterBase):
             skill = skillset[name]
 
             equiv = removeSecurityProxy(skill.equivalent)
-            for eq in list(equiv):
-                equiv.remove(eq)
             for part in breakupIds(equivalent):
                 if part not in skillset:
                     self.error(row, 3, ERROR_INVALID_EQUIVALENT)

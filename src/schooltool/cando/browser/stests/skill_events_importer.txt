@@ -1,0 +1,262 @@
+Test for the skill event subscribers using the skill importer
+=============================================================
+
+We'll test that modifying the skill document tree through the XLS
+importer propagates the changes to the course and section skills, so
+they're visible in the gradebook.
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up a skill document tree. Note the typos in the 'Fraktions' skill
+set:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Document').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('Virginia CTE')
+    >>> manager.query.id('add-button').click()
+    >>> manager.query.name('row2').ui.set_value('Course')
+    >>> manager.query.id('add-button').click()
+    >>> manager.query.name('row3').ui.set_value('Cluster')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.ui.skillset.add('Fraktions', '01')
+    >>> manager.ui.skillset.add('Percents', '02')
+    >>> manager.ui.skillset.add('Arithmetic of Decimals')
+    >>> manager.query.link('Arithmetic of Decimals').click()
+    >>> manager.query.css('a[title="Edit this skill set"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> manager.ui.skill.add('Fraktions', 'Multiply two fractions.', '01')
+    >>> manager.ui.skill.add('Fraktions',
+    ...                      'Divide a fraction by a mixed number.', '02')
+    >>> manager.ui.skill.add('Fraktions',
+    ...                      'Divide a fraction by a whole number.', '03')
+    >>> manager.ui.skill.add('Fraktions', 'Read and write fractions.')
+    >>> manager.query.link('Read and write fractions.').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+    >>> manager.ui.skill.add('Fraktions',
+    ...                      'Convert mixed numbers to improper fractions.')
+    >>> manager.query.link('Convert mixed numbers to improper fractions.').click()
+    >>> manager.query.css('a[title="Edit this skill"]').click()
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-buttons-apply').click()
+    >>> manager.query.link('Done').click()
+
+    >>> manager.ui.skill.add('Percents', 'Write fractions as percents.', '01')
+    >>> manager.ui.skill.add('Percents',
+    ...                      'Write decimal numbers as percents.', '03')
+    >>> manager.ui.skill.add('Percents',
+    ...                      'Write percents as decimal numbers.', '02')
+
+    >>> manager.ui.skill.add('Arithmetic of Decimals',
+    ...                      'Add two decimal numbers.', '01')
+    >>> manager.ui.skill.add('Arithmetic of Decimals',
+    ...                      'Subtract two decimal numbers.', '02')
+    >>> manager.ui.skill.add('Arithmetic of Decimals',
+    ...                      'Add a group of decimal numbers.', '03')
+
+    >>> manager.ui.node.add('Math')
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = 'a[title="Edit skillsets"]'
+    >>> manager.query.css(sel).click()
+    >>> manager.query.name('add_item.Fraktion1').click()
+    >>> manager.query.name('add_item.Percents2').click()
+    >>> manager.query.name('add_item.Arithmet3').click()
+
+Set up a section:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Math')
+    >>> manager.ui.section.add('2012', '2012', 'Math')
+    >>> manager.ui.section.instructors.add('2012', '2012', 'Math (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', '2012', 'Math (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+And assign the skills to the its course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Math').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Assign Skills').click()
+    >>> manager.query.id('math').click()
+    >>> dialog = manager.query.css('.ui-dialog')
+    >>> manager.wait_page(dialog.query.name('SUBMIT_BUTTON').click)
+
+Log in as teacher and go to the CanDo gradebook:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+Add some scores to the Fraktions skill set:
+
+    >>> sel = 'a[title="01: Fraktions"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> fractions_url = teacher.url
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', 'Conve', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', 'Reada', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '0')
+
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', 'Conve', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', 'Reada', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '3')
+
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', 'Conve', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '03', '1')
+
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+-----------------+--------------+
+    | Arithmetic of Decimals | *01: Fraktions* | 02: Percents |
+    +------------------------+-----------------+--------------+
+    +------------------+-------+-------+----+----+----+
+    | Name             | Conve | Reada | 01 | 02 | 03 |
+    |                  | 4     | 4     | 4  | 4  | 4  |
+    +------------------+-------+-------+----+----+----+
+    | Cerna, Camila    | 4     | 3     | 2  | 1  | 0  |
+    | Tejada, Mario    | 0     | 1     |    | 3  |    |
+    | Vividor, Liliana | 0     |       | 4  |    | 1  |
+    +------------------+-------+-------+----+----+----+
+
+List the skills and their types in the Percents skill set:
+
+    >>> sel = 'a[title="02: Percents"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> percents_url = teacher.url
+
+    >>> def print_activity_columns(browser):
+    ...     sel = '#grades-part thead tr:first-child th.scorable'
+    ...     for th in browser.query_all.css(sel):
+    ...         browser.wait_no(lambda:th.query.tag('ul.popup_menu img'))
+    ...         header = th.query.css('ul.popup_menu li.header')
+    ...         optional = 'optional' in th.get_attribute('class')
+    ...         print ['required', 'optional'][optional]
+    ...         # XXX: why header.text produces BLANKLINE?
+    ...         print header
+
+    >>> print_activity_columns(teacher)
+    required
+    <li class="header">
+      01: Write fractions as percents.
+    </li>
+    <BLANKLINE>
+    required
+    <li class="header">
+      02: Write percents as decimal numbers.
+    </li>
+    required
+    <li class="header">
+      03: Write decimal numbers as percents.
+    </li>
+
+Add some scores to the Percent skill set:
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '0')
+
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '03', '4')
+
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '02', '2')
+
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+---------------+----------------+
+    | Arithmetic of Decimals | 01: Fraktions | *02: Percents* |
+    +------------------------+---------------+----------------+
+    +------------------+----+----+----+
+    | Name             | 01 | 02 | 03 |
+    |                  | 4  | 4  | 4  |
+    +------------------+----+----+----+
+    | Cerna, Camila    | 2  | 1  | 0  |
+    | Tejada, Mario    |    | 3  | 4  |
+    | Vividor, Liliana | 1  | 2  |    |
+    +------------------+----+----+----+
+
+Let's fix the typo in the Fraktions skill set and modify some skills
+in the Percents skill set using the XLS importer:
+
+    >>> from pkg_resources import resource_filename
+    >>> path = resource_filename('schooltool.cando.browser.stests',
+    ...                          'skill_events_importer.xls')
+    >>> manager.ui.skill.import_xls(path)
+
+The Fraktions skill set should be updated in the teacher's gradebook:
+
+    >>> teacher.open(fractions_url)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+--------------+-----------------+
+    | Arithmetic of Decimals | 02: Percents | *10: Fractions* |
+    +------------------------+--------------+-----------------+
+    +------------------+-------+-------+----+----+----+
+    | Name             | Conve | Reada | 01 | 02 | 03 |
+    |                  | 4     | 4     | 4  | 4  | 4  |
+    +------------------+-------+-------+----+----+----+
+    | Cerna, Camila    | 4     | 3     | 2  | 1  | 0  |
+    | Tejada, Mario    | 0     | 1     |    | 3  |    |
+    | Vividor, Liliana | 0     |       | 4  |    | 1  |
+    +------------------+-------+-------+----+----+----+
+
+So should be the skills in the Percents skill set:
+
+    >>> teacher.open(percents_url)
+    >>> print_activity_columns(teacher)
+    optional
+    <li class="header">
+      02: Write PERCENTS as decimal numbers.
+    </li>
+    required
+    <li class="header">
+      03: Write decimal numbers as percents.
+    </li>
+    <BLANKLINE>
+    required
+    <li class="header">
+      07: Write fractions as percents.
+    </li>
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+----------------+---------------+
+    | Arithmetic of Decimals | *02: Percents* | 10: Fractions |
+    +------------------------+----------------+---------------+
+    +------------------+----+----+----+
+    | Name             | 02 | 03 | 07 |
+    |                  | 4  | 4  | 4  |
+    +------------------+----+----+----+
+    | Cerna, Camila    | 1  | 0  | 2  |
+    | Tejada, Mario    | 3  | 4  |    |
+    | Vividor, Liliana | 2  |    | 1  |
+    +------------------+----+----+----+
