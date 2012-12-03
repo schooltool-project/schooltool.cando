@@ -770,6 +770,7 @@ class ProjectSkillSearchView(flourish.page.Page):
             for skill in self.skills():
                 if skill['input_name'] in self.request:
                     skill_copy = skill['obj'].copy()
+                    skill_copy.scoresystem = skill['obj'].scoresystem
                     name = chooser.chooseName('', skill_copy)
                     self.context[name] = skill_copy
                     skill_copy.equivalent.add(skill['obj'])
@@ -1618,11 +1619,15 @@ class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
 
     def result(self):
         result = {'is_valid': True, 'is_extracredit': False}
+        gradebook = proxy.removeSecurityProxy(self.context)
         score = self.request.get('score')
-        if score:
-            scoresystem = querySkillScoreSystem()
-            try:
-                score = scoresystem.fromUnicode(score)
-            except (ScoreValidationError,):
-                result['is_valid'] = False
+        activity_id = self.request.get('activity_id')
+        if score and activity_id:
+            activity = gradebook.context.get(activity_id, None)
+            if activity is not None:
+                scoresystem = activity.scoresystem
+                try:
+                    score = scoresystem.fromUnicode(score)
+                except (ScoreValidationError,):
+                    result['is_valid'] = False
         return result
