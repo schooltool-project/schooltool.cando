@@ -23,6 +23,7 @@ from zope.container.interfaces import IContainer, IContained
 from zope.container.constraints import contains
 from zope.html.field import HtmlFragment
 from zope.interface import Interface, Attribute
+from zope.schema import Choice
 
 from schooltool.requirement.interfaces import IRequirement
 from schooltool.gradebook.interfaces import IWorksheets, IWorksheet
@@ -45,6 +46,12 @@ class ISkill(IRequirement, IAttributeAnnotatable):
     description = HtmlFragment(title=_("Full description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
+
+    scoresystem = Choice(
+        title=_("Scoresystem"),
+        description=_("The skill scoresystem."),
+        vocabulary='schooltool.requirement.discretescoresystems',
+        required=True)
 
     def findAllEquivalent():
         """Find all (including indirectly) equivalent skills."""

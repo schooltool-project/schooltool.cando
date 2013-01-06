@@ -1,0 +1,233 @@
+Tests for the skill scoresytems
+===============================
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+We'll define a helper function for printing the form fields of any object.
+
+    >>> def print_attrs():
+    ...     sel = 'table.form-fields tbody tr'
+    ...     for row in manager.query_all.css(sel):
+    ...         label = row.query.xpath('td[1]').text
+    ...         value = row.query.xpath('td[2]').text
+    ...         print '%s: %s' % (label, value)
+
+Let's start by adding a skillset.
+
+    >>> manager.open('http://localhost/skills')
+    >>> manager.query.link('Skill Set').click()
+    >>> manager.query.name('form.widgets.title').type('Carpentry')
+    >>> manager.query.name('form.widgets.label').type('Carp label')
+    >>> manager.query.button('Submit').click()
+
+We see that it was added.
+
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/Carpentr1
+    >>> manager.query.link('Carpentry').click()
+    >>> print_attrs()
+    Full description:
+    Label: Carp label
+
+Now, we'll add a skill to it.  We see that the scoresystem field is set to the
+default, one the user hasn't even chosen yet.
+
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    SkillScoreSystem-
+
+We'll change it to 'Extended Letter Grade' before submitting it.
+
+    >>> manager.query.name('form.widgets.title').type('Pounding')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Extended Letter Grade')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+
+We see that it was added.
+
+    >>> print manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    http://localhost/skills/Carpentr1/Pounding1
+    >>> manager.query.link('Pounding').click()
+    >>> print_attrs()
+    Scoresystem: Extended Letter Grade
+    Full description:
+    Short label: 01
+    Required: Yes
+    External ID:
+
+We'll add another skill.  We see that the scoresystem field is not set to the
+default this time.  The choice we made last time we added a skill is remembered
+so we don't have to choose it every time.
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    extended-letter-grade-
+
+Now we'll fill in the form and add our second skill.  We see that it is there
+after we submit it.
+
+    >>> manager.query.name('form.widgets.title').type('Hammering')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Pass/Fail')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+    >>> manager.query.link('Hammering').click()
+    >>> print_attrs()
+    Scoresystem: Pass/Fail
+    Full description:
+    Short label: 02
+    Required: Yes
+    External ID:
+
+We'll add one last skill.  Again, it remembered the last scoresystem we chose.
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Skill').click()
+    >>> print manager.query.name('form.widgets.scoresystem:list').get_attribute('value')
+    passfail-
+    >>> manager.query.name('form.widgets.title').type('Whacking')
+    >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Letter Grade')
+    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.button('Submit').click()
+    >>> manager.query.link('Whacking').click()
+    >>> print_attrs()
+    Scoresystem: Letter Grade
+    Full description:
+    Short label: 03
+    Required: Yes
+    External ID:
+
+We see our skillset now has three skills.
+
+    >>> manager.query.link('Done').click()
+    >>> links = manager.query_all.xpath('//table[@class="data"]//a').get_attribute('href')
+    >>> for link in sorted(links): print link
+    http://localhost/skills/Carpentr1/Hammerin2
+    http://localhost/skills/Carpentr1/Pounding1
+    http://localhost/skills/Carpentr1/Whacking3
+
+
+Gradebook tests
+---------------
+
+Now that we have shown that we can add skills with different scoresystems, let's
+see how the gradebook handles them.
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+
+Set up a section:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', '2012', 'Programming')
+    >>> manager.ui.section.instructors.add('2012', '2012', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', '2012', 'Programming (1)',
+    ...                                 ['camila'])
+
+Log in as instructor:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+
+Go to gradebook and add the carpentry skills to the project there.
+
+    >>> teacher.query.link('CanDo').click()
+    >>> teacher.query.link('Skill').click()
+    >>> teacher.query.button('Search').click()
+    >>> teacher.query.link('Carpentry').click()
+    >>> teacher.query.name('Carpentr1.Pounding1').click()
+    >>> teacher.query.name('Carpentr1.Hammerin2').click()
+    >>> teacher.query.name('Carpentr1.Whacking3').click()
+    >>> teacher.query.button('Submit').click()
+
+We see the labels and max scores for the three new gradebook columns.
+
+    >>> print teacher.query_all.css('.grades thead th').text
+    01
+    02
+    03
+    A+
+    Pass
+    A
+
+We'll start by putting some invalid scores in all three cells for our
+student.  We see that the cells all are marked with the error class.
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '3')
+    >>> import time; time.sleep(2)
+    >>> print teacher.query_all.css('.grades tbody tr input').get_attribute('class')
+    error
+    error
+    error
+
+We'll put the max possible score for each cell.  Now we see the cells are
+valid.
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', 'A+')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', 'Pass')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', 'A')
+    >>> import time; time.sleep(2)
+    >>> print teacher.query_all.css('.grades tbody tr input').get_attribute('class')
+    valid
+    valid
+    valid
+
+Lastly, well change the first cell to be 'B' because the gradebook used to
+mark such cells as class, 'extracredit', even though there is no extracredit
+with discrete scoresystems, only with ranged values scoresystems.  We verify
+that the cell stays as just valid.
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', 'B')
+    >>> import time; time.sleep(2)
+    >>> print teacher.query_all.css('.grades tbody tr input').get_attribute('class')
+    valid
+    valid
+    valid
+
+
+Student gradebook
+-----------------
+
+We'll grade the student again the same three ways in the score student view.
+We'll need a helper for scoring.
+
+    >>> def score(activity, grade):
+    ...     cell = teacher.query_all.xpath('//td[@class="student-score"]')[activity]
+    ...     cell.click()
+    ...     cell.query.tag('input').type(teacher.keys.DELETE, grade)
+
+    >>> teacher.query.link('Cerna, Camila').click()
+    >>> menu = teacher.query.css('#students-part tbody ul.popup_menu')
+    >>> menu.query.link('Score').click()
+
+We'll enter three invalid scores, then three valid ones.  This view never did
+show extra credit.
+
+    >>> score(0, '3')
+    >>> score(1, '3')
+    >>> score(2, '3')
+    >>> import time; time.sleep(2)
+    >>> print teacher.query_all.xpath('//td[@class="student-score"]/input').get_attribute('class')
+    error
+    error
+    error
+
+    >>> score(0, 'A+')
+    >>> score(1, 'Pass')
+    >>> score(2, 'A')
+    >>> import time; time.sleep(2)
+    >>> print teacher.query_all.xpath('//td[@class="student-score"]/input').get_attribute('class')
+    valid
+    valid
+    valid
+

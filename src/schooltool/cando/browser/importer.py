@@ -31,6 +31,8 @@ from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
     ERROR_INVALID_SCHOOL_YEAR, ERROR_MISSING_YEAR_ID, ERROR_INVALID_COURSE_ID)
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
+from schooltool.requirement.interfaces import IScoreSystemContainer
+
 from schooltool.cando.course import CourseSkillSet
 from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
     ISkillSetContainer, ICourseSkills, IDocumentContainer)
@@ -47,6 +49,7 @@ ERROR_INVALID_SKILLSET = _("has an invalid skillset id")
 ERROR_MISSING_SKILLSET_ID = _("is missing a skillset id")
 ERROR_INVALID_EQUIVALENT = _("has an invalid equivalent skill id")
 ERROR_NODE_LABEL_TOO_BIG = _("node label has more than seven characters")
+ERROR_INVALID_SCORESYSTEM = _("has an invalid scoresystem")
 ERROR_INVALID_NODE = _("has an invalid node id")
 
 
@@ -121,6 +124,7 @@ class SkillsImporter(ImporterBase):
     def process(self):
         sh = self.sheet
         skillsets = ISkillSetContainer(self.context)
+        scoresystems = IScoreSystemContainer(self.context)
         skillset = None
 
         skillset_changes = dict([(k, Changer(v)) for k, v in skillsets.items()])
@@ -139,6 +143,7 @@ class SkillsImporter(ImporterBase):
             label = self.getTextFromCell(sh, row, 6)
             required = self.getBoolFromCell(sh, row, 7)
             retired = self.getBoolFromCell(sh, row, 8)
+            scoresystem = self.getTextFromCell(sh, row, 9)
             if num_errors < len(self.errors):
                 continue
 
@@ -149,6 +154,10 @@ class SkillsImporter(ImporterBase):
                 skillset = skillsets[skillset_id]
             elif skillset is None:
                 self.error(row, 0, ERROR_MISSING_SKILLSET_ID)
+                continue
+
+            if scoresystem and scoresystem not in scoresystems:
+                self.error(row, 3, ERROR_INVALID_SCORESYSTEM)
                 continue
 
             if name in skillset:
@@ -163,6 +172,9 @@ class SkillsImporter(ImporterBase):
             changes['label'] = label
             changes['required'] = bool(required)
             changes['retired'] = bool(retired)
+            if scoresystem:
+                changes['scoresystem'] = removeSecurityProxy(
+                    scoresystems[scoresystem])
             skillset_changes[skillset.__name__].change(changes)
 
         skillset = None
