@@ -64,6 +64,43 @@ It has three skills.
     | Label            | Carp label |
     +------------------+------------+
 
+    >>> print_table(manager, '//table[@class="data"]')
+    +-------+-----------+
+    | Label | Title     |
+    +-------+-----------+
+    |       | Pounding  |
+    |       | Whacking  |
+    | Label | Hammering |
+    +-------+-----------+
+
+Let's visit each skill and print their attrs.
+
+    >>> manager.query.link('Pounding').click()
+    >>> print_attrs()
+    Scoresystem: Letter Grade
+    Full description:
+    Short label:
+    Required: Yes
+    External ID: ext_123
+    >>> manager.query.link('Done').click()
+
+    >>> manager.query.link('Whacking').click()
+    >>> print_attrs()
+    Scoresystem: Pass/Fail
+    Full description: Whacking desc.
+    Short label:
+    Required: No
+    External ID:
+    >>> manager.query.link('Done').click()
+
+    >>> manager.query.link('Hammering').click()
+    >>> print_attrs()
+    Scoresystem: Competency
+    Full description: This is hammering.
+    Short label: Label
+    Required: No
+    External ID:
+
 There are five layers.
 
     >>> manager.query.link('School').click()
