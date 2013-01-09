@@ -850,6 +850,7 @@
   <include file="report.zcml" />
   <include file="gradebook.zcml" />
   <include file="breadcrumbs.zcml" />
+  <include file="iep.zcml" />
 
   <flourish:viewlet
       name="courses-actions-links"

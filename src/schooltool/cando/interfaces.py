@@ -227,3 +227,23 @@ class IMySkillsGrades(IMyGrades):
 
 class ICanDoStudentGradebook(IStudentGradebook):
     pass
+
+
+class IStudentIEP(Interface):
+
+    active = zope.schema.Bool(
+        title=_('Active'),
+        default=False)
+
+    description = HtmlFragment(title=_("Description"), required=False)
+
+    iep_skills = Attribute('IEP Skills')
+
+    def getIEPSkills(section):
+        """Returns IEP skills"""
+
+    def addSkill(section, skill):
+        """Adds IEP skill"""
+
+    def removeSkill(section, skill):
+        """Removes IEP skill"""

@@ -1,0 +1,13 @@
+<script>ST.state.push()</script>
+<tal:script replace="structure scriptlocal: students view/students" />
+<script>
+$(document).ready(function() {
+    var students = ST.local.students;
+    return function(e) {
+        $.each(students, function(i, element) {
+            $(ST.dialogs.jquery_id(element)).addClass('iep-student');
+        });
+    }
+}());
+</script>
+<script>ST.state.pop()</script>

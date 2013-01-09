@@ -9,6 +9,7 @@
   <include file="project.zcml" />
   <include file="course.zcml" />
   <include file="gradebook.zcml" />
+  <include file="iep.zcml" />
 
   <include package=".browser" />
 

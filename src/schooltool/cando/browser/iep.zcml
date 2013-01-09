@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/browser"
+           xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:flourish="http://schooltool.org/flourish"
+           xmlns:report="http://namespaces.schooltool.org/report"
+           i18n_domain="schooltool.cando">
+
+  <flourish:viewlet
+      name="iep.html"
+      title="IEP"
+      after="*"
+      class=".iep.StudentIEPLinkViewlet"
+      manager="schooltool.basicperson.browser.person.PersonLinks"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="iep.html"
+      for="schooltool.basicperson.interfaces.IBasicPerson"
+      class=".iep.StudentIEPView"
+      subtitle="Individualized Educational Plan"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="iep-details"
+      class=".iep.StudentIEPViewDetails"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="iep-sections"
+      class=".iep.StudentIEPViewSectionsViewlet"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPView"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done-link"
+      after="iep-details iep-sections"
+      class=".iep.StudentIEPViewDoneLink"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPView"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="iep-edit-details.html"
+      for="schooltool.basicperson.interfaces.IBasicPerson"
+      class=".iep.StudentIEPEditView"
+      subtitle="Individualized Educational Plan"
+      permission="schooltool.edit"
+      />
+
+  <flourish:page
+      name="iep_section.html"
+      for="schooltool.basicperson.interfaces.IBasicPerson"
+      class=".iep.StudentIEPSectionView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".iep.StudentIEPSectionView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="iep-section-skills"
+      class=".iep.StudentIEPSectionSkillsViewlet"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPSectionView"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="iep_section_skills"
+      class=".iep.StudentIEPSectionSkillsTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".iep.StudentIEPSectionView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".iep.StudentIEPSectionSkillsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="done-link"
+      after="iep-section-skills"
+      class=".iep.StudentIEPSectionViewDoneLink"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPSectionView"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="iep_edit_section_skills.html"
+      for="schooltool.basicperson.interfaces.IBasicPerson"
+      class=".iep.StudentIEPEditSectionSkillsView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="cando-resources"
+      view=".iep.StudentIEPEditSectionSkillsView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="iep-section-skills"
+      class=".iep.StudentIEPEditSectionSkillsViewlet"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      view=".iep.StudentIEPEditSectionSkillsView"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="iep_section_skills"
+      class=".iep.StudentIEPEditSectionSkillsTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".iep.StudentIEPEditSectionSkillsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".iep.StudentIEPEditSectionSkillsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="buttons"
+      after="table"
+      class=".iep.StudentIEPEditSectionSkillsButtons"
+      manager=".iep.StudentIEPEditSectionSkillsTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="gradebook-help"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view=".iep.StudentIEPSectionView"
+      title="Help"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="scoresystemhelp.html"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      manager=".gradebook.GradebookHelpLinks"
+      view=".iep.StudentIEPSectionView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="gradebook-help"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".gradebook.GradebookHelpLinks"
+      view=".iep.StudentIEPEditSectionSkillsView"
+      title="Help"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="scoresystemhelp.html"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      manager=".gradebook.GradebookHelpLinks"
+      view=".iep.StudentIEPEditSectionSkillsView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="gradebook-iep-students"
+      view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".iep.GradebookIEPStudents"
+      render="template"
+      permission="schooltool.view"
+      />
+
+</configure>
