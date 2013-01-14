@@ -1,0 +1,221 @@
+IEP functionality for the Student Competency Report
+===================================================
+
+Helpers:
+
+    >>> def print_report_skills(browser):
+    ...     sel = '.student-scr tbody tr'
+    ...     for row in browser.query_all.css(sel):
+    ...         tds = row.query_all.tag('td')
+    ...         if tds:
+    ...             print '%s, %s, %s' % (tds[0].text, tds[1].text, tds[2].text)
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> camila_url = manager.url
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+Set up a section:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', '2012', 'Programming')
+    >>> manager.ui.section.instructors.add('2012', '2012', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', '2012', 'Programming (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+Set up skills:
+
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.node.add('Programming', label='PRO')
+
+    >>> manager.ui.skillset.add('Python Environment', '01')
+    >>> manager.ui.skillset.add('Data Types, Statements, and Expressions', '02')
+    >>> manager.ui.skillset.add('Errors', '03')
+    >>> manager.ui.skillset.add('Strings', '04')
+
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Use the Python shell for interactive evaluation',
+    ...     '01')
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Make Python scripts with a text editor',
+    ...     '02',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Recognize int, float, str, list, tuple, and dict.',
+    ...     '03')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use type(...) to determine the data type of a given value.',
+    ...     '04')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use assignment statements to assign names (variables) to values.',
+    ...     '05')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use the input function to read user input.',
+    ...     '06')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Define keyword and recognize keywords in Python.',
+    ...     '07')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Create legal variable names and recognize illegal ones.',
+    ...     '08',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Recognize and differentiate among errors.',
+    ...     '09')
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Read and interpret stack traceback messages.',
+    ...     '10')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Create string literals with single, double, and triple quotes.',
+    ...     '11')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the len() function to return the length of a string.',
+    ...     '12')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the find(...) method to locate substrings in a string.',
+    ...     '13',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the split() method to break a string into a list.',
+    ...     '14',
+    ...     required=False)
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.button('Search').click()
+    >>> manager.query.link('Programming').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit skillsets"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Done').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> layers_accordion_header = accordion_headers[3]
+    >>> layers_accordion_header.click()
+    >>> layers_accordion_content = accordion_contents[3]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit layers"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+
+Assign the skills to the course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Batch Assign Skills').click()
+    >>> manager.query.name('course_attr').ui.set_value('Course ID')
+    >>> manager.query.name('layer').ui.set_value('Course')
+    >>> manager.query.name('node_attr').ui.set_value('Label')
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.name('ASSIGN_BUTTON').click()
+
+Log in as instructor:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+Check Camila's Student Competency Report and print its skills
+information (label, required, title):
+
+    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
+    >>> teacher.query.link('Cerna, Camila').click()
+    >>> camila_menu.query.link('Report').click()
+    >>> camila_report_url = teacher.url
+
+    >>> print_report_skills(teacher)
+    01, Yes, Use the Python shell for interactive evaluation
+    02, No, Make Python scripts with a text editor
+    03, Yes, Recognize int, float, str, list, tuple, and dict.
+    04, Yes, Use type(...) to determine the data type of a given value.
+    05, Yes, Use assignment statements to assign names (variables) to values.
+    06, Yes, Use the input function to read user input.
+    07, Yes, Define keyword and recognize keywords in Python.
+    08, No, Create legal variable names and recognize illegal ones.
+    09, Yes, Recognize and differentiate among errors.
+    10, Yes, Read and interpret stack traceback messages.
+    11, Yes, Create string literals with single, double, and triple quotes.
+    12, Yes, Use the len() function to return the length of a string.
+    13, No, Use the find(...) method to locate substrings in a string.
+    14, No, Use the split() method to break a string into a list.
+
+Let's activate IEP for Camila:
+
+    >>> manager.open(camila_url)
+    >>> manager.query.link('IEP').click()
+    >>> sel = 'a[title="Edit this plan information"]'
+    >>> manager.query.css(sel).click()
+    >>> manager.query.id('form-widgets-active-0').click()
+    >>> manager.query.id('form-buttons-add').click()
+
+And customize some of the required skills:
+
+    >>> manager.query.link('Programming (1)').click()
+    >>> sel = '''a[title="Edit student's IEP skills"]'''
+    >>> manager.query.css(sel).click()
+    >>> sel = 'iep_section_skills.iep.Python E1.Use the 1'
+    >>> manager.query.id(sel).click()
+    >>> sel = 'iep_section_skills.iep.Data Typ2.Use the 4'
+    >>> manager.query.id(sel).click()
+    >>> sel = 'iep_section_skills.iep.Errors-3.Recogniz1'
+    >>> manager.query.id(sel).click()
+    >>> manager.query.name('SAVE').click()
+
+And check her report again. The IEP skills should be shown as not
+required now:
+
+    >>> teacher.open(camila_report_url)
+    >>> print_report_skills(teacher)
+    01, No, Use the Python shell for interactive evaluation
+    02, No, Make Python scripts with a text editor
+    03, Yes, Recognize int, float, str, list, tuple, and dict.
+    04, Yes, Use type(...) to determine the data type of a given value.
+    05, Yes, Use assignment statements to assign names (variables) to values.
+    06, No, Use the input function to read user input.
+    07, Yes, Define keyword and recognize keywords in Python.
+    08, No, Create legal variable names and recognize illegal ones.
+    09, No, Recognize and differentiate among errors.
+    10, Yes, Read and interpret stack traceback messages.
+    11, Yes, Create string literals with single, double, and triple quotes.
+    12, Yes, Use the len() function to return the length of a string.
+    13, No, Use the find(...) method to locate substrings in a string.
+    14, No, Use the split() method to break a string into a list.

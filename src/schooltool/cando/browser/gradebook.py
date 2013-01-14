@@ -1648,6 +1648,10 @@ class StudentCompetencyRecordTableFormatter(CanDoGradeStudentTableFormatterBase)
         return '<td%s>%s</td>' % (klass, self.getCell(item, column),)
 
 
+def score_required_getter(item, formatter):
+    return item['skill'].required and not item['is_iep_skill']
+
+
 class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
 
     css_classes = 'data student-scr'
@@ -1665,7 +1669,7 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
         required = zc.table.column.GetterColumn(
             name='required',
             title=_('Required'),
-            getter=lambda item, formatter: item['skill'].required,
+            getter=score_required_getter,
             cell_formatter=lambda v, i, f: v and _('Yes') or _('No'))
         skill = zc.table.column.GetterColumn(
             name='skill',
