@@ -61,9 +61,16 @@ class StudentIEPView(flourish.page.Page):
 
 class StudentIEPViewDetails(flourish.form.FormViewlet):
 
-    fields = field.Fields(IStudentIEP)
     template = ViewPageTemplateFile('templates/iep_details.pt')
     mode = DISPLAY_MODE
+
+    @property
+    def fields(self):
+        return field.Fields(IStudentIEP)
+
+    @property
+    def title(self):
+        return self.view.subtitle
 
     def canModify(self):
         return flourish.hasPermission(self.context, 'schooltool.edit')
@@ -71,6 +78,9 @@ class StudentIEPViewDetails(flourish.form.FormViewlet):
     def editURL(self):
         person_url = absoluteURL(self.context, self.request)
         return '%s/iep-edit-details.html' % person_url
+
+    def getContent(self):
+        return self.context
 
 
 class StudentIEPViewSectionsViewlet(FlourishCoursesViewlet):
@@ -441,3 +451,31 @@ class GradebookIEPStudents(flourish.viewlet.Viewlet):
             if IStudentIEP(student).active:
                 result.append(student.username)
         return result
+
+
+class GradeStudentIEPDescriptionViewlet(StudentIEPViewDetails):
+
+    @property
+    def fields(self):
+        return field.Fields(IStudentIEP).select('description')
+
+    @property
+    def title(self):
+        return _('IEP Information')
+
+    def canModify(self):
+        return False
+
+    def getContent(self):
+        return self.view.student
+
+    @property
+    def enabled(self):
+        iep = IStudentIEP(self.view.student)
+        return iep.active and iep.description
+
+    def render(self, *args, **kw):
+        if not self.enabled:
+            return ''
+        return super(GradeStudentIEPDescriptionViewlet, self).render(
+            *args, **kw)

@@ -46,7 +46,7 @@ Helpers:
     ...                                       title.text, skill_type)
 
     >>> def print_gradebook_skills(browser):
-    ...     sel = 'table tbody tr'
+    ...     sel = 'table.grade-student tbody tr'
     ...     for row in browser.query_all.css(sel):
     ...         tds = browser.driver.execute_script(
     ...                   'return $(arguments[0]).find("td")', row)
@@ -357,12 +357,18 @@ gradebook:
     Tejada, Mario
     Vividor, Liliana
 
-and the IEP skills are shown in the Score student view:
+and the IEP information is shown in the Score student view:
 
     >>> sel = '#students-part tbody ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
     >>> teacher.query.link('Cerna, Camila').click()
     >>> camila_menu.query.link('Score').click()
+
+    >>> sel = '.additional .content:first-child h3'
+    >>> print teacher.query.css(sel).text
+    IEP Information
+    >>> print_details(teacher)
+    Description: This is Camilas IEP
 
     >>> print_gradebook_skills(teacher)
     01: Use the Python shell for interactive evaluation, iep

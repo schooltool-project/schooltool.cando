@@ -197,4 +197,14 @@
       permission="schooltool.view"
       />
 
+  <flourish:viewlet
+      name="iep-description"
+      after="cando-resources"
+      before="grade-student-table"
+      view="schooltool.cando.browser.gradebook.CanDoGradeStudent"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".iep.GradeStudentIEPDescriptionViewlet"
+      permission="schooltool.view"
+      />
+
 </configure>

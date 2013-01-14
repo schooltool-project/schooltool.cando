@@ -1,7 +1,7 @@
 <div i18n:domain="schooltool.cando">
   <div>
     <h3>
-      <tal:block tal:content="view/view/subtitle" />
+      <tal:block tal:content="view/title" />
       <a class="modify" href="" title="Edit this plan information"
          tal:attributes="href view/editURL"
          i18n:attributes="title"
