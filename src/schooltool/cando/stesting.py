@@ -68,7 +68,7 @@ def registerSeleniumSetup():
             'skillset.add', addSkillSet))
 
     def addSkill(browser, skillset, title, label=None, required=True,
-                 external_id=None):
+                 external_id=None, scoresystem=None):
         browser.query.link('School').click()
         browser.query.link('Skills').click()
         browser.query.link('Skill Sets').click()
@@ -83,6 +83,10 @@ def registerSeleniumSetup():
             browser.query.id('form-widgets-required-1').click()
         if external_id is not None:
             browser.query.name('form.widgets.external_id').type(external_id)
+        if scoresystem is not None:
+            browser.query.name('form.widgets.scoresystem:list').ui.set_value(scoresystem)
+        else:
+            browser.query.name('form.widgets.scoresystem:list').ui.set_value('Competency')
         page = browser.query.tag('html')
         browser.query.button('Submit').click()
         browser.wait(lambda: page.expired)
