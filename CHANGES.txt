@@ -2,11 +2,12 @@
 CHANGES
 =======
 
-0.4.2 (unreleased)
-------------------
+0.5 (2013-01-23)
+----------------
 
 - Skills now have their own scoresystem. Old skills that had no scoresystem
   set, system default is used.
+- Add IEP (Individualized Educational Plan) functionality.
 - Added Dutch and Spanish (El Salvador) translations.
 
 
