@@ -330,7 +330,7 @@ def updateCourseSkillSet(skillset, section):
             target_skill = worksheet[skill_name]
 
         for attr in ('external_id', 'label', 'description', 'title',
-                     'required', 'retired'):
+                     'required', 'retired', 'scoresystem'):
             val = getattr(skill, attr, None)
             if getattr(target_skill, attr, None) != val:
                 setattr(target_skill, attr, val)

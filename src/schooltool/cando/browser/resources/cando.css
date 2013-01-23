@@ -66,6 +66,7 @@
 
 .skill-title p.optional,
 .color-codes .optional,
+.color-codes .iep,
 .grades thead th.optional > a {
     color: black;
 }
@@ -75,6 +76,12 @@ ul.skills li.optional,
 .grade-student .optional,
 .grades thead th.optional > a {
     background: #ACC4E4;
+}
+
+.iep-student,
+.color-codes .iep,
+.grade-student .iep {
+    background: #d1c4da;
 }
 
 .skillsets-selection {
@@ -210,4 +217,8 @@ input[type="checkbox"].select-all {
     top: 68px;
     max-width: 752px;
     width: 752px;
+}
+
+.optional-iep {
+    width: 60px;
 }

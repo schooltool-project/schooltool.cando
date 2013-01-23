@@ -38,6 +38,7 @@ import zc.table.interfaces
 from schooltool.skin import flourish
 from schooltool import table
 from schooltool.app.interfaces import ISchoolToolApplication
+from schooltool.person.interfaces import IPerson
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.interfaces import ISkillSet, ISkill
 from schooltool.cando.skill import SkillSet, Skill
@@ -46,7 +47,8 @@ from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.cando import CanDoMessage as _
-
+from schooltool.cando.skill import getDefaultSkillScoreSystem
+from schooltool.cando.skill import setDefaultSkillScoreSystem
 
 class SkillSetContainerView(flourish.page.Page):
 
@@ -227,7 +229,7 @@ class SkillAddView(flourish.form.AddForm):
     add_next = False
 
     fields = z3c.form.field.Fields(ISkill)
-    fields = fields.select('title', 'description', 'label',
+    fields = fields.select('title', 'scoresystem', 'description', 'label',
                            'required', 'external_id')
 
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
@@ -249,6 +251,13 @@ class SkillAddView(flourish.form.AddForm):
         self.actions['add'].addClass('button-ok')
         self.actions['submitadd'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
+
+    def updateWidgets(self):
+        super(SkillAddView, self).updateWidgets()
+        person = IPerson(self.request.principal, None)
+        default = getDefaultSkillScoreSystem(person)
+        if default is not None:
+            self.widgets['scoresystem'].value = default
 
     def nextURL(self):
         url = absoluteURL(self.context, self.request)
@@ -273,6 +282,10 @@ class SkillAddView(flourish.form.AddForm):
             name = name[:8]+str(len(self.context)+1)
         name = chooser.chooseName(name, skill)
         self.context[name] = skill
+        scoresystem = self.request.get(self.widgets['scoresystem'].name, '')
+        if scoresystem:
+            person = IPerson(self.request.principal, None)
+            setDefaultSkillScoreSystem(person, scoresystem)
         return skill
 
 
@@ -284,8 +297,8 @@ class SkillView(flourish.form.DisplayForm):
     legend = _('Skill')
 
     fields = z3c.form.field.Fields(ISkill)
-    fields = fields.select('description', 'label',
-                           'required', 'external_id')
+    fields = fields.select('scoresystem', 'description', 'label', 'required',
+                           'external_id')
 
     @property
     def title(self):

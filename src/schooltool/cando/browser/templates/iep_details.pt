@@ -1,0 +1,24 @@
+<div i18n:domain="schooltool.cando">
+  <div>
+    <h3>
+      <tal:block tal:content="view/title" />
+      <a class="modify" href="" title="Edit this plan information"
+         tal:attributes="href view/editURL"
+         i18n:attributes="title"
+         tal:condition="view/canModify">
+        <img tal:attributes="src context/++resource++schooltool.skin.flourish/edit-icon.png"
+             i18n:domain="schooltool"
+             alt="Edit"
+             i18n:attributes="alt" />
+      </a>
+    </h3>
+    <table class="form-fields">
+      <tbody>
+        <tr tal:repeat="widget view/widgets/values">
+          <td tal:content="widget/label" class="label"/>
+          <td tal:content="structure widget/render" />
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

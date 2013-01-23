@@ -5,6 +5,8 @@ CHANGES
 0.4.2 (unreleased)
 ------------------
 
+- skills now have their own scoresystem attribute
+  for old skills with no scoresystem set, get property returns system default
 - Added Dutch and Spanish (El Salvador) translations.
 
 

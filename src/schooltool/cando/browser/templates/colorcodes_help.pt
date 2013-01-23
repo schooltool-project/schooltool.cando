@@ -12,6 +12,9 @@
       <tr class="optional">
         <td i18n:translate="" class="optional">Optional</td>
       </tr>
+      <tr class="iep">
+        <td i18n:translate="" class="iep">Optional (IEP)</td>
+      </tr>
     </tbody>
   </table>
 </div>

@@ -86,6 +86,7 @@ from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import ISkill
+from schooltool.cando.interfaces import IStudentIEP
 from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.gradebook import ensureAtLeastOneProject
 from schooltool.cando.browser.model import NodesTable
@@ -784,6 +785,7 @@ class ProjectSkillSearchView(flourish.page.Page):
             for skill in self.skills():
                 if skill['input_name'] in self.request:
                     skill_copy = skill['obj'].copy()
+                    skill_copy.scoresystem = skill['obj'].scoresystem
                     name = chooser.chooseName('', skill_copy)
                     self.context[name] = skill_copy
                     skill_copy.equivalent.add(skill['obj'])
@@ -1347,6 +1349,10 @@ class CanDoGradeStudentBase(flourish.page.Page):
     def isSkillsGradebook(self):
         return ISkillsGradebook.providedBy(self.gradebook)
 
+    def isIEPSkill(self, iep_skills, skill):
+        skillset = skill.__parent__
+        return skillset in iep_skills and skill in iep_skills[skillset]
+
 
 class CanDoGradeStudentTableViewlet(flourish.viewlet.Viewlet):
 
@@ -1403,6 +1409,10 @@ class CanDoGradeStudentTableFormatter(CanDoGradeStudentTableFormatterBase):
             if klass:
                 klass += ' '
             klass += 'optional'
+        if column.name == 'skill' and item['is_iep_skill']:
+            if klass:
+                klass += ' '
+            klass += 'iep'
         klass = klass and ' class=%s' % quoteattr(klass) or ''
         return '<td id="%s"%s>%s</td>' % (
             item['skill_id'], klass, self.getCell(item, column),)
@@ -1448,6 +1458,8 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
 
     def items(self):
         result = []
+        iep = IStudentIEP(self.view.student)
+        iep_skills = iep.getIEPSkills(self.view.gradebook.section)
         worksheets = self.context.__parent__.__parent__.__parent__
         for worksheet in worksheets.values():
             if self.view.isSkillsGradebook:
@@ -1457,12 +1469,15 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
                 gradebook = IProjectsGradebook(worksheet)
                 skillset_label = None
             for activity in gradebook.activities:
+                is_iep_skill = self.view.isSkillsGradebook and \
+                               self.view.isIEPSkill(iep_skills, activity)
                 result.append({
                         'gradebook': gradebook,
                         'skillset': proxy.removeSecurityProxy(worksheet),
                         'skillset_label': skillset_label,
                         'skill': activity,
                         'skill_id': self.getSkillId(activity),
+                        'is_iep_skill': is_iep_skill,
                         })
         return result
 
@@ -1633,6 +1648,10 @@ class StudentCompetencyRecordTableFormatter(CanDoGradeStudentTableFormatterBase)
         return '<td%s>%s</td>' % (klass, self.getCell(item, column),)
 
 
+def score_required_getter(item, formatter):
+    return item['skill'].required and not item['is_iep_skill']
+
+
 class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
 
     css_classes = 'data student-scr'
@@ -1650,7 +1669,7 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
         required = zc.table.column.GetterColumn(
             name='required',
             title=_('Required'),
-            getter=lambda item, formatter: item['skill'].required,
+            getter=score_required_getter,
             cell_formatter=lambda v, i, f: v and _('Yes') or _('No'))
         skill = zc.table.column.GetterColumn(
             name='skill',
@@ -1691,11 +1710,15 @@ class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
 
     def result(self):
         result = {'is_valid': True, 'is_extracredit': False}
+        gradebook = proxy.removeSecurityProxy(self.context)
         score = self.request.get('score')
-        if score:
-            scoresystem = querySkillScoreSystem()
-            try:
-                score = scoresystem.fromUnicode(score)
-            except (ScoreValidationError,):
-                result['is_valid'] = False
+        activity_id = self.request.get('activity_id')
+        if score and activity_id:
+            activity = gradebook.context.get(activity_id, None)
+            if activity is not None:
+                scoresystem = activity.scoresystem
+                try:
+                    score = scoresystem.fromUnicode(score)
+                except (ScoreValidationError,):
+                    result['is_valid'] = False
         return result

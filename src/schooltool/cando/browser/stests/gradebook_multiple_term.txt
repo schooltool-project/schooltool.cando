@@ -191,3 +191,98 @@ section and some from the Q3 section:
     | Tejada, Mario    | 4  |    |
     | Vividor, Liliana | 1  |    |
     +------------------+----+----+
+
+Let's add a new student and enroll him in the middle of the year:
+
+    >>> manager.ui.person.add('Nestor', 'Guzman', 'nestor', 'pwd')
+    >>> manager.ui.section.students.add('2012', 'Q3', 'Programming (1)',
+    ...                                 ['nestor'])
+
+Let's visit all the terms to see how the new student is handled. We'll
+add a score for him in Q3 and check it in Q4:
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q1')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  | 3  |
+    | Tejada, Mario    | 4  | 3  |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q2')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 3  | 3  |
+    | Tejada, Mario    | 4  | 3  |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q3')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  | 3  |
+    | Guzman, Nestor   |    |    |
+    | Tejada, Mario    | 4  |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+
+
+    >>> teacher.ui.gradebook.worksheet.score('Guzman, Nestor', '02', '0')
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  | 3  |
+    | Guzman, Nestor   |    | 0  |
+    | Tejada, Mario    | 4  |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+
+
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q4')
+    >>> teacher.wait(lambda: page.expired)
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+
+    | *01: Python Environment* |
+    +--------------------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    | 2  | 3  |
+    | Guzman, Nestor   |    | 0  |
+    | Tejada, Mario    | 4  |    |
+    | Vividor, Liliana | 1  |    |
+    +------------------+----+----+

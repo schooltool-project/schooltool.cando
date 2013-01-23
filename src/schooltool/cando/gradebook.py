@@ -194,7 +194,10 @@ class SkillsGradebook(Gradebook):
                 worksheet = skill.__parent__
                 gradebook = ISkillsGradebook(worksheet, None)
                 if gradebook is not None:
-                    score = gradebook.getScore(student, skill)
+                    try:
+                        score = gradebook.getScore(student, skill)
+                    except (ValueError,):
+                        score = None
                     if score is not None:
                         return score
 

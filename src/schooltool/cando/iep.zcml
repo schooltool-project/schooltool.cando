@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".iep.StudentIEP">
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.IStudentIEP" />
+    <require
+        permission="schooltool.edit"
+        set_schema=".interfaces.IStudentIEP" />
+  </class>
+
+  <adapter factory=".iep.getStudentIEP" trusted="True" />
+
+</configure>
