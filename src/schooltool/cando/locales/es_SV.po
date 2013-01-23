@@ -1,0 +1,950 @@
+# Spanish (El Salvador) translation for schooltool.cando
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the schooltool.cando package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: schooltool.cando\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-11-27 01:22+0200\n"
+"PO-Revision-Date: 2012-10-21 03:23+0000\n"
+"Last-Translator: Douglas Cerna <douglascerna@yahoo.com>\n"
+"Language-Team: Spanish (El Salvador) <es_SV@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-11-27 06:26+0000\n"
+"X-Generator: Launchpad (build 16309)\n"
+
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:9
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:67
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:72
+#: /src/schooltool/cando/browser/configure.zcml:135
+#: /src/schooltool/cando/browser/configure.zcml:336
+#: /src/schooltool/cando/browser/configure.zcml:779
+#: /src/schooltool/cando/browser/course.py:162
+#: /src/schooltool/cando/browser/document.py:815
+#: /src/schooltool/cando/browser/document.zcml:26
+#: /src/schooltool/cando/browser/gradebook.py:275
+#: /src/schooltool/cando/browser/skill.py:76
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:30
+#: /src/schooltool/cando/browser/templates/course_remove_skills.pt:20
+#: /src/schooltool/cando/browser/templates/course_skills_overview.pt:4
+#: /src/schooltool/cando/browser/templates/skillset.pt:77
+msgid "Skills"
+msgstr "Competencias"
+
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:14
+#: /src/schooltool/cando/browser/configure.zcml:40
+#: /src/schooltool/cando/browser/course.py:292
+#: /src/schooltool/cando/browser/document.py:122
+#: /src/schooltool/cando/browser/gradebook.zcml:115
+msgid "Skill Sets"
+msgstr "Grupos de Competencias"
+
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:21
+#: /src/schooltool/cando/browser/course.py:287
+#: /src/schooltool/cando/browser/document.py:121
+#: /src/schooltool/cando/browser/model.py:439
+#: /src/schooltool/cando/browser/templates/course_assign_skills_table_filter.pt:34
+#: /src/schooltool/cando/browser/templates/node.pt:155
+#: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:34
+msgid "Layers"
+msgstr "Capas"
+
+#: /src/schooltool/cando/browser/breadcrumbs.zcml:28
+msgid "Nodes"
+msgstr "Nodos"
+
+#: /src/schooltool/cando/browser/configure.zcml:107
+#: /src/schooltool/cando/browser/configure.zcml:162
+#: /src/schooltool/cando/browser/configure.zcml:515
+#: /src/schooltool/cando/browser/configure.zcml:642
+#: /src/schooltool/cando/browser/course.py:223
+#: /src/schooltool/cando/browser/course.py:225
+#: /src/schooltool/cando/browser/document.zcml:61
+#: /src/schooltool/cando/browser/document.zcml:185
+#: /src/schooltool/cando/browser/document.zcml:220
+#: /src/schooltool/cando/browser/document.zcml:303
+#: /src/schooltool/cando/browser/gradebook.zcml:63
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:32
+msgid "Add"
+msgstr "Añadir"
+
+#: /src/schooltool/cando/browser/configure.zcml:117
+#: /src/schooltool/cando/browser/configure.zcml:260
+#: /src/schooltool/cando/browser/configure.zcml:795
+msgid "Actions"
+msgstr "Acciones"
+
+#: /src/schooltool/cando/browser/configure.zcml:127
+msgid "Skill Set"
+msgstr "Grupo de Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:135
+msgid "New Skill Set"
+msgstr "Nuevo Grupo de Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:145
+#: /src/schooltool/cando/browser/configure.zcml:199
+#: /src/schooltool/cando/browser/configure.zcml:552
+#: /src/schooltool/cando/browser/configure.zcml:679
+#: /src/schooltool/cando/browser/document.zcml:98
+#: /src/schooltool/cando/browser/document.zcml:194
+#: /src/schooltool/cando/browser/document.zcml:253
+#: /src/schooltool/cando/browser/document.zcml:312
+#: /src/schooltool/cando/browser/document.zcml:345
+#: /src/schooltool/cando/browser/gradebook.zcml:322
+#: /src/schooltool/cando/browser/templates/document.pt:9
+#: /src/schooltool/cando/browser/templates/layer.pt:109
+#: /src/schooltool/cando/browser/templates/node.pt:21
+#: /src/schooltool/cando/browser/templates/node.pt:126
+#: /src/schooltool/cando/browser/templates/node.pt:164
+#: /src/schooltool/cando/browser/templates/node.pt:201
+msgid "Edit"
+msgstr "Editar"
+
+#: /src/schooltool/cando/browser/configure.zcml:171
+#: /src/schooltool/cando/browser/document.py:166
+#: /src/schooltool/cando/browser/document.py:388
+#: /src/schooltool/cando/browser/document.py:397
+#: /src/schooltool/cando/browser/gradebook.py:182
+#: /src/schooltool/cando/browser/gradebook.py:197
+#: /src/schooltool/cando/browser/gradebook.py:298
+#: /src/schooltool/cando/browser/gradebook.py:924
+#: /src/schooltool/cando/browser/model.py:137
+#: /src/schooltool/cando/browser/skill.py:221
+#: /src/schooltool/cando/browser/skill.py:279
+#: /src/schooltool/cando/browser/skill.py:307
+#: /src/schooltool/cando/browser/templates/edit_course_skills.pt:7
+#: /src/schooltool/cando/browser/templates/student_competency_record.pt:9
+msgid "Skill"
+msgstr "Competencia"
+
+#: /src/schooltool/cando/browser/configure.zcml:181
+#: /src/schooltool/cando/browser/gradebook.py:838
+#: /src/schooltool/cando/browser/gradebook.zcml:187
+msgid "New Skill"
+msgstr "Nueva Competencia"
+
+#: /src/schooltool/cando/browser/configure.zcml:190
+#: /src/schooltool/cando/browser/configure.zcml:461
+msgid "View Skill"
+msgstr "Ver Competencia"
+
+#: /src/schooltool/cando/browser/configure.zcml:228
+#: /src/schooltool/cando/browser/configure.zcml:395
+msgid "Assigned Skills"
+msgstr "Competencias Asignadas"
+
+#: /src/schooltool/cando/browser/configure.zcml:270
+#: /src/schooltool/cando/browser/configure.zcml:345
+msgid "Assign Skills"
+msgstr "Asignar Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:278
+#: /src/schooltool/cando/browser/configure.zcml:353
+msgid "Remove Skills"
+msgstr "Remover Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:287
+#: /src/schooltool/cando/browser/configure.zcml:304
+msgid "Set Required/Visible"
+msgstr "Fijar Requerida/Visible"
+
+#: /src/schooltool/cando/browser/configure.zcml:336
+msgid "Assign Skill Set"
+msgstr "Asignar Grupo de Competencia"
+
+#: /src/schooltool/cando/browser/configure.zcml:404
+msgid "Edit Skills"
+msgstr "Editar Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:488
+#: /src/schooltool/cando/browser/configure.zcml:533
+msgid "Layers Container"
+msgstr "Contenedor de Capas"
+
+#: /src/schooltool/cando/browser/configure.zcml:524
+#: /src/schooltool/cando/browser/model.py:174
+msgid "Layer"
+msgstr "Capa"
+
+#: /src/schooltool/cando/browser/configure.zcml:533
+msgid "Add Layer"
+msgstr "Añadir Capa"
+
+#: /src/schooltool/cando/browser/configure.zcml:543
+msgid "View Layer"
+msgstr "Ver Capa"
+
+#: /src/schooltool/cando/browser/configure.zcml:561
+#: /src/schooltool/cando/browser/configure.zcml:688
+msgid "Edit Children"
+msgstr "Editar Hijos"
+
+#: /src/schooltool/cando/browser/configure.zcml:605
+#: /src/schooltool/cando/browser/configure.zcml:660
+msgid "Nodes Container"
+msgstr "Contenedor de Nodos"
+
+#: /src/schooltool/cando/browser/configure.zcml:605
+#: /src/schooltool/cando/browser/document.py:123
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:77
+#: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:53
+msgid "Search"
+msgstr "Buscar"
+
+#: /src/schooltool/cando/browser/configure.zcml:651
+#: /src/schooltool/cando/browser/model.py:357
+#: /src/schooltool/cando/browser/model.py:386
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:109
+msgid "Node"
+msgstr "Nodo"
+
+#: /src/schooltool/cando/browser/configure.zcml:660
+msgid "Add Node"
+msgstr "Añadir Nodo"
+
+#: /src/schooltool/cando/browser/configure.zcml:670
+msgid "View Node"
+msgstr "Ver Nodo"
+
+#: /src/schooltool/cando/browser/configure.zcml:714
+msgid "Edit Layers"
+msgstr "Editar Capas"
+
+#: /src/schooltool/cando/browser/configure.zcml:740
+msgid "Edit SkillSets"
+msgstr "Editar Grupos de Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:770
+#: /src/schooltool/cando/browser/configure.zcml:779
+msgid "Import Skill Data"
+msgstr "Importar Datos de Competencias"
+
+#: /src/schooltool/cando/browser/configure.zcml:806
+msgid "Batch Assign Skills"
+msgstr "Asignar Competencias por Lotes"
+
+#: /src/schooltool/cando/browser/configure.zcml:814
+msgid "Assign Courses Skills"
+msgstr "Asignar Competencias de Asignatura"
+
+#: /src/schooltool/cando/browser/course.py:156
+#: /src/schooltool/cando/browser/course.py:277
+#: /src/schooltool/cando/browser/course.py:571
+#: /src/schooltool/cando/browser/document.py:869
+#: /src/schooltool/cando/browser/model.py:432
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:29
+#: /src/schooltool/cando/browser/templates/course_remove_skills.pt:19
+#: /src/schooltool/cando/browser/templates/projects.pt:10
+#: /src/schooltool/cando/browser/templates/skillsets.pt:10
+#: /src/schooltool/cando/interfaces.py:72
+#: /src/schooltool/cando/interfaces.py:89
+msgid "Title"
+msgstr "Título"
+
+#: /src/schooltool/cando/browser/course.py:260
+msgid "Select Skill Sets from ${node} (${node_id})"
+msgstr "Seleccionar Grupos de Competencias ${node} (${node_id})"
+
+#: /src/schooltool/cando/browser/course.py:282
+msgid "ID"
+msgstr "Identificador"
+
+#: /src/schooltool/cando/browser/course.py:314
+#: /src/schooltool/cando/browser/model.py:454
+msgid "ID, title, label or description"
+msgstr "Identificador, título, etiqueta o descripción"
+
+#: /src/schooltool/cando/browser/course.py:576
+#: /src/schooltool/cando/browser/course.py:635
+#: /src/schooltool/cando/browser/document.py:880
+#: /src/schooltool/cando/browser/model.py:427
+#: /src/schooltool/cando/browser/skill.py:80
+#: /src/schooltool/cando/browser/skill.py:209
+#: /src/schooltool/cando/interfaces.py:63
+#: /src/schooltool/cando/interfaces.py:96
+msgid "Label"
+msgstr "Etiqueta"
+
+#: /src/schooltool/cando/browser/course.py:581
+#: /src/schooltool/cando/browser/document.py:875
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:10
+#: /src/schooltool/cando/browser/templates/edit_course_skills.pt:9
+#: /src/schooltool/cando/browser/templates/student_competency_record.pt:8
+#: /src/schooltool/cando/interfaces.py:39
+msgid "Required"
+msgstr "Requerida"
+
+#: /src/schooltool/cando/browser/course.py:587
+msgid "Hidden"
+msgstr "Oculta"
+
+#: /src/schooltool/cando/browser/course.py:790
+msgid "Course has skills assigned already"
+msgstr "La asignatura ya tiene competencias asignadas"
+
+#: /src/schooltool/cando/browser/course.py:810
+msgid "Couldn't find a matching node"
+msgstr "No se pudo encontrar un nodo que corresponda"
+
+#: /src/schooltool/cando/browser/course.py:816
+msgid "Course attribute is empty"
+msgstr "El atributo de la asignatura está vacío"
+
+#: /src/schooltool/cando/browser/document.py:120
+msgid "Documents"
+msgstr "Documentos"
+
+#: /src/schooltool/cando/browser/document.py:148
+msgid "Document Information"
+msgstr "Información de Documento"
+
+#: /src/schooltool/cando/browser/document.py:166
+#: /src/schooltool/cando/browser/document.py:264
+#: /src/schooltool/cando/browser/document.py:271
+msgid "SkillSet"
+msgstr ""
+
+#: /src/schooltool/cando/browser/document.py:182
+#: /src/schooltool/cando/browser/document.py:457
+#: /src/schooltool/cando/browser/document.py:641
+#: /src/schooltool/cando/browser/document.py:702
+#: /src/schooltool/cando/browser/gradebook.py:317
+#: /src/schooltool/cando/browser/gradebook.py:436
+#: /src/schooltool/cando/browser/model.py:102
+#: /src/schooltool/cando/browser/model.py:176
+#: /src/schooltool/cando/browser/model.py:320
+#: /src/schooltool/cando/browser/model.py:395
+#: /src/schooltool/cando/browser/skill.py:173
+#: /src/schooltool/cando/browser/skill.py:228
+#: /src/schooltool/cando/browser/skill.py:309
+#: /src/schooltool/cando/browser/templates/course_skills_edit_table_buttons.pt:5
+msgid "Submit"
+msgstr "Enviar"
+
+#: /src/schooltool/cando/browser/document.py:186
+#: /src/schooltool/cando/browser/document.py:465
+#: /src/schooltool/cando/browser/document.py:645
+#: /src/schooltool/cando/browser/document.py:709
+#: /src/schooltool/cando/browser/gradebook.py:321
+#: /src/schooltool/cando/browser/gradebook.py:444
+#: /src/schooltool/cando/browser/model.py:106
+#: /src/schooltool/cando/browser/model.py:183
+#: /src/schooltool/cando/browser/model.py:324
+#: /src/schooltool/cando/browser/model.py:403
+#: /src/schooltool/cando/browser/skill.py:180
+#: /src/schooltool/cando/browser/skill.py:238
+#: /src/schooltool/cando/browser/skill.py:316
+#: /src/schooltool/cando/browser/templates/course_skills_edit_table_buttons.pt:8
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:79
+#: /src/schooltool/cando/browser/templates/grade_student.pt:39
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: /src/schooltool/cando/browser/document.py:429
+#: /src/schooltool/cando/browser/document.py:571
+#: /src/schooltool/cando/browser/document.py:816
+msgid "${layer} list"
+msgstr "Lista de ${layer}"
+
+#: /src/schooltool/cando/browser/document.py:450
+#: /src/schooltool/cando/browser/document.zcml:70
+msgid "Document"
+msgstr "Documento"
+
+#: /src/schooltool/cando/browser/document.py:477
+msgid "Current document hierarchy layers"
+msgstr "Capas de jerarquía del documento actual"
+
+#: /src/schooltool/cando/browser/document.py:478
+msgid "Available layers"
+msgstr "Capas disponibles"
+
+#: /src/schooltool/cando/browser/document.py:566
+#: /src/schooltool/cando/browser/document.py:808
+#: /src/schooltool/cando/browser/document.py:961
+msgid "View ${layer}"
+msgstr "Ver ${layer}"
+
+#: /src/schooltool/cando/browser/document.py:624
+#: /src/schooltool/cando/browser/document.py:744
+#: /src/schooltool/cando/browser/document.py:921
+msgid "Add ${layer}"
+msgstr "Añadir ${layer}"
+
+#: /src/schooltool/cando/browser/document.py:629
+#: /src/schooltool/cando/browser/document.py:916
+msgid "${layer} Information"
+msgstr "Información de ${layer}"
+
+#: /src/schooltool/cando/browser/document.py:673
+msgid "Skills Document"
+msgstr "Documento de Competencias"
+
+#: /src/schooltool/cando/browser/document.py:695
+msgid "Change information"
+msgstr "Cambiar información"
+
+#: /src/schooltool/cando/browser/document.py:928
+#: /src/schooltool/cando/browser/gradebook.py:1594
+msgid "No"
+msgstr "No"
+
+#: /src/schooltool/cando/browser/document.py:928
+#: /src/schooltool/cando/browser/gradebook.py:1594
+msgid "Yes"
+msgstr "Sí"
+
+#: /src/schooltool/cando/browser/document.zcml:35
+#: /src/schooltool/cando/browser/document.zcml:79
+msgid "Skills Documents"
+msgstr "Documentos de Competencias"
+
+#: /src/schooltool/cando/browser/document.zcml:79
+msgid "Add Document"
+msgstr "Añadir Documento"
+
+#: /src/schooltool/cando/browser/document.zcml:89
+msgid "View Skills Document"
+msgstr "Ver Documento de Competencias"
+
+#: /src/schooltool/cando/browser/document.zcml:107
+msgid "Edit Layer Hierarchy"
+msgstr "Editar Jerarquía de Capa"
+
+#: /src/schooltool/cando/browser/document.zcml:133
+msgid "View Hierarchy Layer"
+msgstr "Ver Jerarquía de Capa"
+
+#: /src/schooltool/cando/browser/document.zcml:142
+msgid "Edit Hierarchy Layer"
+msgstr "Editar Jerarquía de Capa"
+
+#: /src/schooltool/cando/browser/document.zcml:151
+msgid "Edit Hierarchy Layer Parents"
+msgstr "Editar Padres de Jerarquía de Capa"
+
+#: /src/schooltool/cando/browser/document.zcml:211
+msgid "Layer Hierarchy"
+msgstr "Jerarquía de Capa"
+
+#: /src/schooltool/cando/browser/gradebook.py:189
+msgid "No Visible Projects"
+msgstr "No hay Proyectos Visibles"
+
+#: /src/schooltool/cando/browser/gradebook.py:191
+#: /src/schooltool/cando/browser/gradebook.py:206
+msgid "Enter Skills"
+msgstr "Introducir Competencias"
+
+#: /src/schooltool/cando/browser/gradebook.py:204
+msgid "No Visible Skill Sets"
+msgstr "No hay Grupos de Competencias Visibles"
+
+#: /src/schooltool/cando/browser/gradebook.py:281
+#: /src/schooltool/cando/browser/gradebook.zcml:98
+#: /src/schooltool/cando/browser/gradebook.zcml:106
+#: /src/schooltool/cando/project.py:163
+msgid "Projects"
+msgstr "Proyectos"
+
+#: /src/schooltool/cando/browser/gradebook.py:315
+msgid "Project Details"
+msgstr "Detalles de Proyecto"
+
+#: /src/schooltool/cando/browser/gradebook.py:358
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: /src/schooltool/cando/browser/gradebook.py:423
+msgid "Skill Details"
+msgstr "Detalles de Competencia"
+
+#: /src/schooltool/cando/browser/gradebook.py:518
+msgid "${section} Skills"
+msgstr "Competencias de ${section}"
+
+#: /src/schooltool/cando/browser/gradebook.py:520
+msgid "${section} Project Skills"
+msgstr "Competencias de Proyecto de ${section}"
+
+#: /src/schooltool/cando/browser/gradebook.py:529
+msgid "Score System Help"
+msgstr "Ayuda del Sistema de Puntuación"
+
+#: /src/schooltool/cando/browser/gradebook.py:537
+msgid "Color Codes Help"
+msgstr "Ayuda de Códigos de Color"
+
+#: /src/schooltool/cando/browser/gradebook.py:953
+msgid "No layer assigned"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1192
+#: /src/schooltool/cando/browser/gradebook.zcml:140
+msgid "Search Skills"
+msgstr "Buscar Competencias"
+
+#: /src/schooltool/cando/browser/gradebook.py:1450
+msgid "Save"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1466
+#: /src/schooltool/cando/browser/templates/scoresystem_help.pt:5
+msgid "Score"
+msgstr "Puntaje"
+
+#: /src/schooltool/cando/browser/gradebook.py:1601
+msgid "Date"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1606
+#: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
+msgid "Rating"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:10
+#: /src/schooltool/cando/browser/gradebook.zcml:26
+#: /src/schooltool/cando/browser/gradebook.zcml:128
+#: /src/schooltool/cando/browser/gradebook.zcml:223
+#: /src/schooltool/cando/browser/gradebook.zcml:321
+#: /src/schooltool/cando/browser/gradebook.zcml:431
+msgid "CanDo"
+msgstr "CanDo"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:45
+msgid "View"
+msgstr "Ver"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:80
+msgid "Project"
+msgstr "Proyecto"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:88
+msgid "Settings"
+msgstr "Configuración"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:126
+msgid "New Project"
+msgstr "Proyecto Nuevo"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:310
+msgid "Edit Skill"
+msgstr "Editar Competencia"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:373
+#: /src/schooltool/cando/browser/gradebook.zcml:637
+#: /src/schooltool/cando/browser/gradebook.zcml:660
+msgid "Help"
+msgstr "Ayuda"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:383
+msgid "Score System"
+msgstr "Sistema de Puntuación"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:391
+msgid "Color Codes"
+msgstr "Códigos de Color"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:492
+msgid "Skills Pop-up"
+msgstr "Diálogo de Competencias"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:509
+msgid "CanDo Gradebook"
+msgstr "Cuadro de Notas de CanDo"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:535
+msgid "My Skills Grades"
+msgstr "Mis Notas de Competencias"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:546
+msgid "Section"
+msgstr "Sección"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:557
+msgid "Term"
+msgstr "Período"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:568
+msgid "Year"
+msgstr "Año"
+
+#: /src/schooltool/cando/browser/model.py:94
+msgid "Layer Information"
+msgstr "Información de Capa"
+
+#: /src/schooltool/cando/browser/model.py:209
+msgid "Parents"
+msgstr "Padres"
+
+#: /src/schooltool/cando/browser/model.py:214
+msgid "Children"
+msgstr "Hijos"
+
+#: /src/schooltool/cando/browser/model.py:257
+msgid "Current child layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:258
+msgid "Available child layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:307
+msgid "Node Information"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:546
+msgid "Current child nodes"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:547
+msgid "Available child nodes"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:584
+msgid "Current node layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:585
+msgid "Available node layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:621
+msgid "Current node skillsets"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:622
+msgid "Available node skillsets"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:10
+msgid "Export global skills data for the school."
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:10
+msgid "School"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:10
+msgid "Skills Export"
+msgstr ""
+
+#: /src/schooltool/cando/browser/skill.py:87
+msgid "Title, description or label"
+msgstr ""
+
+#: /src/schooltool/cando/browser/skill.py:125
+#: /src/schooltool/cando/browser/skill.py:171
+msgid "Skill set"
+msgstr ""
+
+#: /src/schooltool/cando/browser/skill.py:232
+msgid "Submit and add"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/cando_third_nav.pt:2
+msgid "Scroll over a skill ID to see its description here"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:5
+msgid "Skill Color Code"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
+msgid "Optional"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_assign_skills_table_filter.pt:12
+#: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:12
+msgid "Showing ${count} of ${total} items"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:20
+msgid "You must select at least one skill set."
+msgstr ""
+
+#. Default: "Submit"
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:69
+#: /src/schooltool/cando/browser/templates/course_remove_skills.pt:59
+#: /src/schooltool/cando/browser/templates/edit_course_skills.pt:45
+msgid "submit-button"
+msgstr ""
+
+#. Default: "Cancel"
+#: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:73
+#: /src/schooltool/cando/browser/templates/course_remove_skills.pt:62
+#: /src/schooltool/cando/browser/templates/edit_course_skills.pt:48
+msgid "cancel-button"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_remove_skills.pt:22
+msgid "Remove"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_skills_overview.pt:4
+msgid "Assign Course Skills"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_skills_overview.pt:13
+msgid "There are ${count} sets of skills assigned."
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_skills_overview.pt:16
+msgid "There are no skills assigned."
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/course_skillset.pt:4
+#: /src/schooltool/cando/browser/templates/document_skillset.pt:4
+#: /src/schooltool/cando/browser/templates/skillset.pt:4
+#: /src/schooltool/cando/browser/templates/skillsets.pt:34
+msgid "Edit this skill set"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:10
+msgid "Course Matching"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:15
+msgid "Course attribute"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:21
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:63
+msgid "Select an attribute"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:36
+msgid "Node layer"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:42
+msgid "Select a layer"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:57
+msgid "Node attribute"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:83
+msgid "Courses not matched"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:87
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:106
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:108
+msgid "Attribute"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:88
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:107
+msgid "Course"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:89
+msgid "Reason"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:102
+msgid "Courses matched"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:122
+msgid "Assign"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/document.pt:5
+msgid "Edit this Document"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/document_skill.pt:4
+#: /src/schooltool/cando/browser/templates/skill.pt:4
+msgid "Edit this skill"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/edit_course_skills.pt:15
+#: /src/schooltool/cando/browser/templates/projects.pt:11
+#: /src/schooltool/cando/browser/templates/skillsets.pt:11
+msgid "Visible"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:33
+#: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:43
+msgid "There are no skills."
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/layer.pt:4
+msgid "Edit this Layer"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/layer.pt:78
+msgid "Parent layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/layer.pt:105
+msgid "Edit children"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/layer.pt:109
+msgid ""
+"Child layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> "
+"<img alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:13
+msgid "General Information"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:17
+msgid "Edit this Node"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:89
+#: /src/schooltool/cando/browser/templates/node.pt:92
+msgid "Parent nodes"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:118
+#: /src/schooltool/cando/browser/templates/node.pt:121
+msgid "Child nodes"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:122
+msgid "Edit child nodes"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:160
+msgid "Edit layers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:164
+msgid ""
+"Layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img "
+"alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:192
+msgid "SkillSets"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:197
+msgid "Edit skillsets"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/node.pt:201
+msgid ""
+"SkillSets <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img "
+"alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/projects.pt:5
+msgid "Reorder or Hide Projects"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/projects.pt:9
+#: /src/schooltool/cando/browser/templates/skillsets.pt:9
+msgid "Order"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/projects.pt:34
+msgid "Edit this project"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/skillsets.pt:5
+msgid "Reorder or Hide Skill Sets"
+msgstr ""
+
+#: /src/schooltool/cando/course.py:184
+msgid "Course Skills"
+msgstr ""
+
+#: /src/schooltool/cando/course.py:228
+msgid "Section Skills"
+msgstr ""
+
+#: /src/schooltool/cando/gradebook.py:56
+msgid "Project1"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:37
+msgid "External ID"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:40
+msgid "Is skill required or optional"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:41
+msgid "Retired"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:42
+msgid "Skill is no longer used"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:43
+msgid "Short label"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:45
+#: /src/schooltool/cando/interfaces.py:62
+msgid "Full description"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:92
+msgid "Description"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:97
+msgid "Limit to 7 characters or less."
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:150
+msgid "Project deployed"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:151
+msgid "Is this project deployed to course sections"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:200
+msgid "Section intID"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:201
+msgid "Skillset ID"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:202
+msgid "Skill ID"
+msgstr ""
+
+#: /src/schooltool/cando/project.py:137
+msgid "Course Projects"
+msgstr ""
+
+#: /src/schooltool/cando/project.py:207
+msgid "${project} total points"
+msgstr ""
+
+#: /src/schooltool/cando/project.py:229
+msgid "${project} percent passed"
+msgstr ""
+
+#: /src/schooltool/cando/project.py:273
+msgid "${course} total points"
+msgstr ""
+
+#: /src/schooltool/cando/project.py:297
+msgid "${course} percent passed"
+msgstr ""
+
+#~ msgid "optional"
+#~ msgstr "opcional"
+
+#~ msgid "required"
+#~ msgstr "requerida"
