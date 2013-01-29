@@ -26,7 +26,7 @@ from xml.sax.saxutils import quoteattr
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
-from zope.component import getMultiAdapter
+from zope.component import queryMultiAdapter
 from zope.component import getUtility
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
@@ -67,8 +67,10 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookValidateScor
 from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import GradebookPDFView
 from schooltool.person.interfaces import IPerson
+from schooltool.report.browser.report import RequestReportDownloadDialog
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
+from schooltool.term.interfaces import ITerm
 import schooltool.table.catalog
 from schooltool.skin import flourish
 from schooltool import table
@@ -1557,28 +1559,38 @@ class StudentCompetencyRecordView(CanDoGradeStudentBase):
         return pytz.timezone(timezone_name)
 
 
-def score_date_formatter(timezone):
-    def formatter(score, item, formatter):
+class ScoreDateColumn(table.column.DateColumn):
+
+    def __init__(self, *args, **kw):
+        self.timezone = kw.pop('timezone')
+        super(ScoreDateColumn, self).__init__(*args, **kw)
+
+    def getter(self, item, formatter):
+        score = get_skill_score(item, formatter)
         if score is not None:
             time_utc = pytz.utc.localize(score.time)
-            time = time_utc.astimezone(timezone)
-            date = time.date()
-            view = getMultiAdapter((date, formatter.request),
-                                   name='mediumDate')
-            return view()
-        return ''
-    return formatter
+            time = time_utc.astimezone(self.timezone)
+            return time.date()
+
+    def cell_formatter(self, value, item, formatter):
+        view = queryMultiAdapter((value, formatter.request),
+                                 name='mediumDate',
+                                 default=lambda: '')
+        return view()
 
 
-def score_rating_formatter(score, item, formatter):
-    result = '-'
-    skill = item['skill']
-    if score is not None:
-        grade = score.value
-        scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
-        scores = dict([(s[2], s[1]) for s in scoresystem.scores])
-        result = scores.get(scoresystem.scoresDict().get(grade), '-')
-    return result
+class ScoreRatingColumn(zc.table.column.GetterColumn):
+
+    def getter(self, item, formatter):
+        result = '-'
+        score = get_skill_score(item, formatter)
+        skill = item['skill']
+        if score is not None:
+            grade = score.value
+            scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
+            scores = dict([(s[2], s[1]) for s in scoresystem.scores])
+            result = scores.get(scoresystem.scoresDict().get(grade), '-')
+        return result
 
 
 class StudentCompetencyRecordTableFormatter(table.ajax.AJAXFormSortFormatter):
@@ -1594,7 +1606,8 @@ class StudentCompetencyRecordTableFormatter(table.ajax.AJAXFormSortFormatter):
 
 
 def score_required_getter(item, formatter):
-    return item['skill'].required and not item['is_iep_skill']
+    is_required = item['skill'].required and not item['is_iep_skill']
+    return [_('No'), _('Yes')][is_required]
 
 
 class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
@@ -1614,22 +1627,18 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
         required = zc.table.column.GetterColumn(
             name='required',
             title=_('Required'),
-            getter=score_required_getter,
-            cell_formatter=lambda v, i, f: v and _('Yes') or _('No'))
+            getter=score_required_getter)
         skill = zc.table.column.GetterColumn(
             name='skill',
             title=_('Skill'),
             getter=lambda item, formatter: item['skill'].title)
-        date = zc.table.column.GetterColumn(
+        date = ScoreDateColumn(
             name='date',
             title=_('Date'),
-            getter=get_skill_score,
-            cell_formatter=score_date_formatter(self.view.timezone))
-        rating = zc.table.column.GetterColumn(
+            timezone=self.view.timezone)
+        rating = ScoreRatingColumn(
             name='rating',
-            title=_('Rating'),
-            getter=get_skill_score,
-            cell_formatter=score_rating_formatter)
+            title=_('Rating'))
         return [skillset, label, required, skill, date, rating]
 
     def sortOn(self):
@@ -1667,3 +1676,60 @@ class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
                 except (ScoreValidationError,):
                     result['is_valid'] = False
         return result
+
+
+class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
+
+    def nextURL(self):
+        return '%s/student_competency_report.pdf' % absoluteURL(self.context,
+                                                                self.request)
+
+
+class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
+                                     StudentCompetencyRecordView):
+
+    name = _('STUDENT COMPETENCY REPORT')
+
+    @property
+    def scope(self):
+        term = ITerm(self.gradebook.section)
+        return term.title
+
+    @property
+    def title(self):
+        return self.student.title
+
+    @property
+    def subtitles_left(self):
+        section = self.gradebook.section
+        teachers = ', '.join([teacher.title
+                              for teacher in section.instructors])
+        courses = ', '.join([course.title for course in section.courses])
+        codes = ', '.join(filter(None, [course.course_id
+                                  for course in section.courses]))
+        if codes:
+            courses += ' (%s)' % codes
+        return [
+            _('Teacher(s): ${teachers}', mapping={'teachers': teachers}),
+            _('Course: ${courses}', mapping={'courses': courses}),
+            ]
+
+
+class StudentCompetencyReportSkillsTablePart(table.pdf.RMLTablePart):
+
+    table_name = 'student_grades_table'
+
+    def getColumnWidths(self, rml_columns):
+        return '7% 10% 53% 15% 15%'
+
+
+class RMLSkillColumn(table.pdf.RMLGetterColumn):
+
+    style = table.pdf.Config(
+        para_class='skill-cell',
+        )
+
+    def renderCell(self, item, formatter):
+        value = self.column.getter(item, formatter)
+        return '<para style="%s">%s</para>' % (
+            self.style.para_class, self.escape(value))

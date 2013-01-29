@@ -751,6 +751,77 @@
       />
 
   <flourish:viewlet
+      name="scr-reports-links"
+      before="*"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.report.browser.report.ReportsLinks"
+      title="Reports"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      permission="schooltool.view"
+      />
+
+  <report:reportLink
+      name="student_competency_report"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      link="request_student_competency_report.html"
+      group="Student"
+      description="XXX Description XXX"
+      title="Export as PDF"
+      file_type="pdf"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="request_student_competency_report.html"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.RequestStudentCompetencyReportView"
+      permission="schooltool.view"
+      />
+
+  <flourish:pdf
+      name="student_competency_report.pdf"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.StudentCompetencyReportPDFView"
+      permission="schooltool.view"
+      />
+
+  <flourish:content
+      name="student_grades_table"
+      class=".gradebook.StudentCompetencyRecordTable"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="skills_table"
+      manager="schooltool.skin.flourish.report.PDFStory"
+      view=".gradebook.StudentCompetencyReportPDFView"
+      class=".gradebook.StudentCompetencyReportSkillsTablePart"
+      permission="schooltool.view"
+      />
+
+  <zope:adapter
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook
+           schooltool.skin.flourish.IFlourishLayer
+           .gradebook.StudentCompetencyReportPDFView
+           zc.table.column.GetterColumn"
+      name="skill"
+      provides="schooltool.table.interfaces.IRMLColumn"
+      factory=".gradebook.RMLSkillColumn"
+      />
+
+  <flourish:viewlet
+      name="scr-styles"
+      after="schooltool"
+      manager="schooltool.skin.flourish.report.PDFStylesheetSection"
+      view=".gradebook.StudentCompetencyReportPDFView"
+      class="schooltool.skin.flourish.report.PDFPart"
+      template="rml/student_competency_report_styles.pt"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
       name="gradebook-help"
       manager="schooltool.skin.flourish.page.IPageRefineManager"
       class=".gradebook.GradebookHelpLinks"
