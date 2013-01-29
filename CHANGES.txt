@@ -5,11 +5,17 @@ CHANGES
 0.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added PDF version of the student competency report
 
 
 0.5 (2013-01-23)
 ----------------
+
+- Updated tables to use new table formatters.
+
+
+0.4.2 (2013-01-29)
+------------------
 
 - Skills now have their own scoresystem. Old skills that had no scoresystem
   set, system default is used.
@@ -43,7 +49,7 @@ CHANGES
 - Sorted skills by label in the skills gradebook
 - Fixed validation in score student view
 - Removed subscriber that prevented section deleting
-- Restore scores that disappeared after upgrade to 0.3
+- Restored scores that disappeared after upgrade to 0.3
 
 
 0.3 (2012-10-19)
