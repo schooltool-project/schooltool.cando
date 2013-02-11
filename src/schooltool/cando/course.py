@@ -352,7 +352,7 @@ class CourseSkillSetModified(CourseWorksheetEventSubscriber):
     adapts(IObjectModifiedEvent, ICourseSkillSet)
 
     def __call__(self):
-        skillset = self.object
+        skillset = removeSecurityProxy(self.object)
         skillset.title = skillset.skillset.title
         for section in self.sections:
             updateCourseSkillSet(skillset, section)
