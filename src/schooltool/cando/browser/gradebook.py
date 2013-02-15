@@ -1852,7 +1852,7 @@ class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
     def title(self):
         return self.student.title
 
-    def formatDate(self, date, format='mediumDate'):
+    def formatDate(self, date, format='longDate'):
         if date is None:
             return ''
         formatter = getMultiAdapter((date, self.request), name=format)
