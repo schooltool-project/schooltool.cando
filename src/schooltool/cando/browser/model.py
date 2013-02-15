@@ -426,8 +426,10 @@ class NodesTable(table.ajax.Table):
         label = zc.table.column.GetterColumn(
             name='label',
             title=_(u"Label"),
-            getter=lambda i, f: i.label or ''
+            getter=lambda i, f: i.label or '',
+            subsort=True
             )
+        directlyProvides(label, ISortableColumn)
         title = zc.table.column.GetterColumn(
             name='title',
             title=_(u"Title"),
@@ -448,6 +450,9 @@ class NodesTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+    def sortOn(self):
+        return (('label', False), ('title', False))
 
 
 def get_skill_layers():

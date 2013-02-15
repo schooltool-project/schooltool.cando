@@ -414,7 +414,8 @@ order of the skills displayed:
     >>> accordion_contents = manager.query_all.css(sel)
     >>> math_accordion_content = accordion_contents[1]
     >>> math_accordion_header = accordion_headers[1]
-    >>> manager.wait_no(math_accordion_header.click)
+    >>> math_accordion_header.click()
+    >>> manager.wait(math_accordion_content.is_displayed)
     >>> for item in math_accordion_content.query_all.tag('li'):
     ...     print item.text
     Convert mixed numbers to improper fractions.
@@ -431,7 +432,8 @@ order of the skills displayed:
     >>> accordion_contents = manager.query_all.css(sel)
     >>> math_accordion_content = accordion_contents[1]
     >>> math_accordion_header = accordion_headers[1]
-    >>> manager.wait_no(math_accordion_header.click)
+    >>> math_accordion_header.click()
+    >>> manager.wait(math_accordion_content.is_displayed)
     >>> for item in math_accordion_content.query_all.tag('li'):
     ...     print item.text
     Convert mixed numbers to improper fractions.
