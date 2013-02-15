@@ -72,6 +72,7 @@ from schooltool.report.browser.report import RequestReportDownloadDialog
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.term.interfaces import ITerm
+from schooltool.schoolyear.interfaces import ISchoolYear
 import schooltool.table.catalog
 from schooltool.skin import flourish
 from schooltool import table
@@ -1559,7 +1560,17 @@ class CanDoGradeStudentTableButtons(flourish.viewlet.Viewlet):
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase,
                             FlourishGradebookPDFView):
 
-    name = _('CanDo Gradebook')
+    name = _('CANDO GRADEBOOK')
+
+    @Lazy
+    def filtered_activity_info(self):
+        result = super(CanDoGradebookPDFView, self).filtered_activity_info
+        if ISkillsGradebook.providedBy(self.context):
+            collator = ICollator(self.request.locale)
+            result = sorted(result,
+                            key=lambda x:(collator.key(x['object'].label or ''),
+                                          collator.key(x['object'].title)))
+        return result
 
 
 class SkillSetGrid(WorksheetGrid):
@@ -1719,12 +1730,13 @@ class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
 class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
                                      StudentCompetencyRecordView):
 
-    name = _('STUDENT COMPETENCY REPORT')
+    name = _('SECTION COMPETENCIES')
 
     @property
     def scope(self):
         term = ITerm(self.gradebook.section)
-        return term.title
+        schoolyear = ISchoolYear(term)
+        return '%s | %s' % (term.title, schoolyear.title)
 
     @property
     def title(self):
