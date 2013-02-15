@@ -717,6 +717,13 @@
       permission="schooltool.edit"
       />
 
+  <flourish:content
+      name="grid"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".gradebook.SkillSetGrid"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="student_competency_report.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"

@@ -65,7 +65,8 @@ from schooltool.gradebook.browser.gradebook import FlourishGradebookSectionNavig
 from schooltool.gradebook.browser.gradebook import FlourishMyGradesView
 from schooltool.gradebook.browser.gradebook import FlourishGradebookValidateScoreView
 from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
-from schooltool.gradebook.browser.pdf_views import GradebookPDFView
+from schooltool.gradebook.browser.pdf_views import FlourishGradebookPDFView
+from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
 from schooltool.report.browser.report import RequestReportDownloadDialog
 from schooltool.requirement.scoresystem import ScoreValidationError
@@ -1555,9 +1556,20 @@ class CanDoGradeStudentTableButtons(flourish.viewlet.Viewlet):
     ''')
 
 
-class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
+class CanDoGradebookPDFView(CanDoGradebookOverviewBase,
+                            FlourishGradebookPDFView):
 
-    pass
+    name = _('CanDo Gradebook')
+
+
+class SkillSetGrid(WorksheetGrid):
+
+    def updateColumns(self):
+        self.columns = []
+        for info in self.gradebook_overview.filtered_activity_info:
+            self.columns.append(schooltool.table.pdf.GridColumn(
+                info['shortTitle'], item=info['hash']
+                ))
 
 
 class StudentCompetencyRecordView(CanDoGradeStudentBase):
