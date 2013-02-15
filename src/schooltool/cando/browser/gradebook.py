@@ -28,7 +28,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.catalog.interfaces import ICatalog
 from zope.component import queryMultiAdapter
-from zope.component import getUtility
+from zope.component import getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
 from zope.i18n import translate
 from zope.i18n.interfaces.locales import ICollator
@@ -71,7 +71,7 @@ from schooltool.person.interfaces import IPerson
 from schooltool.report.browser.report import RequestReportDownloadDialog
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
-from schooltool.term.interfaces import ITerm
+from schooltool.term.interfaces import ITerm, IDateManager
 from schooltool.schoolyear.interfaces import ISchoolYear
 import schooltool.table.catalog
 from schooltool.skin import flourish
@@ -1851,6 +1851,18 @@ class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
     @property
     def title(self):
         return self.student.title
+
+    def formatDate(self, date, format='mediumDate'):
+        if date is None:
+            return ''
+        formatter = getMultiAdapter((date, self.request), name=format)
+        return formatter()
+
+    @property
+    def scope(self):
+        dtm = getUtility(IDateManager)
+        today = dtm.today
+        return self.formatDate(today)
 
     @property
     def subtitles_left(self):
