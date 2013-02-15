@@ -20,6 +20,7 @@
 CanDo view components.
 """
 
+from urllib import urlencode
 import pytz
 from xml.sax.saxutils import quoteattr
 
@@ -1346,6 +1347,13 @@ class CanDoGradeStudentBase(flourish.page.Page):
         skillset = skill.__parent__
         return skillset in iep_skills and skill in iep_skills[skillset]
 
+    @Lazy
+    def timezone(self):
+        app = ISchoolToolApplication(None)
+        prefs = IApplicationPreferences(app)
+        timezone_name = prefs.timezone
+        return pytz.timezone(timezone_name)
+
 
 class CanDoGradeStudentTableViewlet(flourish.viewlet.Viewlet):
 
@@ -1407,13 +1415,6 @@ def skill_score_formatter(score, item, formatter):
     return ''
 
 
-def get_skill_score(item, formatter):
-    student = formatter.context.student
-    skill = item['skill']
-    gradebook = item['gradebook']
-    return gradebook.getScore(student, skill)
-
-
 class CanDoGradeStudentTableBase(table.ajax.Table):
 
     batch_size = 0
@@ -1438,11 +1439,14 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
             for activity in gradebook.activities:
                 is_iep_skill = self.view.isSkillsGradebook and \
                                self.view.isIEPSkill(iep_skills, activity)
+                score = gradebook.getScore(self.view.student, activity)
                 result.append({
                         'gradebook': gradebook,
+                        'score': score,
                         'skillset': proxy.removeSecurityProxy(worksheet),
                         'skillset_label': skillset_label,
                         'skill': activity,
+                        'scoresystem': activity.scoresystem,
                         'skill_id': self.getSkillId(activity),
                         'is_iep_skill': is_iep_skill,
                         })
@@ -1494,7 +1498,7 @@ class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
         score = zc.table.column.GetterColumn(
             name='student-score',
             title=_('Score'),
-            getter=get_skill_score,
+            getter=lambda item, formatter: item['score'],
             cell_formatter=skill_score_formatter)
         return [skillset, skill, score]
 
@@ -1558,12 +1562,7 @@ class CanDoGradebookPDFView(CanDoGradebookOverviewBase, GradebookPDFView):
 
 class StudentCompetencyRecordView(CanDoGradeStudentBase):
 
-    @Lazy
-    def timezone(self):
-        app = ISchoolToolApplication(None)
-        prefs = IApplicationPreferences(app)
-        timezone_name = prefs.timezone
-        return pytz.timezone(timezone_name)
+    pass
 
 
 class ScoreDateColumn(table.column.DateColumn):
@@ -1573,7 +1572,7 @@ class ScoreDateColumn(table.column.DateColumn):
         super(ScoreDateColumn, self).__init__(*args, **kw)
 
     def getter(self, item, formatter):
-        score = get_skill_score(item, formatter)
+        score = item['score']
         if score is not None:
             time_utc = pytz.utc.localize(score.time)
             time = time_utc.astimezone(self.timezone)
@@ -1586,17 +1585,30 @@ class ScoreDateColumn(table.column.DateColumn):
         return view()
 
 
+def getScoreInfo(score):
+    label, abbr, value, percent = score
+    return label, {
+        'label': label,
+        'abbr': abbr,
+        'value': value,
+        'percent': percent,
+        }
+
+
+def getScoresByLabel(scoresystem):
+    return dict([getScoreInfo(s) for s in scoresystem.scores])
+
+
 class ScoreRatingColumn(zc.table.column.GetterColumn):
 
     def getter(self, item, formatter):
         result = '-'
-        score = get_skill_score(item, formatter)
-        skill = item['skill']
+        score = item['score']
         if score is not None:
-            grade = score.value
-            scoresystem = proxy.removeSecurityProxy(skill.scoresystem)
-            scores = dict([(s[2], s[1]) for s in scoresystem.scores])
-            result = scores.get(scoresystem.scoresDict().get(grade), '-')
+            scoresByLabel = getScoresByLabel(item['scoresystem'])
+            score_info = scoresByLabel.get(score.value)
+            if score_info is not None:
+                return score_info['abbr'] or score_info['label']
         return result
 
 
@@ -1740,3 +1752,148 @@ class RMLSkillColumn(table.pdf.RMLGetterColumn):
         value = self.column.getter(item, formatter)
         return '<para style="%s">%s</para>' % (
             self.style.para_class, self.escape(value))
+
+
+def getScoreSystems(gradebook):
+    result = {}
+    worksheet = gradebook.__parent__.__parent__
+    worksheets = worksheet.__parent__
+    for worksheet in worksheets.values():
+        for activity in worksheet.values():
+            scoresystem = proxy.removeSecurityProxy(activity.scoresystem)
+            if scoresystem not in result:
+                scoresByLabel = getScoresByLabel(scoresystem)
+                is_max_passing = scoresystem._isMaxPassingScore
+                scores = sorted(scoresByLabel.values(),
+                                key=lambda x:x['value'],
+                                reverse=not is_max_passing)
+                scoresDict = scoresystem.scoresDict()
+                result[scoresystem] = {
+                    'obj': scoresystem,
+                    'scoresDict': scoresDict,
+                    'scores': scores,
+                    'passing_score': scoresDict[scoresystem._minPassingScore],
+                    'is_max_passing': is_max_passing,
+                    'name': scoresystem.__name__,
+                    }
+    return result
+
+
+class RequestCompetencyCertificateView(RequestReportDownloadDialog):
+
+    template = ViewPageTemplateFile(
+        'templates/request_competency_certificate.pt')
+
+    @Lazy
+    def scoresystems(self):
+        result = getScoreSystems(self.context)
+        return result
+
+    def sorted_scoresystems(self):
+        collator = ICollator(self.request.locale)
+        return sorted(self.scoresystems.values(),
+                      key=lambda v: collator.key(v['obj'].title))
+
+    def is_selected(self, ss_info, score_info):
+        requested_passing_score = self.request.get(ss_info['name'])
+        if requested_passing_score is not None:
+            return requested_passing_score == score_info['label']
+        return score_info['value'] == ss_info['passing_score']
+
+    def nextURL(self):
+        url = '%s/competency_certificate.pdf' % absoluteURL(self.context,
+                                                            self.request)
+        params = {}
+        for ss_info in self.scoresystems.values():
+            requested_passing_score = self.request.get(ss_info['name'])
+            if requested_passing_score is not None:
+                params[ss_info['name']] = requested_passing_score
+        if params:
+            url += '?%s' % urlencode(params)
+        return url
+
+    def update(self):
+        if 'DOWNLOAD' in self.request:
+            self.request.response.redirect(self.nextURL())
+            return
+        super(RequestCompetencyCertificateView, self).update()
+
+
+class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
+                                   CanDoGradeStudentBase):
+
+    name = _(u'CERTIFICATE OF COMPETENCY')
+
+    @property
+    def title(self):
+        return self.student.title
+
+    @property
+    def subtitles_left(self):
+        section = self.gradebook.section
+        courses = ', '.join([course.title for course in section.courses])
+        return [
+            _('Course: ${courses}', mapping={'courses': courses}),
+            ]
+
+    @Lazy
+    def scoresystems(self):
+        result = getScoreSystems(self.context)
+        return result
+
+    @Lazy
+    def scoresystem_filters(self):
+        result = {}
+        for ss_info in self.scoresystems.values():
+            requested_passing_score = self.request.get(ss_info['name'])
+            scoresDict = ss_info['scoresDict']
+            if requested_passing_score is not None:
+                result[ss_info['name']] = scoresDict[requested_passing_score]
+            else:
+                result[ss_info['name']] = ss_info['passing_score']
+        return result
+
+
+class CompetencyCertificateSkillsTablePart(table.pdf.RMLTablePart):
+
+    table_name = 'student_grades_table'
+    visible_column_names = ['skill', 'rating']
+
+    def getColumnWidths(self, rml_columns):
+        return '85% 15%'
+
+
+class CompetencyCertificateSignaturePart(flourish.report.PDFPart):
+
+    template = flourish.templates.XMLFile(
+        'rml/competency_certificate_signature.pt')
+
+
+class CompetencyCertificateTableFilter(table.ajax.TableFilter):
+
+    def filter(self, items):
+        items = [item for item in items
+                 if item['score'] is not None and
+                 item['score'].value is not UNSCORED]
+        if items:
+            scoresystems = self.view.scoresystems
+            result = []
+            for item in items:
+                ss_info = scoresystems[item['scoresystem']]
+                is_max_passing = ss_info['is_max_passing']
+                scoresDict = ss_info['scoresDict']
+                score_value = scoresDict[item['score'].value]
+                passing_score = self.view.scoresystem_filters[ss_info['name']]
+                append = False
+                if not is_max_passing:
+                    append = score_value >= passing_score
+                else:
+                    append = score_value <= passing_score
+                if append:
+                    result.append(item)
+            items = result
+        result = super(CompetencyCertificateTableFilter, self).filter(items)
+        return result
+
+    def render(self, *args, **kw):
+        return ''

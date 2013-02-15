@@ -222,3 +222,7 @@ input[type="checkbox"].select-all {
 .optional-iep {
     width: 60px;
 }
+
+.request-competency-certificate-form select {
+    width: 288px;
+}

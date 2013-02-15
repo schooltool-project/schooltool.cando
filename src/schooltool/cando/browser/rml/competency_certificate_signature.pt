@@ -1,0 +1,18 @@
+<metal:block
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="schooltool">
+
+  <para style="signature" i18n:translate="">
+    Instructor:
+    <u><tal:loop tal:repeat="k python:range(100)">&#160;</tal:loop></u>
+  </para>
+  <para style="signature" i18n:translate="">
+    Signature:
+    <u><tal:loop tal:repeat="k python:range(80)">&#160;</tal:loop></u>
+    Date:
+    <u><tal:loop tal:repeat="k python:range(30)">&#160;</tal:loop></u>
+  </para>
+
+</metal:block>
