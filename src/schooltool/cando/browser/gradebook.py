@@ -33,7 +33,6 @@ from zope.i18n import translate
 from zope.i18n.interfaces.locales import ICollator
 from zope.interface import directlyProvides
 from zope.intid.interfaces import IIntIds
-from zope.location.location import LocationProxy
 from zope.traversing.api import getName
 from zope.traversing.browser.absoluteurl import absoluteURL
 from zope.security import proxy
@@ -139,28 +138,36 @@ class SectionSkillsCanDoRedirectView(flourish.page.Page):
     teacher_worksheet_view_name = 'gradebook'
     student_worksheet_view_name = 'mygrades'
 
+    def getProjectGradebookURL(self, is_student):
+        result = absoluteURL(self.context, self.request)
+        if is_student:
+            result += '/mygrades-projects'
+        else:
+            result += '/gradebook-projects'
+        return result
+
     # XXX: merge this with SectionGradebookRedirectView
     def __call__(self):
         person = IPerson(self.request.principal)
+        is_student = person in self.context.members
         worksheets = ISectionSkills(self.context)
         current_worksheet = worksheets.getCurrentWorksheet(person)
         url = absoluteURL(worksheets, self.request)
         if not worksheets:
-            url = absoluteURL(self.context, self.request)
-            if person in self.context.members:
-                url += '/mygrades-projects'
-            else:
-                url += '/gradebook-projects'
+            url = self.getProjectGradebookURL(is_student)
             self.request.response.redirect(url)
             return
         if current_worksheet is not None:
-            container = ISectionSkills(self.context)
-            current_worksheet = LocationProxy(
-                current_worksheet,
-                container=container,
-                name=current_worksheet.__name__)
+            # XXX: current worksheet may have been deleted
+            if current_worksheet not in worksheets:
+                collator = ICollator(self.request.locale)
+                worksheets = sorted(
+                    worksheets.values(),
+                    key=lambda x:(collator.key(x.label or ''),
+                                  collator.key(x.title)))
+                current_worksheet = worksheets[0]
             url = absoluteURL(current_worksheet, self.request)
-            if person in self.context.members:
+            if is_student:
                 url += '/%s' % self.student_worksheet_view_name
             else:
                 url += '/%s' % self.teacher_worksheet_view_name
