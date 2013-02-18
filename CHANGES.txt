@@ -2,17 +2,25 @@
 CHANGES
 =======
 
-0.5.1 (unreleased)
+0.5.1 (2013-02-18)
 ------------------
 
-- Added PDF version of the student competency report
+- New-style CanDo Gradebook report.
+- Added student's Section Competencies report.
+- Added student's Certificate of Competency report.
+
+
+0.4.4 (2013-02-18)
+------------------
+
+- Fixed error when current skillset for the user has been removed.
+- Sorted tables for adding/removing nodes by label and title.
+
+
+0.4.3 (2013-02-11)
+------------------
+
 - Fixed submit of Set Required/Visible course skills page.
-
-
-0.5 (2013-01-23)
-----------------
-
-- Updated tables to use new table formatters.
 
 
 0.4.2 (2013-01-29)
