@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-01-23 23:19+0200\n"
+"POT-Creation-Date: 2013-02-18 19:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -507,13 +507,37 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:1601
+#: /src/schooltool/cando/browser/gradebook.py:1561
+#: /src/schooltool/cando/browser/gradebook.zcml:520
+msgid "CanDo Gradebook"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1677
 msgid "Date"
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.py:1606
 #: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
 msgid "Rating"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1731
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+msgid "Section Competencies"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1754
+msgid "Teacher(s): ${teachers}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1755
+#: /src/schooltool/cando/browser/gradebook.py:1870
+msgid "Course: ${courses}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1847
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid "Certificate of Competency"
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:10
@@ -563,11 +587,7 @@ msgstr ""
 msgid "Skills Pop-up"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.zcml:509
-msgid "CanDo Gradebook"
-msgstr ""
-
-#: /src/schooltool/cando/browser/gradebook.zcml:535
+#: /src/schooltool/cando/browser/gradebook.zcml:546
 msgid "My Skills Grades"
 msgstr ""
 
@@ -581,6 +601,23 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:568
 msgid "Year"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:760
+msgid "Reports"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+msgid "Summary of a student's scores for all the skills assigned to a section."
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid "Student"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid "Summary of a student scores in a section exceeding a selected minimum score. Formatted for presentation to an potential employer or other person outside of the school."
 msgstr ""
 
 #: /src/schooltool/cando/browser/iep.py:122
@@ -894,6 +931,24 @@ msgstr ""
 msgid "Edit this project"
 msgstr ""
 
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:5
+#: /src/schooltool/cando/interfaces.py:99
+#: /src/schooltool/cando/interfaces.py:238
+msgid "Description"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:11
+msgid "File Type"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:23
+msgid "Select a minimum display score for ${scoresystem}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:41
+msgid "Download"
+msgstr ""
+
 #: /src/schooltool/cando/browser/templates/skillsets.pt:5
 msgid "Reorder or Hide Skill Sets"
 msgstr ""
@@ -943,12 +998,7 @@ msgstr ""
 msgid "The skill scoresystem."
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:99
-#: /src/schooltool/cando/interfaces.py:238
-msgid "Description"
-msgstr ""
-
-#: /src/schooltool/cando/interfaces.py:97
+#: /src/schooltool/cando/interfaces.py:104
 msgid "Limit to 7 characters or less."
 msgstr ""
 

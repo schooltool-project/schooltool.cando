@@ -26,7 +26,6 @@ from xml.sax.saxutils import quoteattr
 
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
-from zope.catalog.interfaces import ICatalog
 from zope.component import queryMultiAdapter
 from zope.component import getUtility, getMultiAdapter
 from zope.container.interfaces import INameChooser
@@ -89,7 +88,6 @@ from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
-from schooltool.cando.interfaces import ISkill
 from schooltool.cando.interfaces import IStudentIEP
 from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.gradebook import ensureAtLeastOneProject
@@ -1560,7 +1558,7 @@ class CanDoGradeStudentTableButtons(flourish.viewlet.Viewlet):
 class CanDoGradebookPDFView(CanDoGradebookOverviewBase,
                             FlourishGradebookPDFView):
 
-    name = _('CANDO GRADEBOOK')
+    name = _('CanDo Gradebook')
 
     @Lazy
     def filtered_activity_info(self):
@@ -1730,7 +1728,7 @@ class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
 class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
                                      StudentCompetencyRecordView):
 
-    name = _('SECTION COMPETENCIES')
+    name = _('Section Competencies')
 
     @property
     def scope(self):
@@ -1846,7 +1844,7 @@ class RequestCompetencyCertificateView(RequestReportDownloadDialog):
 class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
                                    CanDoGradeStudentBase):
 
-    name = _(u'CERTIFICATE OF COMPETENCY')
+    name = _(u'Certificate of Competency')
 
     @property
     def title(self):
