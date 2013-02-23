@@ -780,13 +780,16 @@ class ProjectSkillSearchView(flourish.page.Page):
                     'checked': checked,
                     'obj': skill,
                     })
-        return result
+        return sorted(result,
+                      key=lambda i: (self.collator.key(i['label'] or ''),
+                                     self.collator.key(i['title'])))
 
     def getSkillId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
 
     def update(self):
+        self.collator = ICollator(self.request.locale)
         if 'CANCEL' in self.request:
             self.request.response.redirect(self.nextURL())
             return
