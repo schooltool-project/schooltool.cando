@@ -155,8 +155,10 @@
   <h2 i18n:translate="">Layers</h2>
   <div id="layers">
   <tal:block define="layers context/layers">
-    <h3 i18n:translate="">
-      Layers
+    <h3>
+      <tal:block i18n:translate="">
+        Layers
+      </tal:block>
     <a class="modify" href="" title="Edit layers"
        tal:attributes="href string:${context/@@absolute_url}/edit_layers.html"
        i18n:attributes="title"
@@ -189,12 +191,14 @@
   </tal:block>
   </div>
 
-  <h2 i18n:translate="">SkillSets</h2>
+  <h2 i18n:translate="">Skill Sets</h2>
   <div id="skillsets">
   <tal:block define="skillsets context/skillsets">
-    <h3 i18n:translate="">
-      SkillSets
-    <a class="modify" href="" title="Edit skillsets"
+    <h3>
+      <tal:block i18n:translate="">
+        Skill Sets
+      </tal:block>
+    <a class="modify" href="" title="Edit skill sets"
        tal:attributes="href string:${context/@@absolute_url}/edit_skillsets.html"
        i18n:attributes="title"
        tal:condition="context/schooltool:can_edit">

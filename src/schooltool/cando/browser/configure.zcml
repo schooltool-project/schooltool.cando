@@ -786,7 +786,7 @@
       name="edit_skillsets.html"
       for="schooltool.cando.interfaces.INode"
       class=".model.EditNodeSkillSetsView"
-      subtitle="Edit SkillSets"
+      subtitle="Edit Skill Sets"
       permission="schooltool.edit"
       />
 
@@ -810,14 +810,23 @@
 
   <!-- All objects imported using global importer -->
 
+  <flourish:viewlet
+      name="documents-actions-links"
+      after="documents-add-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".document.DocumentsActionsLinks"
+      title="Actions"
+      permission="schooltool.edit"
+      view=".document.DocumentsView"
+      />
+
   <configure package="schooltool.export">
 
     <flourish:viewlet
         name="import-skills.html"
-        after="import.html"
         title="Import Skill Data"
-        class="schooltool.skin.flourish.page.LinkViewlet"
-        manager="schooltool.app.browser.app.SchoolActionsLinks"
+        class="schooltool.cando.browser.document.ImportSkillsLinkViewlet"
+        manager="schooltool.cando.browser.document.DocumentsActionsLinks"
         permission="schooltool.edit"
         />
 

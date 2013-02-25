@@ -118,7 +118,7 @@ Set up skills:
     >>> skillsets_accordion_header.click()
     >>> skillsets_accordion_content = accordion_contents[4]
     >>> manager.wait_no(information_accordion_content.is_displayed)
-    >>> sel = '//a[@title="Edit skillsets"]'
+    >>> sel = '//a[@title="Edit skill sets"]'
     >>> manager.query.xpath(sel).click()
     >>> manager.query.id('form-buttons-add').click()
     >>> manager.query.link('Done').click()

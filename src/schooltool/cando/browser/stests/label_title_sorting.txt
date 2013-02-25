@@ -130,7 +130,7 @@ to associate them, so later it can be assigned to a SchoolTool course:
     >>> skillsets_accordion_header.click()
     >>> skillsets_accordion_content = accordion_contents[4]
     >>> manager.wait_no(information_accordion_content.is_displayed)
-    >>> sel = 'a[title="Edit skillsets"]'
+    >>> sel = 'a[title="Edit skill sets"]'
     >>> manager.query.css(sel).click()
     >>> manager.query.name('add_item.Fraction1').click()
     >>> manager.query.name('add_item.Percents2').click()
@@ -222,7 +222,7 @@ Add some skill sets to the Business Law course:
 
     >>> manager.query.link('Business Law').click()
     >>> course_url = manager.url
-    >>> manager.query.link('SkillSet').click()
+    >>> manager.query.link('Skill Set').click()
     >>> add_skillset_url = manager.url
 
     >>> manager.open(add_skillset_url)
@@ -321,7 +321,7 @@ Let's visit the Business Law course node:
     >>> print manager.query.css('.page .header h2').text
     View Node
 
-Print the skill sets in the SkillSets accordion:
+Print the skill sets in the Skill Sets accordion:
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
     >>> accordion_headers = manager.query_all.xpath(sel)

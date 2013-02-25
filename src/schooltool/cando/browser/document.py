@@ -141,6 +141,22 @@ class DocumentsAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in DocumentsView"""
 
 
+class DocumentsActionsLinks(flourish.page.RefineLinksViewlet):
+    """Manager for Actions links in DocumentsView"""
+
+
+class ImportSkillsLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def url(self):
+        link = self.link
+        if not link:
+            return None
+        app = ISchoolToolApplication(None)
+        return "%s/%s" % (absoluteURL(app, self.request),
+                          self.link)
+
+
 class DocumentAddView(flourish.form.AddForm):
 
     template = InheritTemplate(flourish.page.Page.template)
@@ -163,7 +179,7 @@ class DocumentAddView(flourish.form.AddForm):
     def rows(self):
         titles = self.layer_titles
         if not titles:
-            titles = [_('SkillSet'), _('Skill')]
+            titles = [_('Skill Set'), _('Skill')]
         num_titles = len(titles)
         rows = []
         for index, title in enumerate(titles):
@@ -261,14 +277,14 @@ class DocumentMixin(object):
     def layer_title(self):
         layer = self.get_layer()
         if layer is None:
-            return _('SkillSet')
+            return _('Skill Set')
         return layer.title
 
     @property
     def next_layer_title(self):
         layer = self.get_next_layer()
         if layer is None:
-            return _('SkillSet')
+            return _('Skill Set')
         return layer.title
 
     def build_query_string(self, **kw):
@@ -422,7 +438,7 @@ class DocumentView(flourish.form.DisplayForm, DocumentMixin):
     template = InheritTemplate(flourish.page.Page.template)
     label = None
 
-    fields = z3c.form.field.Fields(IDocument).select('title', 'description')
+    fields = z3c.form.field.Fields(IDocument).select('description')
 
     @property
     def legend(self):
