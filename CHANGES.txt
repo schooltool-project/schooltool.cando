@@ -2,10 +2,15 @@
 CHANGES
 =======
 
-0.5.2 (unreleased)
-------------------
+0.6 (2013-02-25)
+----------------
 
-- Nothing changed yet.
+- Fix section skills with no equivalent course skill
+- Sorted by label and title in add skill view for projects
+- Moved "Skills Export" option from School to Documents view (https://launchpad.net/bugs/1126577)
+- Moved "Import Skill Data" option from School to Documents view (https://launchpad.net/bugs/1131436)
+- Changed string "skillset" to "skill set" (https://launchpad.net/bugs/1131376)
+- Removed title from tables in index views for document and node (https://launchpad.net/bugs/1049966)
 
 
 0.5.1 (2013-02-18)
