@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-02-18 19:57+0200\n"
+"POT-Creation-Date: 2013-02-25 19:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -224,12 +224,12 @@ msgstr ""
 msgid "Edit Layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/configure.zcml:740
-msgid "Edit SkillSets"
+#: /src/schooltool/cando/browser/configure.zcml:785
+msgid "Edit Skill Sets"
 msgstr ""
 
-#: /src/schooltool/cando/browser/configure.zcml:770
-#: /src/schooltool/cando/browser/configure.zcml:779
+#: /src/schooltool/cando/browser/configure.zcml:825
+#: /src/schooltool/cando/browser/configure.zcml:833
 msgid "Import Skill Data"
 msgstr ""
 
@@ -312,25 +312,20 @@ msgstr ""
 msgid "Document Information"
 msgstr ""
 
-#: /src/schooltool/cando/browser/document.py:166
-#: /src/schooltool/cando/browser/document.py:264
-#: /src/schooltool/cando/browser/document.py:271
-msgid "SkillSet"
-msgstr ""
-
-#: /src/schooltool/cando/browser/document.py:182
-#: /src/schooltool/cando/browser/document.py:457
-#: /src/schooltool/cando/browser/document.py:641
-#: /src/schooltool/cando/browser/document.py:702
-#: /src/schooltool/cando/browser/gradebook.py:317
-#: /src/schooltool/cando/browser/gradebook.py:436
-#: /src/schooltool/cando/browser/model.py:102
-#: /src/schooltool/cando/browser/model.py:176
-#: /src/schooltool/cando/browser/model.py:320
-#: /src/schooltool/cando/browser/model.py:395
-#: /src/schooltool/cando/browser/skill.py:173
-#: /src/schooltool/cando/browser/skill.py:228
-#: /src/schooltool/cando/browser/skill.py:309
+#: /src/schooltool/cando/browser/document.py:198
+#: /src/schooltool/cando/browser/document.py:524
+#: /src/schooltool/cando/browser/document.py:708
+#: /src/schooltool/cando/browser/document.py:769
+#: /src/schooltool/cando/browser/gradebook.py:352
+#: /src/schooltool/cando/browser/gradebook.py:471
+#: /src/schooltool/cando/browser/iep.py:131
+#: /src/schooltool/cando/browser/model.py:103
+#: /src/schooltool/cando/browser/model.py:177
+#: /src/schooltool/cando/browser/model.py:321
+#: /src/schooltool/cando/browser/model.py:396
+#: /src/schooltool/cando/browser/skill.py:179
+#: /src/schooltool/cando/browser/skill.py:235
+#: /src/schooltool/cando/browser/skill.py:327
 #: /src/schooltool/cando/browser/templates/course_skills_edit_table_buttons.pt:5
 msgid "Submit"
 msgstr ""
@@ -689,15 +684,15 @@ msgstr ""
 msgid "Available node layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/model.py:621
-msgid "Current node skillsets"
+#: /src/schooltool/cando/browser/model.py:641
+msgid "Current node skill sets"
 msgstr ""
 
-#: /src/schooltool/cando/browser/model.py:622
-msgid "Available node skillsets"
+#: /src/schooltool/cando/browser/model.py:642
+msgid "Available node skill sets"
 msgstr ""
 
-#: /src/schooltool/cando/browser/report.zcml:10
+#: /src/schooltool/cando/browser/report.zcml:20
 msgid "Export global skills data for the school."
 msgstr ""
 
@@ -868,12 +863,12 @@ msgstr ""
 msgid "Parent layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/layer.pt:105
-msgid "Edit children"
+#: /src/schooltool/cando/browser/templates/layer.pt:104
+msgid "Child layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/layer.pt:109
-msgid "Child layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+#: /src/schooltool/cando/browser/templates/layer.pt:107
+msgid "Edit children"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/node.pt:13
@@ -902,20 +897,8 @@ msgstr ""
 msgid "Edit layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/node.pt:164
-msgid "Layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/node.pt:192
-msgid "SkillSets"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/node.pt:197
-msgid "Edit skillsets"
-msgstr ""
-
 #: /src/schooltool/cando/browser/templates/node.pt:201
-msgid "SkillSets <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+msgid "Edit skill sets"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/projects.pt:5
@@ -1014,11 +997,11 @@ msgstr ""
 msgid "Section intID"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:201
-msgid "Skillset ID"
+#: /src/schooltool/cando/interfaces.py:208
+msgid "Skill set ID"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:202
+#: /src/schooltool/cando/interfaces.py:209
 msgid "Skill ID"
 msgstr ""
 
