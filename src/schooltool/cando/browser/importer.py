@@ -469,7 +469,9 @@ class CourseNodesImporter(ImporterBase):
 class GlobalSkillsMegaImporter(FlourishMegaImporter):
 
     def nextURL(self):
-        url = absoluteURL(self.context, self.request) + '/manage'
+        app = ISchoolToolApplication(None)
+        container = IDocumentContainer(app)
+        url = absoluteURL(container, self.request)
         return url
 
     @property

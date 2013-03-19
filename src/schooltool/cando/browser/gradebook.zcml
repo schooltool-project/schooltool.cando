@@ -717,6 +717,13 @@
       permission="schooltool.edit"
       />
 
+  <flourish:content
+      name="grid"
+      for="schooltool.cando.interfaces.ISkillSet"
+      class=".gradebook.SkillSetGrid"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="student_competency_report.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"
@@ -748,6 +755,139 @@
       class=".gradebook.StudentCompetencyRecordDoneLink"
       permission="schooltool.view"
       render="template"
+      />
+
+  <flourish:viewlet
+      name="scr-reports-links"
+      before="*"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.report.browser.report.ReportsLinks"
+      title="Reports"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      permission="schooltool.view"
+      />
+
+  <report:reportLink
+      name="student_competency_report"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      link="request_student_competency_report.html"
+      group="Student"
+      description="Summary of a student's scores for all the skills assigned to a section."
+      title="Section Competencies"
+      file_type="pdf"
+      permission="schooltool.view"
+      />
+
+  <report:reportLink
+      name="competency_certificate"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      link="request_competency_certificate.html"
+      group="Student"
+      description="Summary of a student scores in a section exceeding a selected minimum score. Formatted for presentation to an potential employer or other person outside of the school."
+      title="Certificate of Competency"
+      file_type="pdf"
+      permission="schooltool.view"
+      />
+
+  <flourish:page
+      name="request_student_competency_report.html"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.RequestStudentCompetencyReportView"
+      permission="schooltool.view"
+      />
+
+  <flourish:pdf
+      name="student_competency_report.pdf"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.StudentCompetencyReportPDFView"
+      permission="schooltool.view"
+      />
+
+  <flourish:content
+      name="student_grades_table"
+      class=".gradebook.StudentCompetencyRecordTable"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="skills_table"
+      manager="schooltool.skin.flourish.report.PDFStory"
+      view=".gradebook.StudentCompetencyReportPDFView"
+      class=".gradebook.StudentCompetencyReportSkillsTablePart"
+      permission="schooltool.view"
+      />
+
+  <zope:adapter
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook
+           schooltool.skin.flourish.IFlourishLayer
+           .gradebook.CanDoGradeStudentBase
+           zc.table.column.GetterColumn"
+      name="skill"
+      provides="schooltool.table.interfaces.IRMLColumn"
+      factory=".gradebook.RMLSkillColumn"
+      />
+
+  <flourish:viewlet
+      name="scr-styles"
+      after="*"
+      manager="schooltool.skin.flourish.report.PDFStylesheetSection"
+      view=".gradebook.StudentCompetencyReportPDFView"
+      class="schooltool.skin.flourish.report.PDFPart"
+      template="rml/student_competency_report_styles.pt"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="competency-certificate-styles"
+      after="*"
+      manager="schooltool.skin.flourish.report.PDFStylesheetSection"
+      view=".gradebook.CompetencyCertificatePDFView"
+      class="schooltool.skin.flourish.report.PDFPart"
+      template="rml/competency_certificate_styles.pt"
+      permission="zope.Public"
+      />
+
+  <flourish:page
+      name="request_competency_certificate.html"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.RequestCompetencyCertificateView"
+      permission="schooltool.view"
+      />
+
+  <flourish:pdf
+      name="competency_certificate.pdf"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      class=".gradebook.CompetencyCertificatePDFView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="signature"
+      before="skills_table"
+      manager="schooltool.skin.flourish.report.PDFStory"
+      view=".gradebook.CompetencyCertificatePDFView"
+      class=".gradebook.CompetencyCertificateSignaturePart"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="skills_table"
+      manager="schooltool.skin.flourish.report.PDFStory"
+      view=".gradebook.CompetencyCertificatePDFView"
+      class=".gradebook.CompetencyCertificateSkillsTablePart"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class=".gradebook.CompetencyCertificateTableFilter"
+      manager=".gradebook.StudentCompetencyRecordTable"
+      view=".gradebook.CompetencyCertificatePDFView"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet

@@ -1,14 +1,8 @@
-IEP functionality for the Student Competency Report
-===================================================
+Test for current worksheet functionality
+========================================
 
-Helpers:
-
-    >>> def print_report_skills(browser):
-    ...     sel = '.student-scr tbody tr'
-    ...     for row in browser.query_all.css(sel):
-    ...         tds = row.query_all.tag('td')
-    ...         if tds:
-    ...             print '%s, %s, %s' % (tds[0].text, tds[1].text, tds[2].text)
+We'll check what happens to the gradebook when the current skillset
+for the user is deleted.
 
 Log in as manager:
 
@@ -19,7 +13,6 @@ Set up persons:
 
     >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
     >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
-    >>> camila_url = manager.url
     >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
     >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
 
@@ -153,69 +146,90 @@ Log in as instructor:
     >>> teacher.ui.login('jeffrey', 'pwd')
     >>> teacher.query.link('CanDo').click()
 
-Check Camila's Student Competency Report and print its skills
-information (label, required, title):
+Go to the Errors worksheet:
 
-    >>> sel = '#students-part tbody ul.popup_menu'
-    >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
-    >>> camila_menu.query.link('Report').click()
-    >>> camila_report_url = teacher.url
+    >>> sel = 'a[title="03: Errors"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +------------------------+---------------------------------------------+--------------+-------------+
+    | 01: Python Environment | 02: Data Types, Statements, and Expressions | *03: Errors* | 04: Strings |
+    +------------------------+---------------------------------------------+--------------+-------------+
+    +------------------+----+----+
+    | Name             | 09 | 10 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    |    |    |
+    | Tejada, Mario    |    |    |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
 
-    >>> print_report_skills(teacher)
-    01, Yes, Use the Python shell for interactive evaluation
-    02, No, Make Python scripts with a text editor
-    03, Yes, Recognize int, float, str, list, tuple, and dict.
-    04, Yes, Use type(...) to determine the data type of a given value.
-    05, Yes, Use assignment statements to assign names (variables) to values.
-    06, Yes, Use the input function to read user input.
-    07, Yes, Define keyword and recognize keywords in Python.
-    08, No, Create legal variable names and recognize illegal ones.
-    09, Yes, Recognize and differentiate among errors.
-    10, Yes, Read and interpret stack traceback messages.
-    11, Yes, Create string literals with single, double, and triple quotes.
-    12, Yes, Use the len() function to return the length of a string.
-    13, No, Use the find(...) method to locate substrings in a string.
-    14, No, Use the split() method to break a string into a list.
+Log in as student:
 
-Let's activate IEP for Camila:
+    >>> student = browsers.student
+    >>> student.ui.login('camila', 'pwd')
+    >>> student.query.link('CanDo').click()
 
-    >>> manager.open(camila_url)
-    >>> manager.query.link('IEP').click()
-    >>> sel = 'a[title="Edit this plan information"]'
-    >>> manager.query.css(sel).click()
-    >>> manager.query.id('form-widgets-active-0').click()
-    >>> manager.query.id('form-buttons-add').click()
+Go to the Errors worksheet:
 
-And customize some of the required skills:
+    >>> sel = 'a[title="03: Errors"]'
+    >>> link = student.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> student.open(link.get_attribute('href'))
 
-    >>> manager.query.link('Programming (1)').click()
-    >>> sel = '''a[title="Edit student's IEP skills"]'''
-    >>> manager.query.css(sel).click()
-    >>> sel = 'iep_section_skills.iep.Python E1.Use the 1'
-    >>> manager.query.id(sel).click()
-    >>> sel = 'iep_section_skills.iep.Data Typ2.Use the 4'
-    >>> manager.query.id(sel).click()
-    >>> sel = 'iep_section_skills.iep.Errors-3.Recogniz1'
-    >>> manager.query.id(sel).click()
-    >>> manager.query.name('SAVE').click()
+    >>> sel = '.third-nav li a'
+    >>> for a in student.query_all.css(sel):
+    ...     print a.text
+    01: Python Environment
+    02: Data Types, Statements, and Expressions
+    03: Errors
+    04: Strings
 
-And check her report again. The IEP skills should be shown as not
-required now:
+    >>> sel = 'table tbody tr td:first-child'
+    >>> for td in student.query_all.css(sel):
+    ...     print td.text
+    09: Recognize and differentiate among errors.
+    10: Read and interpret stack traceback messages.
 
-    >>> teacher.open(camila_report_url)
-    >>> print_report_skills(teacher)
-    01, No, Use the Python shell for interactive evaluation
-    02, No, Make Python scripts with a text editor
-    03, Yes, Recognize int, float, str, list, tuple, and dict.
-    04, Yes, Use type(...) to determine the data type of a given value.
-    05, Yes, Use assignment statements to assign names (variables) to values.
-    06, No, Use the input function to read user input.
-    07, Yes, Define keyword and recognize keywords in Python.
-    08, No, Create legal variable names and recognize illegal ones.
-    09, No, Recognize and differentiate among errors.
-    10, Yes, Read and interpret stack traceback messages.
-    11, Yes, Create string literals with single, double, and triple quotes.
-    12, Yes, Use the len() function to return the length of a string.
-    13, No, Use the find(...) method to locate substrings in a string.
-    14, No, Use the split() method to break a string into a list.
+Let's delete the worksheet from the course skills:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Programming').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Remove Skills').click()
+    >>> manager.query.css('input[value="Errors-3"]').click()
+    >>> manager.query.name('SUBMIT_BUTTON').click()
+
+Let's check the new current worksheet for the teacher:
+
+    >>> teacher.query.link('CanDo').click()
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+---------------------------------------------+-------------+
+    | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 04: Strings |
+    +--------------------------+---------------------------------------------+-------------+
+    +------------------+----+----+
+    | Name             | 01 | 02 |
+    |                  | 4  | 4  |
+    +------------------+----+----+
+    | Cerna, Camila    |    |    |
+    | Tejada, Mario    |    |    |
+    | Vividor, Liliana |    |    |
+    +------------------+----+----+
+
+Let's check the new current worksheet for the student:
+
+    >>> student.query.link('CanDo').click()
+    >>> sel = '.third-nav li a'
+    >>> for a in student.query_all.css(sel):
+    ...     print a.text
+    01: Python Environment
+    02: Data Types, Statements, and Expressions
+    04: Strings
+
+    >>> sel = 'table tbody tr td:first-child'
+    >>> for td in student.query_all.css(sel):
+    ...     print td.text
+    01: Use the Python shell for interactive evaluation
+    02: Make Python scripts with a text editor

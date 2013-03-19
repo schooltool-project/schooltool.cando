@@ -22,12 +22,14 @@ Request Report Views
 
 from zope.traversing.browser.absoluteurl import absoluteURL
 
+from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.report.browser.report import RequestReportDownloadDialog
 
 
 class RequestGlobalSkillsExportView(RequestReportDownloadDialog):
 
     def nextURL(self):
-        url = absoluteURL(self.context, self.request)
+        app = ISchoolToolApplication(None)
+        url = absoluteURL(app, self.request)
         return url + '/export_global_skills.xls'
 

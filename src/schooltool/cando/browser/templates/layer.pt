@@ -100,8 +100,10 @@
   </div>
 
   <div id="children" tal:define="children view/children">
-    <h3 i18n:translate="">
-      Child layers
+    <h3>
+      <tal:block i18n:translate="">
+        Child layers
+      </tal:block>
     <a class="modify" href="" title="Edit children"
        tal:attributes="href view/edit_children_url"
        i18n:attributes="title"

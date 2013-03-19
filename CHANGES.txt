@@ -2,11 +2,49 @@
 CHANGES
 =======
 
-0.4.2 (unreleased)
+0.6.1 (unreleased)
 ------------------
 
-- skills now have their own scoresystem attribute
-  for old skills with no scoresystem set, get property returns system default
+
+
+0.6 (2013-02-25)
+----------------
+
+- Fix section skills with no equivalent course skill
+- Sorted by label and title in add skill view for projects
+- Moved "Skills Export" option from School to Documents view (https://launchpad.net/bugs/1126577)
+- Moved "Import Skill Data" option from School to Documents view (https://launchpad.net/bugs/1131436)
+- Changed string "skillset" to "skill set" (https://launchpad.net/bugs/1131376)
+- Removed title from tables in index views for document and node (https://launchpad.net/bugs/1049966)
+
+
+0.5.1 (2013-02-18)
+------------------
+
+- New-style CanDo Gradebook report.
+- Added student's Section Competencies report.
+- Added student's Certificate of Competency report.
+
+
+0.4.4 (2013-02-18)
+------------------
+
+- Fixed error when current skillset for the user has been removed.
+- Sorted tables for adding/removing nodes by label and title.
+
+
+0.4.3 (2013-02-11)
+------------------
+
+- Fixed submit of Set Required/Visible course skills page.
+
+
+0.4.2 (2013-01-29)
+------------------
+
+- Skills now have their own scoresystem. Old skills that had no scoresystem
+  set, system default is used.
+- Add IEP (Individualized Educational Plan) functionality.
 - Added Dutch and Spanish (El Salvador) translations.
 
 
@@ -36,7 +74,7 @@ CHANGES
 - Sorted skills by label in the skills gradebook
 - Fixed validation in score student view
 - Removed subscriber that prevented section deleting
-- Restore scores that disappeared after upgrade to 0.3
+- Restored scores that disappeared after upgrade to 0.3
 
 
 0.3 (2012-10-19)

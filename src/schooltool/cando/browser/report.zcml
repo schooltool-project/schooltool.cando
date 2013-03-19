@@ -7,10 +7,19 @@
 
   <!-- Report links, request views and output views -->
 
+  <flourish:viewlet
+      name="documents-report-links"
+      after="documents-actions-links"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.report.browser.report.ReportsLinks"
+      view=".document.DocumentsView"
+      title="Reports"
+      permission="schooltool.edit"
+      />
+
   <report:reportLink
        name="global_skills_export"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
-       view="schooltool.app.browser.app.ManageSchool"
+       view=".document.DocumentsView"
        layer="schooltool.skin.flourish.IFlourishLayer"
        permission="schooltool.edit"
        group="School"
@@ -22,7 +31,7 @@
 
   <flourish:page
        name="request_global_skills_export.html"
-       for="schooltool.app.interfaces.ISchoolToolApplication"
+       for="schooltool.cando.interfaces.IDocumentContainer"
        class=".request_reports.RequestGlobalSkillsExportView"
        permission="schooltool.edit"
        />

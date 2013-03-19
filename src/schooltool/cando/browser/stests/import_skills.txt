@@ -38,10 +38,10 @@ Let's import a file containing all the skill object types:
     >>> filename = os.path.join(dirname, 'sample_data.xls')
     >>> manager.ui.skill.import_xls(filename)
 
-There should be no errors so we should be back at the School tab view:
+There should be no errors so we should be back at the Documents view:
 
     >>> manager.url
-    u'http://localhost/manage'
+    u'http://localhost/documents'
 
 Let's check the data.  There is one skillset called Carpentry.
 

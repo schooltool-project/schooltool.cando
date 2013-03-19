@@ -109,7 +109,7 @@ class INode(Interface):
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
     children = Attribute("Child nodes")
-    skillsets = Attribute("Skillsets related to this node")
+    skillsets = Attribute("Skill sets related to this node")
 
     def findPaths():
         """
@@ -177,7 +177,7 @@ class ICourseSkills(IRequirement):
 
 class ICourseSkillSet(IContained):
 
-    skillset = Attribute(u"The global skillset.")
+    skillset = Attribute(u"The global skill set.")
 
     required = zope.schema.Dict(
         key_type=zope.schema.TextLine(title=u"Skill __name__ in skilset."),
@@ -191,7 +191,7 @@ class ICourseSkillSet(IContained):
 class ICourseSkill(ISkill):
     """Proxy for the real global skill"""
 
-    course_skillset = Attribute(u"The course skillset.")
+    course_skillset = Attribute(u"The course skill set.")
 
 
 class ISectionSkills(IWorksheets):
@@ -200,12 +200,12 @@ class ISectionSkills(IWorksheets):
 
 class ISectionSkillSet(ISkillSet, IWorksheet):
 
-    skillset = Attribute(u"The global skillset.")
+    skillset = Attribute(u"The global skill set.")
 
 
 class ISectionSkill(ISkill):
     section_intid = zope.schema.Int(title=_("Section intID"), required=False)
-    section_skillset_name = zope.schema.Int(title=_("Skillset ID"), required=False)
+    section_skillset_name = zope.schema.Int(title=_("Skill set ID"), required=False)
     section_skill_name = zope.schema.Int(title=_("Skill ID"), required=False)
 
 

@@ -211,7 +211,6 @@ Let's look at the Math node.  It has no parents, children, layers or skillsets.
     >>> manager.query.button('Search').click()
     >>> manager.query.link('Math').click()
     >>> print_node_attrs()
-    Title: Math
     Description:
     Label:
     >>> print manager.query_all.css('#parents p')
@@ -391,7 +390,7 @@ We see that there are not any there yet.
 We'll go edit its skillsets.  We see no current skillsets and the list of
 available ones.
 
-    >>> href = manager.query.xpath('//a[@title="Edit skillsets"]').get_attribute('href')
+    >>> href = manager.query.xpath('//a[@title="Edit skill sets"]').get_attribute('href')
     >>> manager.open(href)
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.

@@ -144,22 +144,6 @@ class CourseSkillsTable(table.ajax.Table):
     batch_size = 0
     visible_column_names = ['title', 'skills']
 
-    def renderTable(self):
-        if self._table_formatter is None:
-            return ''
-        formatter = self._table_formatter(
-            self.source, self.request, self._items,
-            visible_column_names=self.visible_column_names,
-            columns=self._columns,
-            batch_start=self.batch.start, batch_size=self.batch.size,
-            sort_on=self._sort_on,
-            prefix=self.prefix,
-            ignore_request=self.ignoreRequest,
-            )
-        formatter.html_id = self.html_id
-        formatter.cssClasses.update(self.css_classes)
-        return formatter()
-
     def updateFormatter(self):
         if self._table_formatter is None:
             self.setUp(table_formatter=self.table_formatter,

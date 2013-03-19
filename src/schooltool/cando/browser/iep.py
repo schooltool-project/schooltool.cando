@@ -232,30 +232,6 @@ def label_title_formatter(obj, item, formatter):
 
 class StudentIEPSectionSkillsTableFormatter(table.ajax.AJAXFormSortFormatter):
 
-    def renderHeaders(self):
-        result = []
-        old_css_class = self.cssClasses.get('th')
-        for col in self.visible_columns:
-            self.cssClasses['th'] = col.name.replace('_', '-')
-            result.append(self.renderHeader(col))
-        self.cssClasses['th'] = old_css_class
-        return ''.join(result)
-
-    def renderRows(self):
-        current_skillset = None
-        result = []
-        for item in self.getItems():
-            skillset = item['skillset']
-            if skillset != current_skillset:
-                result.append(self.renderSubHeader(skillset))
-                current_skillset = skillset
-            result.append(self.renderRow(item))
-        return ''.join(result)
-
-    def renderSubHeader(self, skillset):
-        title = label_title_formatter(skillset, None, None)
-        return '<th colspan="%d">%s</th>' % (len(self.visible_columns), title)
-
     def renderCell(self, item, column):
         klass = self.cssClasses.get('td', '')
         if column.name == 'skill' and not item['skill'].required:
@@ -323,22 +299,6 @@ class StudentIEPSectionSkillsTable(table.ajax.Table):
     def getSkillId(self, skill):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
-
-    def renderTable(self):
-        if self._table_formatter is None:
-            return ''
-        formatter = self._table_formatter(
-            self.source, self.request, self._items,
-            visible_column_names=self.visible_column_names,
-            columns=self._columns,
-            batch_start=self.batch.start, batch_size=self.batch.size,
-            sort_on=self._sort_on,
-            prefix=self.prefix,
-            ignore_request=self.ignoreRequest,
-            )
-        formatter.html_id = self.html_id
-        formatter.cssClasses.update(self.css_classes)
-        return formatter()
 
     def updateFormatter(self):
         if self._table_formatter is None:
