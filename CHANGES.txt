@@ -5,6 +5,7 @@ CHANGES
 0.6.1 (unreleased)
 ------------------
 
+- Updated translations, added Thai
 
 
 0.6 (2013-02-25)

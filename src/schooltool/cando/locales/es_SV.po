@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-27 01:22+0200\n"
+"POT-Creation-Date: 2013-02-25 19:36+0200\n"
 "PO-Revision-Date: 2012-10-21 03:23+0000\n"
 "Last-Translator: Douglas Cerna <douglascerna@yahoo.com>\n"
 "Language-Team: Spanish (El Salvador) <es_SV@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-27 06:26+0000\n"
-"X-Generator: Launchpad (build 16309)\n"
+"X-Launchpad-Export-Date: 2013-02-26 05:23+0000\n"
+"X-Generator: Launchpad (build 16506)\n"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:9
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:67
@@ -215,12 +215,12 @@ msgstr "Ver Nodo"
 msgid "Edit Layers"
 msgstr "Editar Capas"
 
-#: /src/schooltool/cando/browser/configure.zcml:740
-msgid "Edit SkillSets"
+#: /src/schooltool/cando/browser/configure.zcml:785
+msgid "Edit Skill Sets"
 msgstr "Editar Grupos de Competencias"
 
-#: /src/schooltool/cando/browser/configure.zcml:770
-#: /src/schooltool/cando/browser/configure.zcml:779
+#: /src/schooltool/cando/browser/configure.zcml:825
+#: /src/schooltool/cando/browser/configure.zcml:833
 msgid "Import Skill Data"
 msgstr "Importar Datos de Competencias"
 
@@ -303,25 +303,20 @@ msgstr "Documentos"
 msgid "Document Information"
 msgstr "Información de Documento"
 
-#: /src/schooltool/cando/browser/document.py:166
-#: /src/schooltool/cando/browser/document.py:264
-#: /src/schooltool/cando/browser/document.py:271
-msgid "SkillSet"
-msgstr ""
-
-#: /src/schooltool/cando/browser/document.py:182
-#: /src/schooltool/cando/browser/document.py:457
-#: /src/schooltool/cando/browser/document.py:641
-#: /src/schooltool/cando/browser/document.py:702
-#: /src/schooltool/cando/browser/gradebook.py:317
-#: /src/schooltool/cando/browser/gradebook.py:436
-#: /src/schooltool/cando/browser/model.py:102
-#: /src/schooltool/cando/browser/model.py:176
-#: /src/schooltool/cando/browser/model.py:320
-#: /src/schooltool/cando/browser/model.py:395
-#: /src/schooltool/cando/browser/skill.py:173
-#: /src/schooltool/cando/browser/skill.py:228
-#: /src/schooltool/cando/browser/skill.py:309
+#: /src/schooltool/cando/browser/document.py:198
+#: /src/schooltool/cando/browser/document.py:524
+#: /src/schooltool/cando/browser/document.py:708
+#: /src/schooltool/cando/browser/document.py:769
+#: /src/schooltool/cando/browser/gradebook.py:352
+#: /src/schooltool/cando/browser/gradebook.py:471
+#: /src/schooltool/cando/browser/iep.py:131
+#: /src/schooltool/cando/browser/model.py:103
+#: /src/schooltool/cando/browser/model.py:177
+#: /src/schooltool/cando/browser/model.py:321
+#: /src/schooltool/cando/browser/model.py:396
+#: /src/schooltool/cando/browser/skill.py:179
+#: /src/schooltool/cando/browser/skill.py:235
+#: /src/schooltool/cando/browser/skill.py:327
 #: /src/schooltool/cando/browser/templates/course_skills_edit_table_buttons.pt:5
 msgid "Submit"
 msgstr "Enviar"
@@ -498,13 +493,37 @@ msgstr ""
 msgid "Score"
 msgstr "Puntaje"
 
-#: /src/schooltool/cando/browser/gradebook.py:1601
+#: /src/schooltool/cando/browser/gradebook.py:1561
+#: /src/schooltool/cando/browser/gradebook.zcml:520
+msgid "CanDo Gradebook"
+msgstr "Cuadro de Notas de CanDo"
+
+#: /src/schooltool/cando/browser/gradebook.py:1677
 msgid "Date"
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.py:1606
 #: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
 msgid "Rating"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1731
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+msgid "Section Competencies"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1754
+msgid "Teacher(s): ${teachers}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1755
+#: /src/schooltool/cando/browser/gradebook.py:1870
+msgid "Course: ${courses}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1847
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid "Certificate of Competency"
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:10
@@ -554,11 +573,7 @@ msgstr "Códigos de Color"
 msgid "Skills Pop-up"
 msgstr "Diálogo de Competencias"
 
-#: /src/schooltool/cando/browser/gradebook.zcml:509
-msgid "CanDo Gradebook"
-msgstr "Cuadro de Notas de CanDo"
-
-#: /src/schooltool/cando/browser/gradebook.zcml:535
+#: /src/schooltool/cando/browser/gradebook.zcml:546
 msgid "My Skills Grades"
 msgstr "Mis Notas de Competencias"
 
@@ -574,7 +589,57 @@ msgstr "Período"
 msgid "Year"
 msgstr "Año"
 
-#: /src/schooltool/cando/browser/model.py:94
+#: /src/schooltool/cando/browser/gradebook.zcml:760
+msgid "Reports"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+msgid ""
+"Summary of a student's scores for all the skills assigned to a section."
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:770
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid "Student"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:782
+msgid ""
+"Summary of a student scores in a section exceeding a selected minimum score. "
+"Formatted for presentation to an potential employer or other person outside "
+"of the school."
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.py:122
+msgid "IEP Details"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.py:176
+msgid "IEP Skills for ${section}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.py:322
+msgid "Edit IEP Skills for ${section}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.py:354
+msgid "Optional IEP"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.py:424
+msgid "IEP Information"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.zcml:8
+msgid "IEP"
+msgstr ""
+
+#: /src/schooltool/cando/browser/iep.zcml:17
+#: /src/schooltool/cando/browser/iep.zcml:52
+msgid "Individualized Educational Plan"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:95
 msgid "Layer Information"
 msgstr "Información de Capa"
 
@@ -614,15 +679,15 @@ msgstr ""
 msgid "Available node layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/model.py:621
-msgid "Current node skillsets"
+#: /src/schooltool/cando/browser/model.py:641
+msgid "Current node skill sets"
 msgstr ""
 
-#: /src/schooltool/cando/browser/model.py:622
-msgid "Available node skillsets"
+#: /src/schooltool/cando/browser/model.py:642
+msgid "Available node skill sets"
 msgstr ""
 
-#: /src/schooltool/cando/browser/report.zcml:10
+#: /src/schooltool/cando/browser/report.zcml:20
 msgid "Export global skills data for the school."
 msgstr ""
 
@@ -657,6 +722,10 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
 msgid "Optional"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:16
+msgid "Optional (IEP)"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/course_assign_skills_table_filter.pt:12
@@ -777,6 +846,10 @@ msgstr ""
 msgid "There are no skills."
 msgstr ""
 
+#: /src/schooltool/cando/browser/templates/iep_details.pt:5
+msgid "Edit this plan information"
+msgstr ""
+
 #: /src/schooltool/cando/browser/templates/layer.pt:4
 msgid "Edit this Layer"
 msgstr ""
@@ -785,14 +858,12 @@ msgstr ""
 msgid "Parent layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/layer.pt:105
-msgid "Edit children"
+#: /src/schooltool/cando/browser/templates/layer.pt:104
+msgid "Child layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/layer.pt:109
-msgid ""
-"Child layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> "
-"<img alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+#: /src/schooltool/cando/browser/templates/layer.pt:107
+msgid "Edit children"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/node.pt:13
@@ -821,24 +892,8 @@ msgstr ""
 msgid "Edit layers"
 msgstr ""
 
-#: /src/schooltool/cando/browser/templates/node.pt:164
-msgid ""
-"Layers <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img "
-"alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/node.pt:192
-msgid "SkillSets"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/node.pt:197
-msgid "Edit skillsets"
-msgstr ""
-
 #: /src/schooltool/cando/browser/templates/node.pt:201
-msgid ""
-"SkillSets <a class=\"modify\" href=\"${DYNAMIC_CONTENT}\" title=\"x\"> <img "
-"alt=\"x\" src=\"${DYNAMIC_CONTENT}\" /> </a>"
+msgid "Edit skill sets"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/projects.pt:5
@@ -852,6 +907,24 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/templates/projects.pt:34
 msgid "Edit this project"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:5
+#: /src/schooltool/cando/interfaces.py:99
+#: /src/schooltool/cando/interfaces.py:238
+msgid "Description"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:11
+msgid "File Type"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:23
+msgid "Select a minimum display score for ${scoresystem}"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:41
+msgid "Download"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/skillsets.pt:5
@@ -895,11 +968,15 @@ msgstr ""
 msgid "Full description"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:92
-msgid "Description"
+#: /src/schooltool/cando/interfaces.py:51
+msgid "Scoresystem"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:97
+#: /src/schooltool/cando/interfaces.py:52
+msgid "The skill scoresystem."
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:104
 msgid "Limit to 7 characters or less."
 msgstr ""
 
@@ -915,12 +992,16 @@ msgstr ""
 msgid "Section intID"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:201
-msgid "Skillset ID"
+#: /src/schooltool/cando/interfaces.py:208
+msgid "Skill set ID"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:202
+#: /src/schooltool/cando/interfaces.py:209
 msgid "Skill ID"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:235
+msgid "Active"
 msgstr ""
 
 #: /src/schooltool/cando/project.py:137
@@ -942,9 +1023,3 @@ msgstr ""
 #: /src/schooltool/cando/project.py:297
 msgid "${course} percent passed"
 msgstr ""
-
-#~ msgid "optional"
-#~ msgstr "opcional"
-
-#~ msgid "required"
-#~ msgstr "requerida"
