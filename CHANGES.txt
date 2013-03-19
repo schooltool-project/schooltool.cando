@@ -2,9 +2,10 @@
 CHANGES
 =======
 
-0.6.1 (unreleased)
+0.6.1 (2013-03-20)
 ------------------
 
+- Fixed permissions of popup menus and competency report
 - Updated translations, added Thai
 
 
