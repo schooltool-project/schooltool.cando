@@ -301,14 +301,14 @@
       name="name_popup_menu"
       for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.CanDoNamePopupMenuView"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:page
       name="activity_popup_menu"
       for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.SkillPopupMenuView"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:page
@@ -714,7 +714,7 @@
       name="gradebook.pdf"
       for="schooltool.cando.interfaces.ICanDoGradebook"
       class=".gradebook.CanDoGradebookPDFView"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:content
@@ -728,7 +728,7 @@
       name="student_competency_report.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"
       class="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet
