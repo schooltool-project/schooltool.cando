@@ -43,7 +43,7 @@ We'll change it to 'Extended Letter Grade' before submitting it.
 
     >>> manager.query.name('form.widgets.title').type('Pounding')
     >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Extended Letter Grade')
-    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.name('form.widgets.required').click()
     >>> manager.query.button('Submit').click()
 
 We see that it was added.
@@ -72,7 +72,7 @@ after we submit it.
 
     >>> manager.query.name('form.widgets.title').type('Hammering')
     >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Pass/Fail')
-    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.name('form.widgets.required').click()
     >>> manager.query.button('Submit').click()
     >>> manager.query.link('Hammering').click()
     >>> print_attrs()
@@ -90,7 +90,7 @@ We'll add one last skill.  Again, it remembered the last scoresystem we chose.
     passfail-
     >>> manager.query.name('form.widgets.title').type('Whacking')
     >>> manager.query.name('form.widgets.scoresystem:list').ui.set_value('Letter Grade')
-    >>> manager.query.name('form.widgets.required:list').click()
+    >>> manager.query.name('form.widgets.required').click()
     >>> manager.query.button('Submit').click()
     >>> manager.query.link('Whacking').click()
     >>> print_attrs()
