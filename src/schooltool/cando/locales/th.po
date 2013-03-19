@@ -1,21 +1,21 @@
-# Dutch translation for schooltool.cando
-# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# Thai translation for schooltool.cando
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the schooltool.cando package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-02-25 19:36+0200\n"
-"PO-Revision-Date: 2013-01-02 20:55+0000\n"
-"Last-Translator: rob <linuxned@gmail.com>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"PO-Revision-Date: 2013-03-12 09:09+0000\n"
+"Last-Translator: mathinan <mathinan@jaansi.com>\n"
+"Language-Team: Thai <th@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-26 05:23+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-13 04:57+0000\n"
+"X-Generator: Launchpad (build 16532)\n"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:9
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:67
@@ -33,7 +33,7 @@ msgstr ""
 #: /src/schooltool/cando/browser/templates/course_skills_overview.pt:4
 #: /src/schooltool/cando/browser/templates/skillset.pt:77
 msgid "Skills"
-msgstr "Vaardigheden"
+msgstr "ทักษะความรู้"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:14
 #: /src/schooltool/cando/browser/configure.zcml:40
@@ -41,7 +41,7 @@ msgstr "Vaardigheden"
 #: /src/schooltool/cando/browser/document.py:122
 #: /src/schooltool/cando/browser/gradebook.zcml:115
 msgid "Skill Sets"
-msgstr ""
+msgstr "กลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:21
 #: /src/schooltool/cando/browser/course.py:287
@@ -51,11 +51,11 @@ msgstr ""
 #: /src/schooltool/cando/browser/templates/node.pt:155
 #: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:34
 msgid "Layers"
-msgstr "Lagen"
+msgstr "ชั้นงาน"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:28
 msgid "Nodes"
-msgstr ""
+msgstr "โหนด"
 
 #: /src/schooltool/cando/browser/configure.zcml:107
 #: /src/schooltool/cando/browser/configure.zcml:162
@@ -70,21 +70,21 @@ msgstr ""
 #: /src/schooltool/cando/browser/gradebook.zcml:63
 #: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:32
 msgid "Add"
-msgstr "Toevoegen"
+msgstr "เพิ่ม"
 
 #: /src/schooltool/cando/browser/configure.zcml:117
 #: /src/schooltool/cando/browser/configure.zcml:260
 #: /src/schooltool/cando/browser/configure.zcml:795
 msgid "Actions"
-msgstr "Acties"
+msgstr "การดำเนินการ"
 
 #: /src/schooltool/cando/browser/configure.zcml:127
 msgid "Skill Set"
-msgstr ""
+msgstr "กลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:135
 msgid "New Skill Set"
-msgstr ""
+msgstr "เพิ่มกลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:145
 #: /src/schooltool/cando/browser/configure.zcml:199
@@ -103,7 +103,7 @@ msgstr ""
 #: /src/schooltool/cando/browser/templates/node.pt:164
 #: /src/schooltool/cando/browser/templates/node.pt:201
 msgid "Edit"
-msgstr "Bewerken"
+msgstr "แก้ไข"
 
 #: /src/schooltool/cando/browser/configure.zcml:171
 #: /src/schooltool/cando/browser/document.py:166
@@ -120,117 +120,117 @@ msgstr "Bewerken"
 #: /src/schooltool/cando/browser/templates/edit_course_skills.pt:7
 #: /src/schooltool/cando/browser/templates/student_competency_record.pt:9
 msgid "Skill"
-msgstr "Vaardigheid"
+msgstr "ทักษะความรู้"
 
 #: /src/schooltool/cando/browser/configure.zcml:181
 #: /src/schooltool/cando/browser/gradebook.py:838
 #: /src/schooltool/cando/browser/gradebook.zcml:187
 msgid "New Skill"
-msgstr "Nieuwe vaardigheid"
+msgstr "เพิ่มทักษะใหม่"
 
 #: /src/schooltool/cando/browser/configure.zcml:190
 #: /src/schooltool/cando/browser/configure.zcml:461
 msgid "View Skill"
-msgstr "Vaardigheid bekijken"
+msgstr "เรียกดูทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:228
 #: /src/schooltool/cando/browser/configure.zcml:395
 msgid "Assigned Skills"
-msgstr "Toegewezen vaardigheden"
+msgstr "ทักษะที่ระบุ"
 
 #: /src/schooltool/cando/browser/configure.zcml:270
 #: /src/schooltool/cando/browser/configure.zcml:345
 msgid "Assign Skills"
-msgstr "Vaardigheden toewijzen"
+msgstr "ระบุทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:278
 #: /src/schooltool/cando/browser/configure.zcml:353
 msgid "Remove Skills"
-msgstr "Vaardigheden verwijderen"
+msgstr "ลบทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:287
 #: /src/schooltool/cando/browser/configure.zcml:304
 msgid "Set Required/Visible"
-msgstr "Verplicht/zichtbaar instellen"
+msgstr "ตั้งเป็นต้องมี/สามารถมองเห็น"
 
 #: /src/schooltool/cando/browser/configure.zcml:336
 msgid "Assign Skill Set"
-msgstr ""
+msgstr "ระบุกลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:404
 msgid "Edit Skills"
-msgstr "Vaardigheden bewerken"
+msgstr "แก้ไขทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:488
 #: /src/schooltool/cando/browser/configure.zcml:533
 msgid "Layers Container"
-msgstr ""
+msgstr "ที่บรรจุชั้นงาน"
 
 #: /src/schooltool/cando/browser/configure.zcml:524
 #: /src/schooltool/cando/browser/model.py:174
 msgid "Layer"
-msgstr "Laag"
+msgstr "ชั้นงาน"
 
 #: /src/schooltool/cando/browser/configure.zcml:533
 msgid "Add Layer"
-msgstr "Laag toevoegen"
+msgstr "เพิ่มชั้นงาน"
 
 #: /src/schooltool/cando/browser/configure.zcml:543
 msgid "View Layer"
-msgstr "Laag bekijken"
+msgstr "เรียกดูชั้นงาน"
 
 #: /src/schooltool/cando/browser/configure.zcml:561
 #: /src/schooltool/cando/browser/configure.zcml:688
 msgid "Edit Children"
-msgstr "Onderliggende bewerken"
+msgstr "แก้ไขข้อมูลของเด็ก"
 
 #: /src/schooltool/cando/browser/configure.zcml:605
 #: /src/schooltool/cando/browser/configure.zcml:660
 msgid "Nodes Container"
-msgstr ""
+msgstr "ที่บรรจุโหนด"
 
 #: /src/schooltool/cando/browser/configure.zcml:605
 #: /src/schooltool/cando/browser/document.py:123
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:77
 #: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:53
 msgid "Search"
-msgstr "Zoeken"
+msgstr "ค้นหา"
 
 #: /src/schooltool/cando/browser/configure.zcml:651
 #: /src/schooltool/cando/browser/model.py:357
 #: /src/schooltool/cando/browser/model.py:386
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:109
 msgid "Node"
-msgstr ""
+msgstr "โหนด"
 
 #: /src/schooltool/cando/browser/configure.zcml:660
 msgid "Add Node"
-msgstr ""
+msgstr "เพิ่มโหนด"
 
 #: /src/schooltool/cando/browser/configure.zcml:670
 msgid "View Node"
-msgstr ""
+msgstr "เรียกดูโหนด"
 
 #: /src/schooltool/cando/browser/configure.zcml:714
 msgid "Edit Layers"
-msgstr "Lagen bewerken"
+msgstr "แก้ไขชั้นงาน"
 
 #: /src/schooltool/cando/browser/configure.zcml:785
 msgid "Edit Skill Sets"
-msgstr ""
+msgstr "แก้ไขกลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:825
 #: /src/schooltool/cando/browser/configure.zcml:833
 msgid "Import Skill Data"
-msgstr "Vaardigheidsgegevens importeren"
+msgstr "นำเข้าข้อมูลทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:806
 msgid "Batch Assign Skills"
-msgstr ""
+msgstr "ชุดทักษะ"
 
 #: /src/schooltool/cando/browser/configure.zcml:814
 msgid "Assign Courses Skills"
-msgstr "Vak-vaardigheden toewijzen"
+msgstr "ระบุทักษะของวิชา"
 
 #: /src/schooltool/cando/browser/course.py:156
 #: /src/schooltool/cando/browser/course.py:277
@@ -244,7 +244,7 @@ msgstr "Vak-vaardigheden toewijzen"
 #: /src/schooltool/cando/interfaces.py:72
 #: /src/schooltool/cando/interfaces.py:89
 msgid "Title"
-msgstr "Titel"
+msgstr "ชื่อเรื่อง"
 
 #: /src/schooltool/cando/browser/course.py:260
 msgid "Select Skill Sets from ${node} (${node_id})"
@@ -252,12 +252,12 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/course.py:282
 msgid "ID"
-msgstr "ID"
+msgstr "รหัส"
 
 #: /src/schooltool/cando/browser/course.py:314
 #: /src/schooltool/cando/browser/model.py:454
 msgid "ID, title, label or description"
-msgstr "ID, titel, label of omschrijving"
+msgstr "รหัส ชื่อเรื่อง ข้อความ หรือคำอธิบาย"
 
 #: /src/schooltool/cando/browser/course.py:576
 #: /src/schooltool/cando/browser/course.py:635
@@ -268,7 +268,7 @@ msgstr "ID, titel, label of omschrijving"
 #: /src/schooltool/cando/interfaces.py:63
 #: /src/schooltool/cando/interfaces.py:96
 msgid "Label"
-msgstr "Label"
+msgstr "แถบข้อความ"
 
 #: /src/schooltool/cando/browser/course.py:581
 #: /src/schooltool/cando/browser/document.py:875
@@ -277,31 +277,31 @@ msgstr "Label"
 #: /src/schooltool/cando/browser/templates/student_competency_record.pt:8
 #: /src/schooltool/cando/interfaces.py:39
 msgid "Required"
-msgstr "Verplicht"
+msgstr "จำเป็น"
 
 #: /src/schooltool/cando/browser/course.py:587
 msgid "Hidden"
-msgstr "Verborgen"
+msgstr "ซ่อน"
 
 #: /src/schooltool/cando/browser/course.py:790
 msgid "Course has skills assigned already"
-msgstr "Er zijn reeds vaardigheden toegewezen aan dit vak"
+msgstr "วิชาได้ถูกระบุทักษะเรียบร้อยแล้วไ"
 
 #: /src/schooltool/cando/browser/course.py:810
 msgid "Couldn't find a matching node"
-msgstr ""
+msgstr "ไม่พบโหนดที่ตรงกันได้"
 
 #: /src/schooltool/cando/browser/course.py:816
 msgid "Course attribute is empty"
-msgstr "Vak-kenmerk is leeg"
+msgstr "ไม่มีคุณลักษณะรายวิชา"
 
 #: /src/schooltool/cando/browser/document.py:120
 msgid "Documents"
-msgstr "Documenten"
+msgstr "เอกสาร"
 
 #: /src/schooltool/cando/browser/document.py:148
 msgid "Document Information"
-msgstr "Documentinformatie"
+msgstr "ข้อมูลเกี่ยวกับเอกสาร"
 
 #: /src/schooltool/cando/browser/document.py:198
 #: /src/schooltool/cando/browser/document.py:524
@@ -319,7 +319,7 @@ msgstr "Documentinformatie"
 #: /src/schooltool/cando/browser/skill.py:327
 #: /src/schooltool/cando/browser/templates/course_skills_edit_table_buttons.pt:5
 msgid "Submit"
-msgstr "Indienen"
+msgstr "ส่งข้อมูล"
 
 #: /src/schooltool/cando/browser/document.py:186
 #: /src/schooltool/cando/browser/document.py:465
@@ -338,179 +338,179 @@ msgstr "Indienen"
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:79
 #: /src/schooltool/cando/browser/templates/grade_student.pt:39
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "ยกเลิก"
 
 #: /src/schooltool/cando/browser/document.py:429
 #: /src/schooltool/cando/browser/document.py:571
 #: /src/schooltool/cando/browser/document.py:816
 msgid "${layer} list"
-msgstr "${layer}-lijst"
+msgstr ""
 
 #: /src/schooltool/cando/browser/document.py:450
 #: /src/schooltool/cando/browser/document.zcml:70
 msgid "Document"
-msgstr "Document"
+msgstr "เอกสาร"
 
 #: /src/schooltool/cando/browser/document.py:477
 msgid "Current document hierarchy layers"
-msgstr "Huidige hiërarchische documentlagen"
+msgstr "ลำดับชั้นเอกสารปัจจุบัน"
 
 #: /src/schooltool/cando/browser/document.py:478
 msgid "Available layers"
-msgstr "Beshikbare lagen"
+msgstr "ลำดับชั้นที่ว่าง"
 
 #: /src/schooltool/cando/browser/document.py:566
 #: /src/schooltool/cando/browser/document.py:808
 #: /src/schooltool/cando/browser/document.py:961
 msgid "View ${layer}"
-msgstr "${layer} bekijken"
+msgstr ""
 
 #: /src/schooltool/cando/browser/document.py:624
 #: /src/schooltool/cando/browser/document.py:744
 #: /src/schooltool/cando/browser/document.py:921
 msgid "Add ${layer}"
-msgstr "${layer} toevoegen"
+msgstr ""
 
 #: /src/schooltool/cando/browser/document.py:629
 #: /src/schooltool/cando/browser/document.py:916
 msgid "${layer} Information"
-msgstr "${layer}-informatie"
+msgstr ""
 
 #: /src/schooltool/cando/browser/document.py:673
 msgid "Skills Document"
-msgstr "Vaardigheidsdocument"
+msgstr "เอกสารทักษะ"
 
 #: /src/schooltool/cando/browser/document.py:695
 msgid "Change information"
-msgstr "Informatie wijzigen"
+msgstr "เปลี่นนแปลงข้อมูล"
 
 #: /src/schooltool/cando/browser/document.py:928
 #: /src/schooltool/cando/browser/gradebook.py:1594
 msgid "No"
-msgstr "Nee"
+msgstr "ไม่"
 
 #: /src/schooltool/cando/browser/document.py:928
 #: /src/schooltool/cando/browser/gradebook.py:1594
 msgid "Yes"
-msgstr "Ja"
+msgstr "ใช่"
 
 #: /src/schooltool/cando/browser/document.zcml:35
 #: /src/schooltool/cando/browser/document.zcml:79
 msgid "Skills Documents"
-msgstr "Vaardigheidsdocumenten"
+msgstr "เอกสารทักษะ"
 
 #: /src/schooltool/cando/browser/document.zcml:79
 msgid "Add Document"
-msgstr "Document toevoegen"
+msgstr "เพิ่มเอกสาร"
 
 #: /src/schooltool/cando/browser/document.zcml:89
 msgid "View Skills Document"
-msgstr "Vaardigheidsdocument bekijken"
+msgstr "เรียกดูเอกสารทักษะ"
 
 #: /src/schooltool/cando/browser/document.zcml:107
 msgid "Edit Layer Hierarchy"
-msgstr ""
+msgstr "แก้ไขลำดับชั้น"
 
 #: /src/schooltool/cando/browser/document.zcml:133
 msgid "View Hierarchy Layer"
-msgstr ""
+msgstr "เรียกดูลำดับชั้น"
 
 #: /src/schooltool/cando/browser/document.zcml:142
 msgid "Edit Hierarchy Layer"
-msgstr ""
+msgstr "แก้ไขลำดับชั้น"
 
 #: /src/schooltool/cando/browser/document.zcml:151
 msgid "Edit Hierarchy Layer Parents"
-msgstr ""
+msgstr "แก้ไขลำดับช้นพ่อแม่"
 
 #: /src/schooltool/cando/browser/document.zcml:211
 msgid "Layer Hierarchy"
-msgstr ""
+msgstr "ลำดับชั้น"
 
 #: /src/schooltool/cando/browser/gradebook.py:189
 msgid "No Visible Projects"
-msgstr "Geen zichtbare projecten"
+msgstr "ไม่พบโครงการ"
 
 #: /src/schooltool/cando/browser/gradebook.py:191
 #: /src/schooltool/cando/browser/gradebook.py:206
 msgid "Enter Skills"
-msgstr "Vaardigheden invoeren"
+msgstr "กรอกทักษะ"
 
 #: /src/schooltool/cando/browser/gradebook.py:204
 msgid "No Visible Skill Sets"
-msgstr ""
+msgstr "ไม่พบกลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/gradebook.py:281
 #: /src/schooltool/cando/browser/gradebook.zcml:98
 #: /src/schooltool/cando/browser/gradebook.zcml:106
 #: /src/schooltool/cando/project.py:163
 msgid "Projects"
-msgstr "Projecten"
+msgstr "โครงการ"
 
 #: /src/schooltool/cando/browser/gradebook.py:315
 msgid "Project Details"
-msgstr "Projectdetails"
+msgstr "รายละเอียดโครงการ"
 
 #: /src/schooltool/cando/browser/gradebook.py:358
 msgid "Sort by"
-msgstr "Sorteren op"
+msgstr "เรียงตาม"
 
 #: /src/schooltool/cando/browser/gradebook.py:423
 msgid "Skill Details"
-msgstr "Vaardigheidsdetails"
+msgstr "รายละเอียดทักษะ"
 
 #: /src/schooltool/cando/browser/gradebook.py:518
 msgid "${section} Skills"
-msgstr "${section}-vaardigheden"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.py:520
 msgid "${section} Project Skills"
-msgstr "${section}-projectvaardigheden"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.py:529
 msgid "Score System Help"
-msgstr "Scoresysteem-hulp"
+msgstr "การช่วยเหลือระบบคะแนน"
 
 #: /src/schooltool/cando/browser/gradebook.py:537
 msgid "Color Codes Help"
-msgstr ""
+msgstr "การช่วยเหลือเรื่องรหัสสี"
 
 #: /src/schooltool/cando/browser/gradebook.py:953
 msgid "No layer assigned"
-msgstr ""
+msgstr "ไม่ระบุลำดับชั้น"
 
 #: /src/schooltool/cando/browser/gradebook.py:1192
 #: /src/schooltool/cando/browser/gradebook.zcml:140
 msgid "Search Skills"
-msgstr "Vaardigheden zoeken"
+msgstr "ค้นหาทักษะ"
 
 #: /src/schooltool/cando/browser/gradebook.py:1450
 msgid "Save"
-msgstr "Opslaan"
+msgstr "บันทึก"
 
 #: /src/schooltool/cando/browser/gradebook.py:1466
 #: /src/schooltool/cando/browser/templates/scoresystem_help.pt:5
 msgid "Score"
-msgstr "Score"
+msgstr "คะแนน"
 
 #: /src/schooltool/cando/browser/gradebook.py:1561
 #: /src/schooltool/cando/browser/gradebook.zcml:520
 msgid "CanDo Gradebook"
-msgstr "CanDo-cijferlijst"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.py:1677
 msgid "Date"
-msgstr "Datum"
+msgstr "วันที่"
 
 #: /src/schooltool/cando/browser/gradebook.py:1606
 #: /src/schooltool/cando/browser/templates/scoresystem_help.pt:6
 msgid "Rating"
-msgstr ""
+msgstr "จัดอันดับความพอใจ"
 
 #: /src/schooltool/cando/browser/gradebook.py:1731
 #: /src/schooltool/cando/browser/gradebook.zcml:770
 msgid "Section Competencies"
-msgstr ""
+msgstr "ส่วนของความสามารถ"
 
 #: /src/schooltool/cando/browser/gradebook.py:1754
 msgid "Teacher(s): ${teachers}"
@@ -524,7 +524,7 @@ msgstr ""
 #: /src/schooltool/cando/browser/gradebook.py:1847
 #: /src/schooltool/cando/browser/gradebook.zcml:782
 msgid "Certificate of Competency"
-msgstr ""
+msgstr "ประกาศนียบัตรความสามารถ"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:10
 #: /src/schooltool/cando/browser/gradebook.zcml:26
@@ -533,41 +533,41 @@ msgstr ""
 #: /src/schooltool/cando/browser/gradebook.zcml:321
 #: /src/schooltool/cando/browser/gradebook.zcml:431
 msgid "CanDo"
-msgstr "CanDo"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:45
 msgid "View"
-msgstr ""
+msgstr "เรียกดู"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:80
 msgid "Project"
-msgstr "Project"
+msgstr "โครงการ"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:88
 msgid "Settings"
-msgstr "Instellingen"
+msgstr "ตั้งค่าต่างๆ"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:126
 msgid "New Project"
-msgstr "Nieuw project"
+msgstr "เพิ่มโครงการใหม่"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:310
 msgid "Edit Skill"
-msgstr "Vaardigheid bewerken"
+msgstr "แก้ไขทักษะ"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:373
 #: /src/schooltool/cando/browser/gradebook.zcml:637
 #: /src/schooltool/cando/browser/gradebook.zcml:660
 msgid "Help"
-msgstr "Hulp"
+msgstr "ช่วยเหลือ"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:383
 msgid "Score System"
-msgstr "Scoresysteem"
+msgstr "ระบบคะแนน"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:391
 msgid "Color Codes"
-msgstr "Kleurcodes"
+msgstr "รหัสสี"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:492
 msgid "Skills Pop-up"
@@ -575,33 +575,33 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:546
 msgid "My Skills Grades"
-msgstr ""
+msgstr "ระดับทักษะของฉัน"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:546
 msgid "Section"
-msgstr "Sectie"
+msgstr "หัวข้อย่อย"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:557
 msgid "Term"
-msgstr "Termijn"
+msgstr "ภาคเรียน"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:568
 msgid "Year"
-msgstr "Jaar"
+msgstr "ปี"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:760
 msgid "Reports"
-msgstr ""
+msgstr "รายงาน"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:770
 msgid ""
 "Summary of a student's scores for all the skills assigned to a section."
-msgstr ""
+msgstr "สรุปผลคะแนนสำหรับทุกทักษะที่ระบุในเซกชั่น"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:770
 #: /src/schooltool/cando/browser/gradebook.zcml:782
 msgid "Student"
-msgstr ""
+msgstr "นักเรียน"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:782
 msgid ""
@@ -612,7 +612,7 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/iep.py:122
 msgid "IEP Details"
-msgstr ""
+msgstr "รายละเอียดของแผนการเรียนเฉพาะบุคคล"
 
 #: /src/schooltool/cando/browser/iep.py:176
 msgid "IEP Skills for ${section}"
@@ -624,105 +624,105 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/iep.py:354
 msgid "Optional IEP"
-msgstr ""
+msgstr "แผนการเรียนเฉพาะบุคคลสามารถยกเว้นได้"
 
 #: /src/schooltool/cando/browser/iep.py:424
 msgid "IEP Information"
-msgstr ""
+msgstr "ข้อมูลของแผนการเรียนเฉพาะบุคคล"
 
 #: /src/schooltool/cando/browser/iep.zcml:8
 msgid "IEP"
-msgstr ""
+msgstr "แผนการเรียนเฉพาะบุคคล"
 
 #: /src/schooltool/cando/browser/iep.zcml:17
 #: /src/schooltool/cando/browser/iep.zcml:52
 msgid "Individualized Educational Plan"
-msgstr ""
+msgstr "แผนการเรียนเฉพาะบุคคล"
 
 #: /src/schooltool/cando/browser/model.py:95
 msgid "Layer Information"
-msgstr "Laag-informatie"
+msgstr "ลำดับชั้นข้อมูล"
 
 #: /src/schooltool/cando/browser/model.py:209
 msgid "Parents"
-msgstr "Bovenliggende"
+msgstr "ผู้ปกครอง"
 
 #: /src/schooltool/cando/browser/model.py:214
 msgid "Children"
-msgstr "Onderliggende"
+msgstr "บุตร"
 
 #: /src/schooltool/cando/browser/model.py:257
 msgid "Current child layers"
-msgstr "Huidige onderliggende lagen"
+msgstr "ระดับลูกปัจจุบัน"
 
 #: /src/schooltool/cando/browser/model.py:258
 msgid "Available child layers"
-msgstr "Beschikbare onderliggende lagen"
+msgstr "ระดับลูกที่ว่าง"
 
 #: /src/schooltool/cando/browser/model.py:307
 msgid "Node Information"
-msgstr ""
+msgstr "ข้อมูลโหนด"
 
 #: /src/schooltool/cando/browser/model.py:546
 msgid "Current child nodes"
-msgstr ""
+msgstr "โหนดลูกปัจจุบัน"
 
 #: /src/schooltool/cando/browser/model.py:547
 msgid "Available child nodes"
-msgstr ""
+msgstr "โหนดลูกที่ว่าง"
 
 #: /src/schooltool/cando/browser/model.py:584
 msgid "Current node layers"
-msgstr ""
+msgstr "ระดับโหนดปัจจุบัน"
 
 #: /src/schooltool/cando/browser/model.py:585
 msgid "Available node layers"
-msgstr ""
+msgstr "ระดับโหนดที่ว่าง"
 
 #: /src/schooltool/cando/browser/model.py:641
 msgid "Current node skill sets"
-msgstr ""
+msgstr "กลุ่มทักษะปัจจุบัน"
 
 #: /src/schooltool/cando/browser/model.py:642
 msgid "Available node skill sets"
-msgstr ""
+msgstr "กลุ่มทักษะที่ว่าง"
 
 #: /src/schooltool/cando/browser/report.zcml:20
 msgid "Export global skills data for the school."
-msgstr "Algemene vaardigheidsgegevens van de school exporteren."
+msgstr "นำข้อมูลทักษะสำหรับโรงเรียนออกสู่ภายนอก"
 
 #: /src/schooltool/cando/browser/report.zcml:10
 msgid "School"
-msgstr "School"
+msgstr "โรงเรียน"
 
 #: /src/schooltool/cando/browser/report.zcml:10
 msgid "Skills Export"
-msgstr "vaardigheden exporteren"
+msgstr "ส"
 
 #: /src/schooltool/cando/browser/skill.py:87
 msgid "Title, description or label"
-msgstr "Titel, omschrijving of label"
+msgstr "ชื่อเรื่อง, คำอธิบาย"
 
 #: /src/schooltool/cando/browser/skill.py:125
 #: /src/schooltool/cando/browser/skill.py:171
 msgid "Skill set"
-msgstr ""
+msgstr "กลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/skill.py:232
 msgid "Submit and add"
-msgstr "Indienen en toevoegen"
+msgstr "ส่งข้อมูล และ เพิ่มข้อมูล"
 
 #: /src/schooltool/cando/browser/templates/cando_third_nav.pt:2
 msgid "Scroll over a skill ID to see its description here"
-msgstr ""
+msgstr "ไปยัง skill ID เพื่อดูคอธิบาย"
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:5
 msgid "Skill Color Code"
-msgstr "Vaardigheidskleurcode"
+msgstr "ทักษะด้านรหัสสี"
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
 msgid "Optional"
-msgstr "Optioneel"
+msgstr "ซึ่งเป็นทางเลือก"
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:16
 msgid "Optional (IEP)"
@@ -731,33 +731,33 @@ msgstr ""
 #: /src/schooltool/cando/browser/templates/course_assign_skills_table_filter.pt:12
 #: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:12
 msgid "Showing ${count} of ${total} items"
-msgstr "${count} van ${total} items worden getoond"
+msgstr ""
 
 #: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:20
 msgid "You must select at least one skill set."
-msgstr ""
+msgstr "คุณต้องเลือกอย่างน้อย 1 ทักษะ"
 
 #. Default: "Submit"
 #: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:69
 #: /src/schooltool/cando/browser/templates/course_remove_skills.pt:59
 #: /src/schooltool/cando/browser/templates/edit_course_skills.pt:45
 msgid "submit-button"
-msgstr "Indienen"
+msgstr "ปุ่มยอมรับ"
 
 #. Default: "Cancel"
 #: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:73
 #: /src/schooltool/cando/browser/templates/course_remove_skills.pt:62
 #: /src/schooltool/cando/browser/templates/edit_course_skills.pt:48
 msgid "cancel-button"
-msgstr "Annuleren"
+msgstr "ปุ่มยกเลิก"
 
 #: /src/schooltool/cando/browser/templates/course_remove_skills.pt:22
 msgid "Remove"
-msgstr "Verwijderen"
+msgstr "ลบออก"
 
 #: /src/schooltool/cando/browser/templates/course_skills_overview.pt:4
 msgid "Assign Course Skills"
-msgstr "Vak-vaardigheden toewijzen"
+msgstr "ระบุทักษะรายวิชา"
 
 #: /src/schooltool/cando/browser/templates/course_skills_overview.pt:13
 msgid "There are ${count} sets of skills assigned."
@@ -765,159 +765,159 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/templates/course_skills_overview.pt:16
 msgid "There are no skills assigned."
-msgstr "Er zijn geen vaardigheden toegewezen."
+msgstr "ไม่มีการระบุทักษะ"
 
 #: /src/schooltool/cando/browser/templates/course_skillset.pt:4
 #: /src/schooltool/cando/browser/templates/document_skillset.pt:4
 #: /src/schooltool/cando/browser/templates/skillset.pt:4
 #: /src/schooltool/cando/browser/templates/skillsets.pt:34
 msgid "Edit this skill set"
-msgstr ""
+msgstr "แก้ไขกลุมทักษะนี้"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:10
 msgid "Course Matching"
-msgstr ""
+msgstr "การจับคู่วิชา"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:15
 msgid "Course attribute"
-msgstr "Vak-kenmerk"
+msgstr "คูณลักษณะรายวิชา"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:21
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:63
 msgid "Select an attribute"
-msgstr "Selecteer een kenmerk"
+msgstr "เลือกคุณสมบัติ"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:36
 msgid "Node layer"
-msgstr ""
+msgstr "ระดับโหนด"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:42
 msgid "Select a layer"
-msgstr "Selecteer een laag"
+msgstr "เลือกระดับชั้น"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:57
 msgid "Node attribute"
-msgstr ""
+msgstr "ลักษณะโหนด"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:83
 msgid "Courses not matched"
-msgstr ""
+msgstr "หลักสูตรไม่ตรงกัน"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:87
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:106
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:108
 msgid "Attribute"
-msgstr "Kenmerk"
+msgstr "คุณลักษณะ"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:88
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:107
 msgid "Course"
-msgstr "Vak"
+msgstr "หลักสูตร"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:89
 msgid "Reason"
-msgstr "Reden"
+msgstr "เหตุผล"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:102
 msgid "Courses matched"
-msgstr ""
+msgstr "หลักสูตรตรงกัน"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:122
 msgid "Assign"
-msgstr "Toewijzen"
+msgstr "กำหนดใช้"
 
 #: /src/schooltool/cando/browser/templates/document.pt:5
 msgid "Edit this Document"
-msgstr "Dit document bewerken"
+msgstr "แก้ไขเอกสาร"
 
 #: /src/schooltool/cando/browser/templates/document_skill.pt:4
 #: /src/schooltool/cando/browser/templates/skill.pt:4
 msgid "Edit this skill"
-msgstr "Deze vaardigheid bewerken"
+msgstr "แก้ไขทักษะ"
 
 #: /src/schooltool/cando/browser/templates/edit_course_skills.pt:15
 #: /src/schooltool/cando/browser/templates/projects.pt:11
 #: /src/schooltool/cando/browser/templates/skillsets.pt:11
 msgid "Visible"
-msgstr "Zichtbaar"
+msgstr "ปรากฏเห็น"
 
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:33
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:43
 msgid "There are no skills."
-msgstr "Er zijn geen vaardigheden"
+msgstr "ไม่มีทักษะ"
 
 #: /src/schooltool/cando/browser/templates/iep_details.pt:5
 msgid "Edit this plan information"
-msgstr ""
+msgstr "แก้ไขข้อมูลของแผน"
 
 #: /src/schooltool/cando/browser/templates/layer.pt:4
 msgid "Edit this Layer"
-msgstr "Deze laag bewerken"
+msgstr "แก้ไขลำดับชั้นนี้"
 
 #: /src/schooltool/cando/browser/templates/layer.pt:78
 msgid "Parent layers"
-msgstr "Bovenliggende lagen"
+msgstr "ชั้นพ่อแม่"
 
 #: /src/schooltool/cando/browser/templates/layer.pt:104
 msgid "Child layers"
-msgstr "Onderliggende lagen"
+msgstr "ชั้นลูก"
 
 #: /src/schooltool/cando/browser/templates/layer.pt:107
 msgid "Edit children"
-msgstr "Onderliggende bewerken"
+msgstr "แก้ไขข้อมูลนักเรียน"
 
 #: /src/schooltool/cando/browser/templates/node.pt:13
 msgid "General Information"
-msgstr "Algemene informatie"
+msgstr "ข้อมูลทั่วไป"
 
 #: /src/schooltool/cando/browser/templates/node.pt:17
 msgid "Edit this Node"
-msgstr ""
+msgstr "แก้ไขโหนดนี้"
 
 #: /src/schooltool/cando/browser/templates/node.pt:89
 #: /src/schooltool/cando/browser/templates/node.pt:92
 msgid "Parent nodes"
-msgstr ""
+msgstr "โหนดพ่อแม่"
 
 #: /src/schooltool/cando/browser/templates/node.pt:118
 #: /src/schooltool/cando/browser/templates/node.pt:121
 msgid "Child nodes"
-msgstr ""
+msgstr "โหนดลูก"
 
 #: /src/schooltool/cando/browser/templates/node.pt:122
 msgid "Edit child nodes"
-msgstr ""
+msgstr "แก้ไขโหนดลูก"
 
 #: /src/schooltool/cando/browser/templates/node.pt:160
 msgid "Edit layers"
-msgstr "Lagen bewerken"
+msgstr "แก้ไขลำดับ"
 
 #: /src/schooltool/cando/browser/templates/node.pt:201
 msgid "Edit skill sets"
-msgstr ""
+msgstr "แก้ไขกลุ่มทักษะ"
 
 #: /src/schooltool/cando/browser/templates/projects.pt:5
 msgid "Reorder or Hide Projects"
-msgstr "Volgorde projecten wijzigen of projecten verbergen"
+msgstr "เรียงลำดับหรือซ่อนโครงการ"
 
 #: /src/schooltool/cando/browser/templates/projects.pt:9
 #: /src/schooltool/cando/browser/templates/skillsets.pt:9
 msgid "Order"
-msgstr "Volgorde"
+msgstr "ลำดับชั้น"
 
 #: /src/schooltool/cando/browser/templates/projects.pt:34
 msgid "Edit this project"
-msgstr "Dit project bewerken"
+msgstr "แก้ไขโครงการนี้"
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:5
 #: /src/schooltool/cando/interfaces.py:99
 #: /src/schooltool/cando/interfaces.py:238
 msgid "Description"
-msgstr "Omschrijving"
+msgstr "คำอธิบาย"
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:11
 msgid "File Type"
-msgstr ""
+msgstr "ชนิดไฟล์"
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:23
 msgid "Select a minimum display score for ${scoresystem}"
@@ -925,64 +925,64 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:41
 msgid "Download"
-msgstr ""
+msgstr "ดาวน์โหลด"
 
 #: /src/schooltool/cando/browser/templates/skillsets.pt:5
 msgid "Reorder or Hide Skill Sets"
-msgstr ""
+msgstr "เรียงลำดับหรือซ่อนกลุ่มทักษะ"
 
 #: /src/schooltool/cando/course.py:184
 msgid "Course Skills"
-msgstr "Vak-vaardigheden"
+msgstr "ทักษะรายวิชา"
 
 #: /src/schooltool/cando/course.py:228
 msgid "Section Skills"
-msgstr "Vaardigheden-sectie"
+msgstr "กลุ่มทักษะ"
 
 #: /src/schooltool/cando/gradebook.py:56
 msgid "Project1"
-msgstr "Project1"
+msgstr "โครงการ 1"
 
 #: /src/schooltool/cando/interfaces.py:37
 msgid "External ID"
-msgstr "Externe-ID"
+msgstr "รหัสจากภายนอก"
 
 #: /src/schooltool/cando/interfaces.py:40
 msgid "Is skill required or optional"
-msgstr ""
+msgstr "ทักษะนี้จำเป็นหรือเป็นเพียงตัวเลือก"
 
 #: /src/schooltool/cando/interfaces.py:41
 msgid "Retired"
-msgstr ""
+msgstr "เกษียณ"
 
 #: /src/schooltool/cando/interfaces.py:42
 msgid "Skill is no longer used"
-msgstr "Vaardigheid wordt niet meer gebruikt"
+msgstr "ทักษะที่ไม่ได้ใช้นานแล้ว"
 
 #: /src/schooltool/cando/interfaces.py:43
 msgid "Short label"
-msgstr "Kort label"
+msgstr "ฉลากแบบสั้น"
 
 #: /src/schooltool/cando/interfaces.py:45
 #: /src/schooltool/cando/interfaces.py:62
 msgid "Full description"
-msgstr "Volledige omschrijving"
+msgstr "คำอธิบายแบบเต็ม"
 
 #: /src/schooltool/cando/interfaces.py:51
 msgid "Scoresystem"
-msgstr ""
+msgstr "ระบบแสดงคะแนน"
 
 #: /src/schooltool/cando/interfaces.py:52
 msgid "The skill scoresystem."
-msgstr ""
+msgstr "ระบบคำนวณทักษะ"
 
 #: /src/schooltool/cando/interfaces.py:104
 msgid "Limit to 7 characters or less."
-msgstr "Limiteren tot 7 tekens of minder"
+msgstr "จำกัดจำนวนที่ 7 ตัวอักษรหรือน้อยกว่า"
 
 #: /src/schooltool/cando/interfaces.py:150
 msgid "Project deployed"
-msgstr ""
+msgstr "โครงการที่นำออก"
 
 #: /src/schooltool/cando/interfaces.py:151
 msgid "Is this project deployed to course sections"
@@ -994,23 +994,23 @@ msgstr ""
 
 #: /src/schooltool/cando/interfaces.py:208
 msgid "Skill set ID"
-msgstr ""
+msgstr "รหัสกลุ้มทักษะ"
 
 #: /src/schooltool/cando/interfaces.py:209
 msgid "Skill ID"
-msgstr "Vaardigheids-ID"
+msgstr "รหัสทักษะ"
 
 #: /src/schooltool/cando/interfaces.py:235
 msgid "Active"
-msgstr ""
+msgstr "เปิดใช้งานอยู่"
 
 #: /src/schooltool/cando/project.py:137
 msgid "Course Projects"
-msgstr "Vak-projecten"
+msgstr "โครงการรายวิชา"
 
 #: /src/schooltool/cando/project.py:207
 msgid "${project} total points"
-msgstr "Totaalscore ${project}"
+msgstr ""
 
 #: /src/schooltool/cando/project.py:229
 msgid "${project} percent passed"
@@ -1018,7 +1018,7 @@ msgstr ""
 
 #: /src/schooltool/cando/project.py:273
 msgid "${course} total points"
-msgstr "Totaalscore  ${course}"
+msgstr ""
 
 #: /src/schooltool/cando/project.py:297
 msgid "${course} percent passed"
