@@ -1,0 +1,16 @@
+<metal:block
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="schooltool.virginia">
+  <para style="student-title" tal:content="view/context/student/title" />
+  <para style="student-subtitle" i18n:translate="">
+    Teacher(s): <tal:replace i18n:name="teachers" content="view/teachers" />
+  </para>
+  <para style="student-subtitle" i18n:translate="">
+    Course: <tal:replace i18n:name="courses" content="view/courses" />
+  </para>
+  <spacer length="0.5cm" />
+  <tal:block replace="structure view/scr_table" />
+  <condPageBreak height="100cm" />
+</metal:block>

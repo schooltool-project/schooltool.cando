@@ -791,6 +791,82 @@
       permission="schooltool.view"
       />
 
+  <report:reportLink
+      name="c_student_competency_section_report"
+      view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      permission="schooltool.view"
+      group="Section"
+      description="Summary of all students' scores for all the skills assigned to a section."
+      title="Student Competency Report (Section)"
+      file_type="pdf"
+      link="request_student_competency_section_report.html"
+      />
+
+  <flourish:page
+      name="request_student_competency_section_report.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".gradebook.RequestStudentCompetencySectionReportView"
+      permission="schooltool.view"
+      />
+
+  <flourish:pdf
+      name="student_competency_section_report.pdf"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".gradebook.StudentCompetencySectionReportPDFView"
+      permission="schooltool.view"
+      />
+
+  <configure package="schooltool.skin.flourish">
+
+    <flourish:viewlet
+        name="default"
+        manager="schooltool.skin.flourish.report.PDFTemplateSection"
+        view="schooltool.cando.browser.gradebook.StudentCompetencySectionReportPDFView"
+        class="schooltool.cando.browser.gradebook.NoHeaderPlainPageTemplate"
+        render="template"
+        template="rml/pdf_plain_page_template.pt"
+        permission="zope.Public"
+        />
+
+  </configure>
+
+  <flourish:content
+      name="story"
+      class=".gradebook.StudentCompetencySectionReportPDFStory"
+      view=".gradebook.StudentCompetencySectionReportPDFView"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="student_scr"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      manager=".gradebook.StudentCompetencySectionReportPDFStory"
+      view=".gradebook.StudentCompetencySectionReportPDFView"
+      class=".gradebook.StudentSCRPart"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="section-scr-styles"
+      after="*"
+      manager="schooltool.skin.flourish.report.PDFStylesheetSection"
+      view=".gradebook.StudentCompetencySectionReportPDFView"
+      class="schooltool.skin.flourish.report.PDFPart"
+      template="rml/student_competency_report_styles.pt"
+      permission="zope.Public"
+      />
+
+  <flourish:viewlet
+      name="student_grades_table"
+      class=".gradebook.StudentCompetencyRecordTable"
+      for="schooltool.cando.interfaces.ICanDoStudentGradebook"
+      manager=".gradebook.StudentCompetencySectionReportPDFView"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyRecordView"
+      permission="schooltool.view"
+      />
+
   <flourish:page
       name="request_student_competency_report.html"
       for="schooltool.cando.interfaces.ICanDoStudentGradebook"
