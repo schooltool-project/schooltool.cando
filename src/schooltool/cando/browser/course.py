@@ -685,6 +685,7 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         skillsets = []
         required_prefix = 'required.'
         visible_prefix = 'visible.'
+        collator = ICollator(self.request.locale)
         for course_skillset_id in self.context:
             skillset_modified = False
             course_skillset = self.context[course_skillset_id]
@@ -693,9 +694,10 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
             if skillset.label:
                 title = '%s: %s' % (skillset.label, title)
             skills = []
-            for skill_id in skillset:
-                course_skill = course_skillset[skill_id]
-                skill = skillset[skill_id]
+            for skill in sorted(skillset.values(),
+                                key=lambda x:(collator.key(x.label or ''),
+                                              collator.key(x.title))):
+                course_skill = course_skillset[skill.__name__]
                 skill_title = skill.title
                 if skill.label:
                     skill_title = '%s: %s' % (skill.label, skill_title)
@@ -730,7 +732,6 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
         if self.submitted:
             self.request.response.redirect(self.nextURL())
             return
-        collator = ICollator(self.request.locale)
         self.skillsets = sorted(skillsets,
                                 key=lambda x:(collator.key(x['label'] or ''),
                                               collator.key(x['raw_title'])))
