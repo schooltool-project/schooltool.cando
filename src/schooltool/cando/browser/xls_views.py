@@ -151,11 +151,11 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
 
     def __call__(self):
         wb = xlwt.Workbook()
+        self.export_documents(wb)
+        self.export_layers(wb)
+        self.export_nodes(wb)
         self.export_skillsets(wb)
         self.export_skills(wb)
-        self.export_layers(wb)
-        self.export_documents(wb)
-        self.export_nodes(wb)
         self.export_course_skills(wb)
 
         datafile = StringIO()
