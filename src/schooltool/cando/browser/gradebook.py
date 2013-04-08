@@ -308,7 +308,7 @@ class CanDoModesViewlet(flourish.viewlet.Viewlet):
         if ISectionSkills(section):
             result.append({
                     'id': 'skills',
-                    'label': _('Skills'),
+                    'label': _('Skill Sets'),
                     'url': section_url + '/gradebook-skills',
                     'selected': ISkillsGradebook.providedBy(self.context),
                     })
