@@ -3,11 +3,10 @@ IEP tests
 
 Helpers:
 
-    >>> def print_person_links(browser):
+    >>> def query_person_links(browser):
     ...      sel = '.refine .content'
     ...      person_links = browser.query_all.css(sel)[0]
-    ...      for link in person_links.query_all.tag('a'):
-    ...          print link.text
+    ...      return [link.text for link in person_links.query_all.tag('a')]
 
     >>> def print_details(browser):
     ...     sel = '.form-fields tbody tr'
@@ -206,13 +205,12 @@ The IEP functionality is only available for persons who are enrolled
 as students in a section:
 
     >>> manager.open(jeffrey_url)
-    >>> print_person_links(manager)
-    Calendar
+    >>> 'IEP' in query_person_links(manager)
+    False
 
     >>> manager.open(camila_url)
-    >>> print_person_links(manager)
-    Calendar
-    IEP
+    >>> 'IEP' in query_person_links(manager)
+    True
 
 Let's activate IEP for Camila:
 

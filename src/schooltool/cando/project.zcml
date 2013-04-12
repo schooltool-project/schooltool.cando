@@ -5,7 +5,7 @@
     <allow interface="zope.interface.common.mapping.IReadMapping" />
     <require
         permission="schooltool.view"
-        attributes="keys __iter__ values items __len__ deployed title"
+        attributes="keys __iter__ values items __len__ deployed title label description"
         />
     <require
         permission="schooltool.edit"

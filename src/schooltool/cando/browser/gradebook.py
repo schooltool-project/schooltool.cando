@@ -90,6 +90,7 @@ from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
 from schooltool.cando.interfaces import IStudentIEP
 from schooltool.cando.interfaces import IDocumentContainer
+from schooltool.cando.interfaces import ICanDoStudentGradebook
 from schooltool.cando.gradebook import ensureAtLeastOneProject
 from schooltool.cando.browser.model import NodesTable
 from schooltool.cando.project import Project
@@ -1429,7 +1430,7 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
 
     def items(self):
         result = []
-        iep = IStudentIEP(self.view.student)
+        iep = IStudentIEP(self.context.student)
         iep_skills = iep.getIEPSkills(self.view.gradebook.section)
         worksheets = self.context.__parent__.__parent__.__parent__
         for worksheet in worksheets.values():
@@ -1442,7 +1443,7 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
             for activity in gradebook.activities:
                 is_iep_skill = self.view.isSkillsGradebook and \
                                self.view.isIEPSkill(iep_skills, activity)
-                score = gradebook.getScore(self.view.student, activity)
+                score = gradebook.getScore(self.context.student, activity)
                 result.append({
                         'gradebook': gradebook,
                         'score': score,
@@ -1528,14 +1529,14 @@ class CanDoGradeStudentTable(CanDoGradeStudentTableBase):
                 value = self.request[cell_name]
                 try:
                     if value is None or value == '':
-                        score = gradebook.getScore(self.view.student, skill)
+                        score = gradebook.getScore(self.context.student, skill)
                         if score:
-                            gradebook.removeEvaluation(self.view.student,
+                            gradebook.removeEvaluation(self.context.student,
                                                        skill,
                                                        self.view.evaluator)
                     else:
                         score_value = skill.scoresystem.fromUnicode(value)
-                        gradebook.evaluate(self.view.student,
+                        gradebook.evaluate(self.context.student,
                                            skill,
                                            score_value,
                                            self.view.evaluator)
@@ -1934,3 +1935,90 @@ class CompetencyCertificateTableFilter(table.ajax.TableFilter):
 
     def render(self, *args, **kw):
         return ''
+
+
+class RequestStudentCompetencySectionReportView(RequestReportDownloadDialog):
+
+    def nextURL(self):
+        return '%s/student_competency_section_report.pdf' % (
+            absoluteURL(self.context, self.request))
+
+
+class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
+                                            StudentCompetencyRecordView):
+
+    name = _('Section Competencies')
+
+    @property
+    def scope(self):
+        gradebook = proxy.removeSecurityProxy(self.context)
+        term = ITerm(gradebook.section)
+        schoolyear = ISchoolYear(term)
+        return '%s | %s' % (term.title, schoolyear.title)
+
+
+class NoHeaderPlainPageTemplate(flourish.report.PlainPageTemplate):
+
+    @property
+    def header(self):
+        default = super(NoHeaderPlainPageTemplate, self).header
+        default['height'] = 0
+        return default
+
+
+class StudentCompetencySectionReportPDFStory(flourish.report.PDFStory):
+
+    def render(self):
+        result = []
+        collator = ICollator(self.request.locale)
+        gradebook = proxy.removeSecurityProxy(self.context)
+        section = gradebook.section
+        for student in sorted(section.members,
+                              key=lambda x: x.title,
+                              cmp=collator.cmp):
+            student_gradebook = getMultiAdapter((student, gradebook),
+                                                ICanDoStudentGradebook)
+            student_gradebook.__parent__ = gradebook
+            student_scr = getMultiAdapter(
+                (student_gradebook, self.request, self.view, self),
+                name="student_scr")
+            student_scr.update()
+            result.append(student_scr.render())
+        return ''.join(result)
+
+
+class StudentSCRPart(flourish.report.PDFPart):
+
+    template = flourish.templates.XMLFile('rml/section_student_scr.pt')
+
+    def teachers(self):
+        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
+        section = gradebook.section
+        return ', '.join([teacher.title
+                          for teacher in section.instructors])
+
+    def courses(self):
+        gradebook = proxy.removeSecurityProxy(self.context.gradebook)
+        section = gradebook.section
+        courses = ', '.join([course.title for course in section.courses])
+        codes = ', '.join(filter(None, [course.course_id
+                                  for course in section.courses]))
+        if codes:
+            courses += ' (%s)' % codes
+        return courses
+
+    def scr_table(self):
+        view = getMultiAdapter(
+            (self.context, self.request),
+            name='student_competency_report.html')
+        grades_table = getMultiAdapter(
+            (self.context, self.request, view, self.manager),
+            name="student_grades_table")
+        # XXX: make StudentCompetencyReportSkillsTablePart registration
+        #      more generic and get rid of this awful monkey patching
+        rml_table = getMultiAdapter(
+            (self.context, self.request, view, grades_table),
+            table.interfaces.IRMLTable)
+        rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
+        rml_table.update()
+        return rml_table.render()

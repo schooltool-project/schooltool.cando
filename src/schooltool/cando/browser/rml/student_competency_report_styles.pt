@@ -23,4 +23,17 @@
 
   <paraStyle name="skill-cell" fontName="Ubuntu_Regular" fontSize="8" />
 
+  <paraStyle
+      name="student-title"
+      fontName="Ubuntu_Regular"
+      fontSize="20"
+      spaceAfter="16"
+      />
+
+  <paraStyle
+      name="student-subtitle"
+      fontName="Ubuntu_Regular"
+      fontSize="12"
+      />
+
 </metal:block>

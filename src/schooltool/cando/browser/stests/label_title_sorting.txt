@@ -399,6 +399,18 @@ and the Set Required/Visible view:
     00: Preparing for Business Law Careers
     01: Exploring Tort Law
 
+The skills in the Set Required/Visible view should be also sorted:
+
+    >>> sel = 'table tbody tr'
+    >>> for row in manager.query_all.css(sel):
+    ...     cells = row.query_all.tag('td')
+    ...     if cells:
+    ...         print '%s' % cells[0].text
+    Analyze the need for a contract
+    Explain elements of a contract
+    00: Explain the Statute of Frauds
+    01: Compare types of contracts
+
 Create a Math course and assign the Fractions skill set and check the
 order of the skills displayed:
 

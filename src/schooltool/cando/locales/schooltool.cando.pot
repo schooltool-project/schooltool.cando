@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-02-25 19:36+0200\n"
+"POT-Creation-Date: 2013-03-25 13:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -613,6 +613,14 @@ msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:782
 msgid "Summary of a student scores in a section exceeding a selected minimum score. Formatted for presentation to an potential employer or other person outside of the school."
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:794
+msgid "Student Competency Report (Section)"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:794
+msgid "Summary of all students' scores for all the skills assigned to a section."
 msgstr ""
 
 #: /src/schooltool/cando/browser/iep.py:122
