@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-25 19:36+0200\n"
-"PO-Revision-Date: 2013-03-12 09:09+0000\n"
+"POT-Creation-Date: 2013-03-25 13:54+0200\n"
+"PO-Revision-Date: 2013-03-27 14:27+0000\n"
 "Last-Translator: mathinan <mathinan@jaansi.com>\n"
 "Language-Team: Thai <th@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-13 04:57+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-03-28 05:12+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:9
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:67
@@ -248,7 +248,7 @@ msgstr "ชื่อเรื่อง"
 
 #: /src/schooltool/cando/browser/course.py:260
 msgid "Select Skill Sets from ${node} (${node_id})"
-msgstr ""
+msgstr "เลือกชุดทักษะจาก ${node} (${node_id})"
 
 #: /src/schooltool/cando/browser/course.py:282
 msgid "ID"
@@ -363,13 +363,13 @@ msgstr "ลำดับชั้นที่ว่าง"
 #: /src/schooltool/cando/browser/document.py:808
 #: /src/schooltool/cando/browser/document.py:961
 msgid "View ${layer}"
-msgstr ""
+msgstr "เรียกดู ${layer}"
 
 #: /src/schooltool/cando/browser/document.py:624
 #: /src/schooltool/cando/browser/document.py:744
 #: /src/schooltool/cando/browser/document.py:921
 msgid "Add ${layer}"
-msgstr ""
+msgstr "เพิ่ม ${layer}"
 
 #: /src/schooltool/cando/browser/document.py:629
 #: /src/schooltool/cando/browser/document.py:916
@@ -514,12 +514,12 @@ msgstr "ส่วนของความสามารถ"
 
 #: /src/schooltool/cando/browser/gradebook.py:1754
 msgid "Teacher(s): ${teachers}"
-msgstr ""
+msgstr "อาจารย์: ${teachers}"
 
 #: /src/schooltool/cando/browser/gradebook.py:1755
 #: /src/schooltool/cando/browser/gradebook.py:1870
 msgid "Course: ${courses}"
-msgstr ""
+msgstr "วิชา: ${courses}"
 
 #: /src/schooltool/cando/browser/gradebook.py:1847
 #: /src/schooltool/cando/browser/gradebook.zcml:782
@@ -533,7 +533,7 @@ msgstr "ประกาศนียบัตรความสามารถ"
 #: /src/schooltool/cando/browser/gradebook.zcml:321
 #: /src/schooltool/cando/browser/gradebook.zcml:431
 msgid "CanDo"
-msgstr ""
+msgstr "CanDo"
 
 #: /src/schooltool/cando/browser/gradebook.zcml:45
 msgid "View"
@@ -609,6 +609,15 @@ msgid ""
 "Formatted for presentation to an potential employer or other person outside "
 "of the school."
 msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:794
+msgid "Student Competency Report (Section)"
+msgstr "รายงานความสามารถของนักเรียน (เซกชั่น)"
+
+#: /src/schooltool/cando/browser/gradebook.zcml:794
+msgid ""
+"Summary of all students' scores for all the skills assigned to a section."
+msgstr "ผลรวมคะแนนของนักเรียนทุกคนในทุกทักษะที่มอบให้กับมทุกเซกชั่น"
 
 #: /src/schooltool/cando/browser/iep.py:122
 msgid "IEP Details"
@@ -726,12 +735,12 @@ msgstr "ซึ่งเป็นทางเลือก"
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:16
 msgid "Optional (IEP)"
-msgstr ""
+msgstr "เป็นตัวเลือก (IEP)"
 
 #: /src/schooltool/cando/browser/templates/course_assign_skills_table_filter.pt:12
 #: /src/schooltool/cando/browser/templates/nodes_table_filter.pt:12
 msgid "Showing ${count} of ${total} items"
-msgstr ""
+msgstr "กำลังแสดง  ${count} ของ  ${total} รายการ"
 
 #: /src/schooltool/cando/browser/templates/course_assign_skillsets_dialog.pt:20
 msgid "You must select at least one skill set."
@@ -921,7 +930,7 @@ msgstr "ชนิดไฟล์"
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:23
 msgid "Select a minimum display score for ${scoresystem}"
-msgstr ""
+msgstr "เลือกแสดงคะแนนที่น้อยที่สุดสำหรับ ${scoresystem}"
 
 #: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:41
 msgid "Download"
