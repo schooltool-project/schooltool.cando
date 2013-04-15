@@ -129,6 +129,7 @@ class SkillSetAddView(flourish.form.AddForm):
 
     label = None
     legend = _('Skill set')
+    add_next = False
 
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('title', 'description', 'label')
@@ -136,10 +137,14 @@ class SkillSetAddView(flourish.form.AddForm):
     def updateActions(self):
         super(SkillSetAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
+        self.actions['submitadd'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
     def nextURL(self):
-        return absoluteURL(self.context, self.request)
+        url = absoluteURL(self.context, self.request)
+        if self.add_next:
+            return url + '/add.html'
+        return url
 
     def create(self, data):
         if not data['label']:
@@ -160,6 +165,20 @@ class SkillSetAddView(flourish.form.AddForm):
         name = chooser.chooseName(name, skillset)
         self.context[name] = skillset
         return skillset
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
+    def handleSubmit(self, action):
+        super(SkillSetAddView, self).handleAdd.func(self, action)
+
+    @z3c.form.button.buttonAndHandler(_('Submit and add'), name='submitadd')
+    def handleSubmitAndAdd(self, action):
+        super(SkillSetAddView, self).handleAdd.func(self, action)
+        if self._finishedAdd:
+            self.add_next = True
+
+    @z3c.form.button.buttonAndHandler(_('Cancel'))
+    def handleCancel(self, action):
+        super(SkillSetAddView, self).handleCancel.func(self, action)
 
 
 # XXX: after adding skillset, redirect to it's edit view.
