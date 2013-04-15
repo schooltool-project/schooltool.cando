@@ -339,7 +339,7 @@ class ProjectSkillAddView(SkillAddView):
     def nextURL(self):
         url = absoluteURL(self.context, self.request)
         if self.add_next:
-            return url + '/addSkill.html'
+            return url + '/addSkillCreate.html'
         return url + '/gradebook'
 
 
