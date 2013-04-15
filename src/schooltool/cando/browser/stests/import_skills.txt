@@ -59,10 +59,10 @@ It has three skills.
     >>> manager.query.link('Carpentry').click()
 
     >>> print_table(manager, '//table[@class="form-fields"]')
-    +------------------+------------+
-    | Full description | ext_carp   |
-    | Label            | Carp label |
-    +------------------+------------+
+    +-------------+------------+
+    | Description | ext_carp   |
+    | Label       | Carp label |
+    +-------------+------------+
 
     >>> print_table(manager, '//table[@class="data"]')
     +-------+-----------+
@@ -78,8 +78,8 @@ Let's visit each skill and print their attrs.
     >>> manager.query.link('Pounding').click()
     >>> print_attrs()
     Scoresystem: Letter Grade
-    Full description:
-    Short label:
+    Description:
+    Label:
     Required: Yes
     External ID: ext_123
     >>> manager.query.link('Done').click()
@@ -87,8 +87,8 @@ Let's visit each skill and print their attrs.
     >>> manager.query.link('Whacking').click()
     >>> print_attrs()
     Scoresystem: Pass/Fail
-    Full description: Whacking desc.
-    Short label:
+    Description: Whacking desc.
+    Label:
     Required: No
     External ID:
     >>> manager.query.link('Done').click()
@@ -96,8 +96,8 @@ Let's visit each skill and print their attrs.
     >>> manager.query.link('Hammering').click()
     >>> print_attrs()
     Scoresystem: Competency
-    Full description: This is hammering.
-    Short label: Label
+    Description: This is hammering.
+    Label: Label
     Required: No
     External ID:
 

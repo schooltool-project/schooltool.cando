@@ -20,7 +20,7 @@ Let's start by adding a skillset.
     >>> manager.open('http://localhost/skills')
     >>> manager.query.link('Skill Set').click()
     >>> manager.query.name('form.widgets.title').type('Carpentry')
-    >>> manager.query.name('form.widgets.label').type('Carp label')
+    >>> manager.query.name('form.widgets.label').type('Carplab')
     >>> manager.query.button('Submit').click()
 
 We see that it was added.
@@ -29,8 +29,8 @@ We see that it was added.
     http://localhost/skills/Carpentr1
     >>> manager.query.link('Carpentry').click()
     >>> print_attrs()
-    Full description:
-    Label: Carp label
+    Description:
+    Label: Carplab
 
 Now, we'll add a skill to it.  We see that the scoresystem field is set to the
 default, one the user hasn't even chosen yet.
@@ -53,8 +53,8 @@ We see that it was added.
     >>> manager.query.link('Pounding').click()
     >>> print_attrs()
     Scoresystem: Extended Letter Grade
-    Full description:
-    Short label: 01
+    Description:
+    Label: 01
     Required: Yes
     External ID:
 
@@ -77,8 +77,8 @@ after we submit it.
     >>> manager.query.link('Hammering').click()
     >>> print_attrs()
     Scoresystem: Pass/Fail
-    Full description:
-    Short label: 02
+    Description:
+    Label: 02
     Required: Yes
     External ID:
 
@@ -95,8 +95,8 @@ We'll add one last skill.  Again, it remembered the last scoresystem we chose.
     >>> manager.query.link('Whacking').click()
     >>> print_attrs()
     Scoresystem: Letter Grade
-    Full description:
-    Short label: 03
+    Description:
+    Label: 03
     Required: Yes
     External ID:
 

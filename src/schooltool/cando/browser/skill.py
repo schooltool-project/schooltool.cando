@@ -32,6 +32,8 @@ from zope.traversing.browser.interfaces import IAbsoluteURL
 import z3c.form.field
 import z3c.form.form
 import z3c.form.button
+from z3c.form.browser.text import TextWidget
+from z3c.form.widget import FieldWidget
 import zc.table.column
 import zc.table.interfaces
 
@@ -147,12 +149,6 @@ class SkillSetAddView(flourish.form.AddForm):
         return url
 
     def create(self, data):
-        if not data['label']:
-            title = unicode(data['title'])
-            if len(title) < 10:
-                data['label'] = title
-            else:
-                data['label'] = title[:7]+'...'
         skillset = SkillSet(data['title'])
         z3c.form.form.applyChanges(self, skillset, data)
         self._skillset = skillset
@@ -362,3 +358,13 @@ class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
     def nextURL(self):
         return absoluteURL(self.context, self.request)
 
+
+class LabelTextLineWidget(TextWidget):
+
+    def update(self):
+        super(LabelTextLineWidget, self).update()
+        self.maxlength = self.field.max_length
+
+
+def LabelTextLineFieldWidget(field, request):
+    return FieldWidget(field, LabelTextLineWidget(request))

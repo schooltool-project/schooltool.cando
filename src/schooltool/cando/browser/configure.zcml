@@ -888,4 +888,11 @@
       permission="schooltool.edit"
       />
 
+  <zope:adapter
+      factory=".skill.LabelTextLineFieldWidget"
+      for="schooltool.cando.interfaces.ILabelTextLine
+           schooltool.skin.flourish.IFlourishLayer"
+      provides="z3c.form.interfaces.IFieldWidget"
+      />
+
 </configure>

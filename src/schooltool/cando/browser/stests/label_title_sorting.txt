@@ -103,10 +103,6 @@ Print labels and titles of the skills:
 We'll add more skills to the other Math skill sets and create a node
 to associate them, so later it can be assigned to a SchoolTool course:
 
-    >>> manager.ui.skillset.add('Pre-algebra', '04')
-    >>> manager.ui.skillset.add('Geometry', '03')
-    >>> manager.ui.skillset.add('Arithmetic of Decimals')
-
     >>> manager.ui.skill.add('Percents', 'Write fractions as percents.', '01')
     >>> manager.ui.skill.add('Percents',
     ...                      'Write decimal numbers as percents.', '03')

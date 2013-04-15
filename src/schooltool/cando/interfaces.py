@@ -22,7 +22,7 @@ from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.interfaces import IContainer, IContained
 from zope.container.constraints import contains
 from zope.html.field import HtmlFragment
-from zope.interface import Interface, Attribute
+from zope.interface import Interface, Attribute, implements
 from zope.schema import Choice
 
 from schooltool.requirement.interfaces import IRequirement
@@ -33,7 +33,27 @@ from schooltool.gradebook.interfaces import IStudentGradebook
 from schooltool.cando import CanDoMessage as _
 
 
-class ISkill(IRequirement, IAttributeAnnotatable):
+class ILabelTextLine(Interface):
+
+    pass
+
+
+class LabelTextLine(zope.schema.TextLine):
+
+    implements(ILabelTextLine)
+
+
+class ILabel(Interface):
+
+    label = LabelTextLine(
+        title=_("Label"),
+        description=_("Limit to 7 characters or less."),
+        required=False,
+        max_length=7,
+        default=u'')
+
+
+class ISkill(IRequirement, IAttributeAnnotatable, ILabel):
 
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)
@@ -41,9 +61,8 @@ class ISkill(IRequirement, IAttributeAnnotatable):
                                 description=_("Is skill required or optional"))
     retired = zope.schema.Bool(title=_("Retired"),
                                description=_("Skill is no longer used"))
-    label = zope.schema.TextLine(title=_("Short label"), required=False)
 
-    description = HtmlFragment(title=_("Full description"), required=False)
+    description = HtmlFragment(title=_("Description"), required=False)
 
     equivalent = Attribute("Directly equivalent skills.")
 
@@ -64,10 +83,9 @@ class ISkillSetContainer(IContainer):
     pass
 
 
-class ISkillSet(IRequirement, IAttributeAnnotatable):
+class ISkillSet(IRequirement, IAttributeAnnotatable, ILabel):
 
-    description = HtmlFragment(title=_("Full description"), required=False)
-    label = zope.schema.TextLine(title=_("Label"), required=False)
+    description = HtmlFragment(title=_("Description"), required=False)
 
 
 class ILayerContainer(IContainer):
@@ -90,7 +108,7 @@ class INodeContainer(IContainer):
     pass
 
 
-class INode(Interface):
+class INode(ILabel):
 
     title = zope.schema.TextLine(
         title=_("Title"),
@@ -98,12 +116,6 @@ class INode(Interface):
     description = HtmlFragment(
         title=_("Description"),
         required=False,
-        default=u'')
-    label = zope.schema.TextLine(
-        title=_("Label"),
-        description=_("Limit to 7 characters or less."),
-        required=False,
-        max_length=7,
         default=u'')
 
     layers = Attribute("Layers within this layer")

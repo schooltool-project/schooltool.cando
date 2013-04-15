@@ -701,10 +701,6 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         self.actions['add'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
-    def updateWidgets(self):
-        super(DocumentAddNodeBase, self).updateWidgets()
-        self.widgets['label'].maxlength = 7
-
     @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
     def handleAdd(self, action):
         super(DocumentAddNodeBase, self).handleAdd.func(self, action)
@@ -782,10 +778,6 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
         self.actions['apply'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
-    def updateWidgets(self):
-        super(DocumentNodeEditView, self).updateWidgets()
-        self.widgets['label'].maxlength = 7
-
     def nextURL(self):
         return absoluteURL(self.context, self.request) + '/document.html'
 
@@ -817,12 +809,6 @@ class DocumentAddSkillSetBase(flourish.form.AddForm):
         self.actions['cancel'].addClass('button-cancel')
 
     def create(self, data):
-        if not data['label']:
-            title = unicode(data['title'])
-            if len(title) < 10:
-                data['label'] = title
-            else:
-                data['label'] = title[:7]+'...'
         skillset = SkillSet(data['title'])
         z3c.form.form.applyChanges(self, skillset, data)
         self._skillset = skillset
