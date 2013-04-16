@@ -89,7 +89,7 @@ We'll look at the skills and see their attributes.
     Scoresystem: Competency
     Description: 
     Label: 01
-    Required: Yes
+    Required?: Required
     External ID: 
 
     >>> manager.query.link('Done').click()
@@ -99,7 +99,7 @@ We'll look at the skills and see their attributes.
     Scoresystem: Competency
     Description: 
     Label: L2
-    Required: No
+    Required?: Optional
     External ID: ext
 
 We can edit the attributes of one of the skills and see them change in the view.
@@ -120,7 +120,7 @@ We can edit the attributes of one of the skills and see them change in the view.
     Scoresystem: Competency
     Description: 
     Label: 02
-    Required: Yes
+    Required?: Required
     External ID: ext2
 
 When we return to the skillset view, we see the change in the list.

@@ -38,9 +38,19 @@ class ILabelTextLine(Interface):
     pass
 
 
+class ISkillRequiredBool(Interface):
+
+    pass
+
+
 class LabelTextLine(zope.schema.TextLine):
 
     implements(ILabelTextLine)
+
+
+class SkillRequiredBool(zope.schema.Bool):
+
+    implements(ISkillRequiredBool)
 
 
 class ILabel(Interface):
@@ -57,8 +67,7 @@ class ISkill(IRequirement, IAttributeAnnotatable, ILabel):
 
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)
-    required = zope.schema.Bool(title=_("Required"),
-                                description=_("Is skill required or optional"))
+    required = SkillRequiredBool(title=_("Required?"))
     retired = zope.schema.Bool(title=_("Retired"),
                                description=_("Skill is no longer used"))
 

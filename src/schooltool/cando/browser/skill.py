@@ -24,7 +24,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -34,6 +34,8 @@ import z3c.form.form
 import z3c.form.button
 from z3c.form.browser.text import TextWidget
 from z3c.form.widget import FieldWidget
+from z3c.form.term import BoolTerms
+from z3c.form.interfaces import IRadioWidget
 import zc.table.column
 import zc.table.interfaces
 
@@ -43,10 +45,12 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.person.interfaces import IPerson
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.interfaces import ISkillSet, ISkill
+from schooltool.cando.interfaces import ISkillRequiredBool
 from schooltool.cando.skill import SkillSet, Skill
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.skin.flourish import IFlourishLayer
 
 from schooltool.cando import CanDoMessage as _
 from schooltool.cando.skill import getDefaultSkillScoreSystem
@@ -368,3 +372,15 @@ class LabelTextLineWidget(TextWidget):
 
 def LabelTextLineFieldWidget(field, request):
     return FieldWidget(field, LabelTextLineWidget(request))
+
+
+class SkillRequiredTerms(BoolTerms):
+
+    adapts(Interface,
+           IFlourishLayer,
+           Interface,
+           ISkillRequiredBool,
+           IRadioWidget)
+
+    trueLabel = _('Required')
+    falseLabel = _('Optional')

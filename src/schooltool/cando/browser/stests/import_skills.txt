@@ -80,7 +80,7 @@ Let's visit each skill and print their attrs.
     Scoresystem: Letter Grade
     Description:
     Label:
-    Required: Yes
+    Required?: Required
     External ID: ext_123
     >>> manager.query.link('Done').click()
 
@@ -89,7 +89,7 @@ Let's visit each skill and print their attrs.
     Scoresystem: Pass/Fail
     Description: Whacking desc.
     Label:
-    Required: No
+    Required?: Optional
     External ID:
     >>> manager.query.link('Done').click()
 
@@ -98,7 +98,7 @@ Let's visit each skill and print their attrs.
     Scoresystem: Competency
     Description: This is hammering.
     Label: Label
-    Required: No
+    Required?: Optional
     External ID:
 
 There are five layers.

@@ -55,7 +55,7 @@ We see that it was added.
     Scoresystem: Extended Letter Grade
     Description:
     Label: 01
-    Required: Yes
+    Required?: Required
     External ID:
 
 We'll add another skill.  We see that the scoresystem field is not set to the
@@ -79,7 +79,7 @@ after we submit it.
     Scoresystem: Pass/Fail
     Description:
     Label: 02
-    Required: Yes
+    Required?: Required
     External ID:
 
 We'll add one last skill.  Again, it remembered the last scoresystem we chose.
@@ -97,7 +97,7 @@ We'll add one last skill.  Again, it remembered the last scoresystem we chose.
     Scoresystem: Letter Grade
     Description:
     Label: 03
-    Required: Yes
+    Required?: Required
     External ID:
 
 We see our skillset now has three skills.

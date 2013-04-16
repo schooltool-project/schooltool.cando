@@ -895,4 +895,6 @@
       provides="z3c.form.interfaces.IFieldWidget"
       />
 
+  <zope:adapter factory=".skill.SkillRequiredTerms" />
+
 </configure>

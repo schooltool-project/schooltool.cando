@@ -175,7 +175,7 @@ View the skill. Note how the label is set differently:
     Scoresystem: Competency
     Description:
     Label: 01
-    Required: Yes
+    Required?: Required
     External ID:
 
 Edit the skill and print the label widget:
@@ -198,7 +198,7 @@ If we try to set the label with 10 characters, it will store only 7:
     Scoresystem: Competency
     Description:
     Label: 1234567
-    Required: Yes
+    Required?: Required
     External ID:
 
 Add another skill with a long label:
@@ -215,5 +215,5 @@ Add another skill with a long label:
     Scoresystem: Competency
     Description:
     Label: ABCDEFG
-    Required: Yes
+    Required?: Required
     External ID:
