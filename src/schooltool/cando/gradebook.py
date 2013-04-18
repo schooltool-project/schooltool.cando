@@ -56,34 +56,6 @@ def ensureAtLeastOneProject(worksheets):
     ensureAtLeastOneWorksheet(worksheets, Project, _('Project1'))
 
 
-def getCurrentSectionTaught(person):
-    person = proxy.removeSecurityProxy(person)
-    ann = IAnnotations(person)
-    if CURRENT_SECTION_TAUGHT_KEY not in ann:
-        ann[CURRENT_SECTION_TAUGHT_KEY] = None
-    else:
-        section = ann[CURRENT_SECTION_TAUGHT_KEY]
-        try:
-            IProjects(section)
-        except:
-            ann[CURRENT_SECTION_TAUGHT_KEY] = None
-    return ann[CURRENT_SECTION_TAUGHT_KEY]
-
-
-def getCurrentSectionAttended(person):
-    person = proxy.removeSecurityProxy(person)
-    ann = IAnnotations(person)
-    if CURRENT_SECTION_ATTENDED_KEY not in ann:
-        ann[CURRENT_SECTION_ATTENDED_KEY] = None
-    else:
-        section = ann[CURRENT_SECTION_ATTENDED_KEY]
-        try:
-            IProjects(section)
-        except:
-            ann[CURRENT_SECTION_ATTENDED_KEY] = None
-    return ann[CURRENT_SECTION_ATTENDED_KEY]
-
-
 class ProjectsGradebook(Gradebook):
 
     implements(IProjectsGradebook)

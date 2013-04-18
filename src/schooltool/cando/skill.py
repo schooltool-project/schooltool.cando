@@ -17,7 +17,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 from decimal import Decimal
-import rwproperty
 
 from zope.annotation.interfaces import IAnnotations
 import zc.catalog.extentcatalog
@@ -84,13 +83,13 @@ class Skill(Requirement):
         self.label = label
         self.custom_scoresystem = scoresystem
 
-    @rwproperty.getproperty
+    @property
     def scoresystem(self):
         if self.custom_scoresystem is not None:
             return self.custom_scoresystem
         return querySkillScoreSystem()
 
-    @rwproperty.setproperty
+    @scoresystem.setter
     def scoresystem(self, new_scoresystem):
         self.custom_scoresystem = new_scoresystem
 

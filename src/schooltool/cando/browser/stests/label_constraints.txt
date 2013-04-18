@@ -1,0 +1,219 @@
+Label constraints
+=================
+
+Nodes, skills and skill sets in CanDo have labels. We're going to test
+some form constraints on these:
+
+* All labels should be limited to 7 characters or less
+
+* Labels are optional:
+
+  - If they're not set by the user, instead of using None, they should
+    be set to u'', except for skills where they should be set to a 2
+    digits number which depends on the quantity of existing skills in
+    the skill set.
+
+Helpers:
+
+    >>> def print_label_widget(browser):
+    ...     div = browser.query.id('form-widgets-label-row')
+    ...     label = div.query.css('label[for="form-widgets-label"] span').text
+    ...     hint = div.query.css('p.hint').text
+    ...     maxlength = div.query.id('form-widgets-label').get_attribute(
+    ...         'maxlength')
+    ...     print 'Label: %s' % label
+    ...     print 'Hint: %s' % hint
+    ...     print 'Maximum Length: %s' % maxlength
+
+    >>> def print_form_fields(browser):
+    ...     for row in browser.query_all.css('table.form-fields tbody tr'):
+    ...         label = row.query.css('td.label').text
+    ...         field = row.query.css('td.field').text
+    ...         print '%s: %s' % (label, field)
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Print the label widget for adding skill sets:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Skill Sets').click()
+    >>> manager.query.link('Skill Set').click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+Add the skill set with no label:
+
+    >>> manager.query.id('form-widgets-title').ui.set_value('My Skill Set')
+    >>> manager.query.id('form-buttons-add').click()
+
+View the skill set:
+
+    >>> manager.query.link('My Skill Set').click()
+    >>> print_form_fields(manager)
+    Description:
+    Label:
+
+Edit the skill set and print the label widget:
+
+    >>> sel = 'a[title="Edit this skill set"]'
+    >>> manager.query.css(sel).click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+If we try to set the label with 10 characters, it will store only 7:
+
+    >>> manager.query.id('form-widgets-label').ui.set_value('1234567890')
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> print_form_fields(manager)
+    Description:
+    Label: 1234567
+
+Add another skill set with a long label:
+
+    >>> manager.query.link('Skill Sets').click()
+    >>> manager.query.link('Skill Set').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value(
+    ...     'My Second Skill Set')
+    >>> manager.query.id('form-widgets-label').ui.set_value('ABCDEFGHIJKLM')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.query.link('My Second Skill Set').click()
+    >>> print_form_fields(manager)
+    Description:
+    Label: ABCDEFG
+
+This checking proccess should be the same for Nodes. Let's print the
+label widget for adding nodes:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Node').click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+Add the node with no label:
+
+    >>> manager.query.id('form-widgets-title').ui.set_value('My Node')
+    >>> manager.query.id('form-buttons-add').click()
+
+View the node:
+
+    >>> print_form_fields(manager)
+    Description:
+    Label:
+
+Edit the node and print the label widget:
+
+    >>> sel = 'a[title="Edit this Node"]'
+    >>> manager.query.css(sel).click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+If we try to set the label with 10 characters, it will store only 7:
+
+    >>> manager.query.id('form-widgets-label').ui.set_value('1234567890')
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> print_form_fields(manager)
+    Description:
+    Label: 1234567
+
+Add another node with a long label:
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.link('Node').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('My Second Node')
+    >>> manager.query.id('form-widgets-label').ui.set_value('ABCDEFGHIJKLM')
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> print_form_fields(manager)
+    Description:
+    Label: ABCDEFG
+
+Finally, let's test labels for skills. Let's print the label widget
+for adding skills:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Skill Sets').click()
+    >>> manager.query.link('My Second Skill Set').click()
+    >>> manager.query.link('Skill').click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+Add the skill with no label:
+
+    >>> manager.query.id('form-widgets-title').ui.set_value('My First Skill')
+    >>> manager.query.id('form-widgets-required-0').click()
+    >>> manager.query.id('form-buttons-add').click()
+
+View the skill. Note how the label is set differently:
+
+    >>> manager.query.link('My First Skill').click()
+    >>> print_form_fields(manager)
+    Scoresystem: Competency
+    Description:
+    Label: 01
+    Required?: Required
+    External ID:
+
+Edit the skill and print the label widget:
+
+    >>> sel = 'a[title="Edit this skill"]'
+    >>> manager.query.css(sel).click()
+
+    >>> print_label_widget(manager)
+    Label: Label
+    Hint: Limit to 7 characters or less.
+    Maximum Length: 7
+
+If we try to set the label with 10 characters, it will store only 7:
+
+    >>> manager.query.id('form-widgets-label').clear()
+    >>> manager.query.id('form-widgets-label').ui.set_value('1234567890')
+    >>> manager.query.id('form-buttons-apply').click()
+
+    >>> print_form_fields(manager)
+    Scoresystem: Competency
+    Description:
+    Label: 1234567
+    Required?: Required
+    External ID:
+
+Add another skill with a long label:
+
+    >>> manager.query.link('Done').click()
+    >>> manager.query.link('Skill').click()
+    >>> manager.query.id('form-widgets-title').ui.set_value('My Second Skill')
+    >>> manager.query.id('form-widgets-label').ui.set_value('ABCDEFGHIJKLM')
+    >>> manager.query.id('form-widgets-required-0').click()
+    >>> manager.query.id('form-buttons-add').click()
+
+    >>> manager.query.link('My Second Skill').click()
+    >>> print_form_fields(manager)
+    Scoresystem: Competency
+    Description:
+    Label: ABCDEFG
+    Required?: Required
+    External ID:

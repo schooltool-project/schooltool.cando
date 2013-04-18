@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-03-25 13:54+0200\n"
+"POT-Creation-Date: 2013-04-18 16:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -725,16 +725,17 @@ msgstr ""
 msgid "Submit and add"
 msgstr ""
 
+#: /src/schooltool/cando/browser/skill.py:386
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
+msgid "Optional"
+msgstr ""
+
 #: /src/schooltool/cando/browser/templates/cando_third_nav.pt:2
 msgid "Scroll over a skill ID to see its description here"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:5
 msgid "Skill Color Code"
-msgstr ""
-
-#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
-msgid "Optional"
 msgstr ""
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:16
@@ -956,15 +957,19 @@ msgstr ""
 msgid "Project1"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:37
+#: /src/schooltool/cando/interfaces.py:60
+msgid "Limit to 7 characters or less."
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:68
 msgid "External ID"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:40
-msgid "Is skill required or optional"
+#: /src/schooltool/cando/interfaces.py:70
+msgid "Required?"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:41
+#: /src/schooltool/cando/interfaces.py:71
 msgid "Retired"
 msgstr ""
 
@@ -972,16 +977,7 @@ msgstr ""
 msgid "Skill is no longer used"
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:43
-msgid "Short label"
-msgstr ""
-
-#: /src/schooltool/cando/interfaces.py:45
-#: /src/schooltool/cando/interfaces.py:62
-msgid "Full description"
-msgstr ""
-
-#: /src/schooltool/cando/interfaces.py:51
+#: /src/schooltool/cando/interfaces.py:79
 msgid "Scoresystem"
 msgstr ""
 
@@ -989,11 +985,7 @@ msgstr ""
 msgid "The skill scoresystem."
 msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:104
-msgid "Limit to 7 characters or less."
-msgstr ""
-
-#: /src/schooltool/cando/interfaces.py:150
+#: /src/schooltool/cando/interfaces.py:178
 msgid "Project deployed"
 msgstr ""
 

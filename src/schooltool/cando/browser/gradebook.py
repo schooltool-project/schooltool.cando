@@ -308,7 +308,7 @@ class CanDoModesViewlet(flourish.viewlet.Viewlet):
         if ISectionSkills(section):
             result.append({
                     'id': 'skills',
-                    'label': _('Skills'),
+                    'label': _('Skill Sets'),
                     'url': section_url + '/gradebook-skills',
                     'selected': ISkillsGradebook.providedBy(self.context),
                     })
@@ -339,7 +339,7 @@ class ProjectSkillAddView(SkillAddView):
     def nextURL(self):
         url = absoluteURL(self.context, self.request)
         if self.add_next:
-            return url + '/addSkill.html'
+            return url + '/addSkillCreate.html'
         return url + '/gradebook'
 
 

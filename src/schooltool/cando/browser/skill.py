@@ -24,7 +24,7 @@ from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.container.interfaces import INameChooser
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.browser import BrowserView
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -32,6 +32,10 @@ from zope.traversing.browser.interfaces import IAbsoluteURL
 import z3c.form.field
 import z3c.form.form
 import z3c.form.button
+from z3c.form.browser.text import TextWidget
+from z3c.form.widget import FieldWidget
+from z3c.form.term import BoolTerms
+from z3c.form.interfaces import IRadioWidget
 import zc.table.column
 import zc.table.interfaces
 
@@ -41,10 +45,12 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.person.interfaces import IPerson
 from schooltool.cando.interfaces import ISkillSetContainer
 from schooltool.cando.interfaces import ISkillSet, ISkill
+from schooltool.cando.interfaces import ISkillRequiredBool
 from schooltool.cando.skill import SkillSet, Skill
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.skin.flourish import IFlourishLayer
 
 from schooltool.cando import CanDoMessage as _
 from schooltool.cando.skill import getDefaultSkillScoreSystem
@@ -129,6 +135,7 @@ class SkillSetAddView(flourish.form.AddForm):
 
     label = None
     legend = _('Skill set')
+    add_next = False
 
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('title', 'description', 'label')
@@ -136,18 +143,16 @@ class SkillSetAddView(flourish.form.AddForm):
     def updateActions(self):
         super(SkillSetAddView, self).updateActions()
         self.actions['add'].addClass('button-ok')
+        self.actions['submitadd'].addClass('button-ok')
         self.actions['cancel'].addClass('button-cancel')
 
     def nextURL(self):
-        return absoluteURL(self.context, self.request)
+        url = absoluteURL(self.context, self.request)
+        if self.add_next:
+            return url + '/add.html'
+        return url
 
     def create(self, data):
-        if not data['label']:
-            title = unicode(data['title'])
-            if len(title) < 10:
-                data['label'] = title
-            else:
-                data['label'] = title[:7]+'...'
         skillset = SkillSet(data['title'])
         z3c.form.form.applyChanges(self, skillset, data)
         self._skillset = skillset
@@ -160,6 +165,20 @@ class SkillSetAddView(flourish.form.AddForm):
         name = chooser.chooseName(name, skillset)
         self.context[name] = skillset
         return skillset
+
+    @z3c.form.button.buttonAndHandler(_('Submit'), name='add')
+    def handleSubmit(self, action):
+        super(SkillSetAddView, self).handleAdd.func(self, action)
+
+    @z3c.form.button.buttonAndHandler(_('Submit and add'), name='submitadd')
+    def handleSubmitAndAdd(self, action):
+        super(SkillSetAddView, self).handleAdd.func(self, action)
+        if self._finishedAdd:
+            self.add_next = True
+
+    @z3c.form.button.buttonAndHandler(_('Cancel'))
+    def handleCancel(self, action):
+        super(SkillSetAddView, self).handleCancel.func(self, action)
 
 
 # XXX: after adding skillset, redirect to it's edit view.
@@ -343,3 +362,25 @@ class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
     def nextURL(self):
         return absoluteURL(self.context, self.request)
 
+
+class LabelTextLineWidget(TextWidget):
+
+    def update(self):
+        super(LabelTextLineWidget, self).update()
+        self.maxlength = self.field.max_length
+
+
+def LabelTextLineFieldWidget(field, request):
+    return FieldWidget(field, LabelTextLineWidget(request))
+
+
+class SkillRequiredTerms(BoolTerms):
+
+    adapts(Interface,
+           IFlourishLayer,
+           Interface,
+           ISkillRequiredBool,
+           IRadioWidget)
+
+    trueLabel = _('Required')
+    falseLabel = _('Optional')
