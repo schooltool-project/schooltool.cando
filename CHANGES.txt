@@ -2,9 +2,13 @@
 CHANGES
 =======
 
-0.6.3 (unreleased)
+0.7.0 (2013-04-18)
 ------------------
 
+- Fixed column title in SkillSets worksheet in sample data xls (https://launchpad.net/bugs/1126624)
+- Added Label column to SkillSets worksheet in the exporter
+- Changed required widget terms to Required and Optional (https://launchpad.net/bugs/1123471)
+- Made label and descriptions fields uniform for nodes, skill sets and skills (https://launchpad.net/bugs/1103708)
 - Added "Submit and add" action to "New skill set" form (https://launchpad.net/bugs/1103710)
 - Changed Skills selector to Skill Sets in the gradebook (https://launchpad.net/bugs/1154425)
 - Fixed worksheet order in Skills Export xls (https://launchpad.net/bugs/1126612)

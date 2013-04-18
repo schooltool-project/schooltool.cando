@@ -10,7 +10,7 @@ some form constraints on these:
 
   - If they're not set by the user, instead of using None, they should
     be set to u'', except for skills where they should be set to a 2
-    digits number which depends on the quantiy of existing skills in
+    digits number which depends on the quantity of existing skills in
     the skill set.
 
 Helpers:
