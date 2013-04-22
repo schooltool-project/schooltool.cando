@@ -1007,4 +1007,18 @@
       permission="schooltool.view"
       />
 
+  <zope:class class=".gradebook.CanDoStudentGradebookReportTask">
+    <require permission="schooltool.view"
+             interface="schooltool.report.interfaces.IReportTask" />
+    <require permission="schooltool.edit"
+             set_schema="schooltool.report.interfaces.IReportTask" />
+  </zope:class>
+
+  <zope:class class=".gradebook.SkillsGradebookReportTask">
+    <require permission="schooltool.view"
+             interface="schooltool.report.interfaces.IReportTask" />
+    <require permission="schooltool.edit"
+             set_schema="schooltool.report.interfaces.IReportTask" />
+  </zope:class>
+
 </configure>
