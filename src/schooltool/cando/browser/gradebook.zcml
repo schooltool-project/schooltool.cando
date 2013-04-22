@@ -774,7 +774,7 @@
       link="request_student_competency_report.html"
       group="Student"
       description="Summary of a student's scores for all the skills assigned to a section."
-      title="Section Competencies"
+      title="Student Skill Report"
       file_type="pdf"
       permission="schooltool.view"
       />
@@ -798,7 +798,7 @@
       permission="schooltool.view"
       group="Section"
       description="Summary of all students' scores for all the skills assigned to a section."
-      title="Student Competency Report (Section)"
+      title="Aggregated Student Skill Reports"
       file_type="pdf"
       link="request_student_competency_section_report.html"
       />

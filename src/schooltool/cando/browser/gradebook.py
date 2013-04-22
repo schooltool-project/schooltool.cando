@@ -1732,7 +1732,7 @@ class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
 class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
                                      StudentCompetencyRecordView):
 
-    name = _('Section Competencies')
+    name = _('Student Skill Report')
 
     @property
     def scope(self):
@@ -1947,7 +1947,7 @@ class RequestStudentCompetencySectionReportView(RequestReportDownloadDialog):
 class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
                                             StudentCompetencyRecordView):
 
-    name = _('Section Competencies')
+    name = _('Student Skill Report')
 
     @property
     def scope(self):
