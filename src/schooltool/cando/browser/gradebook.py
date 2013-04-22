@@ -68,6 +68,7 @@ from schooltool.gradebook.browser.pdf_views import FlourishGradebookPDFView
 from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
 from schooltool.report.browser.report import RequestReportDownloadDialog
+from schooltool.report.report import ReportLinkViewlet
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.term.interfaces import ITerm, IDateManager
@@ -2022,3 +2023,19 @@ class StudentSCRPart(flourish.report.PDFPart):
         rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
         rml_table.update()
         return rml_table.render()
+
+
+class SkillsGradebookReportLink(ReportLinkViewlet):
+
+    @property
+    def report_link(self):
+        skills = ISectionSkills(self.context)
+        if skills:
+            skillset = skills.values()[0]
+            return '%s/gradebook/%s' % (absoluteURL(skillset, self.request),
+                                        self.link)
+
+    def render(self, *args, **kw):
+        if not self.report_link:
+            return ''
+        return super(SkillsGradebookReportLink, self).render(*args, **kw)

@@ -803,6 +803,19 @@
       link="request_student_competency_section_report.html"
       />
 
+  <report:reportLink
+      name="c_student_competency_section_report"
+      for="schooltool.course.interfaces.ISection"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      permission="schooltool.view"
+      group="Section"
+      description="Summary of all students' scores for all the skills assigned to a section."
+      title="Aggregated Student Skill Reports"
+      file_type="pdf"
+      class=".gradebook.SkillsGradebookReportLink"
+      link="request_student_competency_section_report.html"
+      />
+
   <flourish:page
       name="request_student_competency_section_report.html"
       for="schooltool.cando.interfaces.ISkillsGradebook"
