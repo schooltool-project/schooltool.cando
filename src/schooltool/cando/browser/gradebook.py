@@ -2085,19 +2085,3 @@ class StudentSCRPart(flourish.report.PDFPart):
         rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
         rml_table.update()
         return rml_table.render()
-
-
-class SkillsGradebookReportLink(ReportLinkViewlet):
-
-    @property
-    def report_link(self):
-        skills = ISectionSkills(self.context)
-        if skills:
-            skillset = skills.values()[0]
-            return '%s/gradebook/%s' % (absoluteURL(skillset, self.request),
-                                        self.link)
-
-    def render(self, *args, **kw):
-        if not self.report_link:
-            return ''
-        return super(SkillsGradebookReportLink, self).render(*args, **kw)

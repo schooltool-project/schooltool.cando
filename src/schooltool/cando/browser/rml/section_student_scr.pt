@@ -2,7 +2,7 @@
     xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    i18n:domain="schooltool.virginia">
+    i18n:domain="schooltool.cando">
   <para style="student-title" tal:content="view/context/student/title" />
   <para style="student-subtitle" i18n:translate="">
     Teacher(s): <tal:replace i18n:name="teachers" content="view/teachers" />
