@@ -20,16 +20,14 @@
 Request Report Views
 """
 
-from zope.traversing.browser.absoluteurl import absoluteURL
-
 from schooltool.app.interfaces import ISchoolToolApplication
-from schooltool.report.browser.report import RequestReportDownloadDialog
+from schooltool.export.export import RequestXLSReportDialog
 
 
-class RequestGlobalSkillsExportView(RequestReportDownloadDialog):
+class RequestGlobalSkillsExportView(RequestXLSReportDialog):
 
-    def nextURL(self):
-        app = ISchoolToolApplication(None)
-        url = absoluteURL(app, self.request)
-        return url + '/export_global_skills.xls'
+    report_builder = 'export_global_skills.xls'
 
+    @property
+    def target(self):
+        return ISchoolToolApplication(None)
