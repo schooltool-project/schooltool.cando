@@ -20,7 +20,6 @@
 CanDo view components.
 """
 
-from urllib import urlencode
 import pytz
 from xml.sax.saxutils import quoteattr
 
@@ -67,7 +66,9 @@ from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import FlourishGradebookPDFView
 from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
-from schooltool.report.browser.report import RequestReportDownloadDialog
+from schooltool.report.browser.report import RequestRemoteReportDialog
+from schooltool.report.report import ReportTask
+from schooltool.report.report import ReportLinkViewlet
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.term.interfaces import ITerm, IDateManager
@@ -1722,17 +1723,10 @@ class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
         return result
 
 
-class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
-
-    def nextURL(self):
-        return '%s/student_competency_report.pdf' % absoluteURL(self.context,
-                                                                self.request)
-
-
 class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
                                      StudentCompetencyRecordView):
 
-    name = _('Section Competencies')
+    name = _('Student Skill Report')
 
     @property
     def scope(self):
@@ -1758,6 +1752,45 @@ class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
             _('Teacher(s): ${teachers}', mapping={'teachers': teachers}),
             _('Course: ${courses}', mapping={'courses': courses}),
             ]
+
+    @property
+    def base_filename(self):
+        return 'student_skill_report_%s_%s_%s' % (
+            self.student.last_name,
+            self.student.first_name,
+            self.student.username)
+
+
+class CanDoStudentGradebookReportTask(ReportTask):
+
+    @property
+    def context(self):
+        int_ids = getUtility(IIntIds)
+        student = int_ids.queryObject(self.student_intid)
+        worksheet = int_ids.queryObject(self.worksheet_intid)
+        gradebook = ISkillsGradebook(worksheet)
+        student_gradebook = getMultiAdapter((student, gradebook),
+                                            ICanDoStudentGradebook)
+        student_gradebook.__parent__ = gradebook
+        return student_gradebook
+
+    @context.setter
+    def context(self, value):
+        student_gradebook = proxy.removeSecurityProxy(value)
+        student = student_gradebook.student
+        gradebook = student_gradebook.gradebook
+        worksheet = gradebook.context
+        int_ids = getUtility(IIntIds)
+        student_intid = int_ids.getId(student)
+        worksheet_intid = int_ids.getId(worksheet)
+        self.student_intid = student_intid
+        self.worksheet_intid = worksheet_intid
+
+
+class RequestStudentCompetencyReportView(RequestRemoteReportDialog):
+
+    report_builder = StudentCompetencyReportPDFView
+    task_factory = CanDoStudentGradebookReportTask
 
 
 class StudentCompetencyReportSkillsTablePart(table.pdf.RMLTablePart):
@@ -1803,46 +1836,6 @@ def getScoreSystems(gradebook):
                     'name': scoresystem.__name__,
                     }
     return result
-
-
-class RequestCompetencyCertificateView(RequestReportDownloadDialog):
-
-    template = ViewPageTemplateFile(
-        'templates/request_competency_certificate.pt')
-
-    @Lazy
-    def scoresystems(self):
-        result = getScoreSystems(self.context)
-        return result
-
-    def sorted_scoresystems(self):
-        collator = ICollator(self.request.locale)
-        return sorted(self.scoresystems.values(),
-                      key=lambda v: collator.key(v['obj'].title))
-
-    def is_selected(self, ss_info, score_info):
-        requested_passing_score = self.request.get(ss_info['name'])
-        if requested_passing_score is not None:
-            return requested_passing_score == score_info['label']
-        return score_info['value'] == ss_info['passing_score']
-
-    def nextURL(self):
-        url = '%s/competency_certificate.pdf' % absoluteURL(self.context,
-                                                            self.request)
-        params = {}
-        for ss_info in self.scoresystems.values():
-            requested_passing_score = self.request.get(ss_info['name'])
-            if requested_passing_score is not None:
-                params[ss_info['name']] = requested_passing_score
-        if params:
-            url += '?%s' % urlencode(params)
-        return url
-
-    def update(self):
-        if 'DOWNLOAD' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        super(RequestCompetencyCertificateView, self).update()
 
 
 class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
@@ -1891,6 +1884,47 @@ class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
                 result[ss_info['name']] = ss_info['passing_score']
         return result
 
+    @property
+    def base_filename(self):
+        return 'certificate_of_competency_%s_%s_%s' % (
+            self.student.last_name,
+            self.student.first_name,
+            self.student.username)
+
+
+class RequestCompetencyCertificateView(RequestRemoteReportDialog):
+
+    report_builder = CompetencyCertificatePDFView
+    task_factory = CanDoStudentGradebookReportTask
+
+    template = ViewPageTemplateFile(
+        'templates/request_competency_certificate.pt')
+
+    @Lazy
+    def scoresystems(self):
+        result = getScoreSystems(self.context)
+        return result
+
+    def sorted_scoresystems(self):
+        collator = ICollator(self.request.locale)
+        return sorted(self.scoresystems.values(),
+                      key=lambda v: collator.key(v['obj'].title))
+
+    def is_selected(self, ss_info, score_info):
+        requested_passing_score = self.request.get(ss_info['name'])
+        if requested_passing_score is not None:
+            return requested_passing_score == score_info['label']
+        return score_info['value'] == ss_info['passing_score']
+
+    def schedule(self, task):
+        params = {}
+        for ss_info in self.scoresystems.values():
+            requested_passing_score = self.request.get(ss_info['name'])
+            if requested_passing_score is not None:
+                params[ss_info['name']] = requested_passing_score
+        task.request_params.update(params)
+        task.schedule(self.request)
+
 
 class CompetencyCertificateSkillsTablePart(table.pdf.RMLTablePart):
 
@@ -1937,17 +1971,28 @@ class CompetencyCertificateTableFilter(table.ajax.TableFilter):
         return ''
 
 
-class RequestStudentCompetencySectionReportView(RequestReportDownloadDialog):
+class SkillsGradebookReportTask(ReportTask):
 
-    def nextURL(self):
-        return '%s/student_competency_section_report.pdf' % (
-            absoluteURL(self.context, self.request))
+    @property
+    def context(self):
+        int_ids = getUtility(IIntIds)
+        worksheet = int_ids.queryObject(self.worksheet_intid)
+        gradebook = ISkillsGradebook(worksheet)
+        return gradebook
+
+    @context.setter
+    def context(self, value):
+        gradebook = proxy.removeSecurityProxy(value)
+        worksheet = gradebook.context
+        int_ids = getUtility(IIntIds)
+        worksheet_intid = int_ids.getId(worksheet)
+        self.worksheet_intid = worksheet_intid
 
 
 class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
                                             StudentCompetencyRecordView):
 
-    name = _('Section Competencies')
+    name = _('Student Skill Report')
 
     @property
     def scope(self):
@@ -1955,6 +2000,19 @@ class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
         term = ITerm(gradebook.section)
         schoolyear = ISchoolYear(term)
         return '%s | %s' % (term.title, schoolyear.title)
+
+    @property
+    def base_filename(self):
+        gradebook = proxy.removeSecurityProxy(self.context)
+        section = gradebook.section
+        courses = [c.__name__ for c in section.courses]
+        return 'aggregated_student_skill_reports_%s' % '_'.join(courses)
+
+
+class RequestStudentCompetencySectionReportView(RequestRemoteReportDialog):
+
+    report_builder = StudentCompetencySectionReportPDFView
+    task_factory = SkillsGradebookReportTask
 
 
 class NoHeaderPlainPageTemplate(flourish.report.PlainPageTemplate):
@@ -1983,6 +2041,7 @@ class StudentCompetencySectionReportPDFStory(flourish.report.PDFStory):
                 (student_gradebook, self.request, self.view, self),
                 name="student_scr")
             student_scr.update()
+            student_scr.__name__ = 'student_scr'
             result.append(student_scr.render())
         return ''.join(result)
 
@@ -2008,17 +2067,21 @@ class StudentSCRPart(flourish.report.PDFPart):
         return courses
 
     def scr_table(self):
+        self.view.__name__ = 'foobar'
         view = getMultiAdapter(
             (self.context, self.request),
             name='student_competency_report.html')
+        view.__name__ = 'student_competency_report.html'
         grades_table = getMultiAdapter(
             (self.context, self.request, view, self.manager),
             name="student_grades_table")
+        grades_table.__name__ = 'student_grades_table'
         # XXX: make StudentCompetencyReportSkillsTablePart registration
         #      more generic and get rid of this awful monkey patching
         rml_table = getMultiAdapter(
             (self.context, self.request, view, grades_table),
             table.interfaces.IRMLTable)
+        rml_table.__name__ = 'rml_table'
         rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
         rml_table.update()
         return rml_table.render()

@@ -774,7 +774,7 @@
       link="request_student_competency_report.html"
       group="Student"
       description="Summary of a student's scores for all the skills assigned to a section."
-      title="Section Competencies"
+      title="Student Skill Report"
       file_type="pdf"
       permission="schooltool.view"
       />
@@ -798,8 +798,21 @@
       permission="schooltool.view"
       group="Section"
       description="Summary of all students' scores for all the skills assigned to a section."
-      title="Student Competency Report (Section)"
+      title="Aggregated Student Skill Reports"
       file_type="pdf"
+      link="request_student_competency_section_report.html"
+      />
+
+  <report:reportLink
+      name="c_student_competency_section_report"
+      for="schooltool.course.interfaces.ISection"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      permission="schooltool.view"
+      group="Section"
+      description="Summary of all students' scores for all the skills assigned to a section."
+      title="Aggregated Student Skill Reports"
+      file_type="pdf"
+      class=".report.SkillsGradebookReportLink"
       link="request_student_competency_section_report.html"
       />
 
@@ -1006,5 +1019,19 @@
       class=".gradebook.CanDoGradeStudentValidateScoreView"
       permission="schooltool.view"
       />
+
+  <zope:class class=".gradebook.CanDoStudentGradebookReportTask">
+    <require permission="schooltool.view"
+             interface="schooltool.report.interfaces.IReportTask" />
+    <require permission="schooltool.edit"
+             set_schema="schooltool.report.interfaces.IReportTask" />
+  </zope:class>
+
+  <zope:class class=".gradebook.SkillsGradebookReportTask">
+    <require permission="schooltool.view"
+             interface="schooltool.report.interfaces.IReportTask" />
+    <require permission="schooltool.edit"
+             set_schema="schooltool.report.interfaces.IReportTask" />
+  </zope:class>
 
 </configure>

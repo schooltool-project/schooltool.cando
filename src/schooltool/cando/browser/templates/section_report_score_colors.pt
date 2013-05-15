@@ -1,0 +1,38 @@
+<tal:block i18n:domain="schooltool.cando">
+  <script>ST.state.push()</script>
+  <tal:script
+      tal:replace="structure scriptlocal:
+                   passing_score_filter_id view/view/passing_score_filter_id;
+                   colors_container_id view/view/score_colors_container_id;"
+      />
+  <script>
+    var passing_score_filter_id = ST.local.passing_score_filter_id,
+        filter_fields = ST.report.get_filter_fields(),
+        passing_score_filter = $(ST.dialogs.jquery_id(passing_score_filter_id)),
+        colors_container_id = ST.local.colors_container_id;
+    passing_score_filter.on('change', function() {
+        data = ST.report.get_filter_field_values(filter_fields)
+        ST.table.on_form_submit(colors_container_id, null, data);
+    });
+  </script>
+  <script>ST.state.pop()</script>
+  <div class="header" i18n:translate="">Score Colors</div>
+  <div class="body score-colors-container">
+    <tal:block content="structure view/view/providers/ajax/score_colors_table"/>
+    <table class="score-colors-table gradient-example">
+      <tbody>
+        <tr>
+          <td>
+            <div class="score-color-cell">
+              <span class="color passing-target">&nbsp;</span>
+              <span class="title" i18n:translate="">% Passing Target</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="above-passing-target">
+          <td i18n:translate="">Meets target</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</tal:block>

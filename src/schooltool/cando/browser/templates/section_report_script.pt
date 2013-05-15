@@ -1,0 +1,32 @@
+<script>ST.state.push()</script>
+<tal:script
+    tal:replace="structure scriptlocal:
+                 form_container_id view/view/form_container_id;"
+    />
+<script>
+  $(document).ready(function() {
+      var form_container_id = ST.local.form_container_id;
+      return function(e) {
+          var filter_fields = ST.report.get_filter_fields(),
+              filter_field,
+              event;
+          filter_fields.each(function(index, element) {
+              filter_field = $(element);
+              if (filter_field.is('select')) {
+                  event = 'change';
+              } else if (filter_field.is('input["checkbox"]')) {
+                  event = 'click';
+              };
+              filter_field.on(event, function() {
+                  data = ST.report.get_filter_field_values(filter_fields)
+                  ST.table.on_form_submit(form_container_id, null, data);
+              });
+          });
+          $('.section-report-accordion').accordion({
+              header: 'h2',
+              active: false,
+              collapsible: true
+          });
+  }}());
+</script>
+<script>ST.state.pop()</script>

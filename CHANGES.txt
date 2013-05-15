@@ -5,7 +5,10 @@ CHANGES
 0.8.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Moved in Per Student Skills Report and Skills Completion Report from schooltool.virginia
+- Added section report links
+- Made PDF reports to use remote tasks
+- Renamed student competency reports to Student Skill Reports
 
 
 0.7.0 (2013-04-18)

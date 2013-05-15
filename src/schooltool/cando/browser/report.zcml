@@ -43,4 +43,285 @@
        permission="schooltool.edit"
        />
 
+  <report:reportLink
+      name="ab_section_summary"
+      view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      permission="schooltool.view"
+      group="Section"
+      description="An overview of each student's achievement of skills within the section."
+      title="Per Student Skills"
+      link="section_report_by_student.html"
+      />
+
+  <report:reportLink
+      name="ab_section_summary"
+      for="schooltool.course.interfaces.ISection"
+      layer="schooltool.skin.flourish.IFlourishLayer"
+      permission="schooltool.view"
+      group="Section"
+      description="An overview of each student's achievement of skills within the section."
+      title="Per Student Skills"
+      class="schooltool.cando.browser.report.SkillsGradebookReportLink"
+      link="section_report_by_student.html"
+      />
+
+  <report:reportLink
+       name="completion_report"
+       for="schooltool.term.interfaces.ITerm"
+       layer="schooltool.skin.flourish.IFlourishLayer"
+       permission="schooltool.edit"
+       group="Term"
+       description="An overview of each section's aggregate achievement of skills."
+       title="Skills Completion"
+       link="skills_completion_report.html"
+       />
+
+  <flourish:activeViewlet
+      name="cando"
+      manager="schooltool.skin.flourish.page.IHeaderNavigationManager"
+      view=".report.SectionReportByStudentView"
+      />
+
+  <flourish:page
+      name="section_report_by_student.html"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      class=".report.SectionReportByStudentView"
+      title="Per Student Skills"
+      permission="schooltool.view"
+      />
+
+  <flourish:breadcrumb
+      for="schooltool.cando.interfaces.ISectionSkillSet"
+      view=".report.SectionReportView"
+      title=""
+      />
+
+  <flourish:viewlet
+      name="script"
+      before="*"
+      view=".report.SectionReportView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/section_report_script.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="course-details"
+      view=".report.SectionReportView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".report.ReportDetailsViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="report-description"
+      class=".report.SectionReportByStudentDescriptionViewlet"
+      view=".report.SectionReportByStudentView"
+      manager="schooltool.skin.flourish.page.IPageRelatedManager"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="score-colors"
+      after="report-description"
+      class=".report.ScoreColorsViewlet"
+      view=".report.SectionReportByStudentView"
+      manager="schooltool.skin.flourish.page.IPageRelatedManager"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="score_colors_table"
+      class=".report.ScoreColorsTable"
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".report.SectionReportByStudentView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".report.ScoreColorsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="report-table"
+      after="report-description"
+      view=".report.SectionReportView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".report.SectionReportTableViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="done-button"
+      after="report-table"
+      view=".report.SectionReportView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".report.SectionReportDoneButtonViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="charts_table"
+      class=".report.ByStudentChartsTable"
+      for="schooltool.course.interfaces.ISection"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".report.SectionReportByStudentView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".report.ByStudentChartsTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="passing_score_filter"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".report.PassingScoreFilterViewlet"
+      title="Passing Score"
+      permission="schooltool.view"
+      view=".report.SectionReportView"
+      />
+
+  <flourish:viewlet
+      name="passing_score_filter_menu"
+      manager=".report.PassingScoreFilterViewlet"
+      class=".report.PassingScoreFilterMenuViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="skill_type_filter"
+      after="passing_target_filter"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".report.SkillTypeFilterViewlet"
+      title="Type"
+      permission="schooltool.view"
+      view=".report.SectionReportView"
+      />
+
+  <flourish:viewlet
+      name="skill_type_filter_options"
+      manager=".report.SkillTypeFilterViewlet"
+      class=".report.SkillTypeFilterOptionsViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="passing_target_filter"
+      after="passing_score_filter"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".report.PassingTargetFilterViewlet"
+      title="% Passing Target"
+      permission="schooltool.view"
+      view=".report.SectionReportView"
+      />
+
+  <flourish:viewlet
+      name="passing_target_filter_menu"
+      manager=".report.PassingTargetFilterViewlet"
+      class=".report.PassingTargetFilterMenuViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:page_breadcrumbs
+      show_page_title="false"
+      title="Per Student Skills"
+      view=".report.SectionReportByStudentView"
+      url=""
+      for="schooltool.cando.interfaces.ISkillsGradebook"
+      />
+
+  <flourish:page
+      name="skills_completion_report.html"
+      for="schooltool.term.interfaces.ITerm"
+      title="Skills Completion Report"
+      class=".report.SkillsCompletionReportView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="course-details"
+      view=".report.SkillsCompletionReportViewBase"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="report-table"
+      view=".report.SkillsCompletionReportViewBase"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      class=".report.SkillsCompletionReportTableViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="skills_completion_report_table"
+      class=".report.SkillsCompletionReportTable"
+      for="schooltool.term.interfaces.ITerm"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".report.SkillsCompletionReportView"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      class="schooltool.table.table.DoNotFilter"
+      manager=".report.SkillsCompletionReportTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="location_filter"
+      after="skill_type_filter"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".report.LocationFilterViewlet"
+      title="Location"
+      permission="schooltool.view"
+      view=".report.SkillsCompletionReportView"
+      />
+
+  <flourish:viewlet
+      name="location_filter_menu"
+      manager=".report.LocationFilterViewlet"
+      class=".report.LocationFilterMenuViewlet"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="score-colors"
+      after="location_filter"
+      class=".report.ScoreColorsViewlet"
+      view=".report.SkillsCompletionReportView"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      permission="schooltool.view"
+      render="template"
+      />
+
+  <flourish:viewlet
+      name="score_colors_table"
+      class=".report.ScoreColorsTable"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      view=".report.SkillsCompletionReportView"
+      permission="schooltool.view"
+      />
+
 </configure>

@@ -15,35 +15,28 @@
       </tr>
     </tbody>
   </table>
-  <form method="post" tal:attributes="action request/URL"
-        class="request-competency-certificate-form">
-    <tal:block repeat="info view/sorted_scoresystems">
-      <h3 i18n:translate="">
-        Select a minimum display score for
-        <tal:block i18n:name="scoresystem" tal:replace="info/obj/title" />
-      </h3>
-      <table>
-        <tbody>
-	  <tr>
-	    <td>
-              <select tal:attributes="name info/name">
-                <option tal:repeat="score info/scores"
-                        tal:attributes="value score/label;
-                                        selected python:view.is_selected(info, score)"
-                        tal:content="score/abbr" />
-              </select>
-	    </td>
-	  </tr>
-        </tbody>
-      </table>
-    </tal:block>
-    <div class="buttons">
-      <input type="submit" class="button-ok" name="DOWNLOAD"
-             onclick="return ST.dialogs.submit(this, this);"
-             value="Download" i18n:attributes="value" />
-      <input type="submit" class="button-cancel" name="CANCEL"
-             onclick="return ST.dialogs.close(this);"
-             value="Cancel" i18n:attributes="value" />
-    </div>
-  </form>
+  <metal:block use-macro="macro:form">
+    <metal:block fill-slot="above-buttons">
+      <tal:block repeat="info view/sorted_scoresystems">
+        <h3 i18n:translate="">
+          Select a minimum display score for
+          <tal:block i18n:name="scoresystem" tal:replace="info/obj/title" />
+        </h3>
+        <table>
+          <tbody>
+	    <tr>
+	      <td>
+                <select tal:attributes="name info/name">
+                  <option tal:repeat="score info/scores"
+                          tal:attributes="value score/label;
+                                          selected python:view.is_selected(info, score)"
+                          tal:content="score/abbr" />
+                </select>
+	      </td>
+	    </tr>
+          </tbody>
+        </table>
+      </tal:block>
+    </metal:block>
+  </metal:block>
 </div>
