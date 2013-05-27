@@ -40,12 +40,14 @@ import zc.table.column
 from zc.catalog.interfaces import IExtentCatalog
 from zc.table.interfaces import ISortableColumn
 
+from z3c.rml import rml2pdf
 from z3c.form import form, field, button
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.interfaces import IApplicationPreferences
 from schooltool.app.catalog import buildQueryString
 from schooltool.course.interfaces import ISection
+from schooltool.course.interfaces import ISectionContainer
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
@@ -68,7 +70,9 @@ from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
 from schooltool.report.browser.report import RequestRemoteReportDialog
 from schooltool.report.report import ReportTask
-from schooltool.report.report import ReportLinkViewlet
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.report.browser.report import FileArchiver
+from schooltool.report.browser.report import ReportArchivePage
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.term.interfaces import ITerm, IDateManager
@@ -2085,3 +2089,94 @@ class StudentSCRPart(flourish.report.PDFPart):
         rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
         rml_table.update()
         return rml_table.render()
+
+
+class StudentCompetencyArchivePage(ReportArchivePage):
+    message_title = _("skill gradebooks archive")
+    base_filename = 'skill_gradebooks'
+
+
+class ArchiveCompetencySectionReports(FileArchiver):
+
+    sections_by_term = None
+
+    report_builder = 'student_competency_section_report.pdf'
+
+    def collectTerms(self, schoolyear_id=None):
+        app = ISchoolToolApplication(None)
+        syc = ISchoolYearContainer(app)
+        archive_terms = []
+        for year_id, year in syc.items():
+            if (schoolyear_id is None or
+                year_id == schoolyear_id):
+                for term in year.values():
+                    archive_terms.append(term)
+        return archive_terms
+
+    def collectSections(self, terms):
+        archive_sections = []
+        if not terms:
+            return archive_sections
+        for term in terms:
+            sections = []
+            sc = ISectionContainer(term)
+            for section in sc.values():
+                sections.append(section)
+            if sections:
+                archive_sections.append((term, sections))
+        return archive_sections
+
+    def updateTargets(self):
+        terms = self.collectTerms()
+        sections = self.collectSections(terms)
+        self.sections_by_term = sections
+
+    def update(self):
+        FileArchiver.update(self)
+        self.updateTargets()
+
+    def renderReport(self, renderer, filename, archive):
+        renderer.update()
+        rml = renderer.render()
+        pdf_filename = renderer.filename
+        pdf_stream = rml2pdf.parseString(rml, filename=pdf_filename or None)
+        data = pdf_stream.getvalue()
+        archive.writestr(filename, data)
+
+    def renderSection(self, section, filename, archive):
+        request = self.request
+        if hasattr(request, 'clone'):
+            request = request.clone()
+        skills = ISectionSkills(section)
+        if not skills:
+            return
+        worksheet = skills.values()[0]
+        gradebook = ISkillsGradebook(worksheet)
+        renderer = self.queryView(
+            gradebook, request, self.report_builder)
+        if renderer is None:
+            return
+        self.renderReport(renderer, filename, archive)
+
+    def getFullFilename(self, year, term, section):
+        filename = '%s/%s/%s-skills.pdf' % (
+            year.__name__, term.__name__, section.__name__)
+        return filename
+
+    def render(self, archive):
+        total_files = sum([len(sections) for term, sections in self.sections_by_term])
+        file_n = 0
+        first_run = True
+        for term, sections in self.sections_by_term:
+            year = ISchoolYear(term)
+            self.setTitle(u'%s, %s' % (year.title, term.title))
+            for section in sections:
+                filename = self.getFullFilename(year, term, section)
+                self.progress(filename, file_n, total_files)
+                if first_run:
+                    # Push out update progress immediately
+                    self.view.task_progress.force()
+                first_run = False
+                self.renderSection(section, filename, archive)
+                file_n += 1
+        self.finish()

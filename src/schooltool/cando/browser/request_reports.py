@@ -22,11 +22,21 @@ Request Report Views
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.export.export import RequestXLSReportDialog
+from schooltool.report.browser.report import RequestReportArchiveDialog
 
 
 class RequestGlobalSkillsExportView(RequestXLSReportDialog):
 
     report_builder = 'export_global_skills.xls'
+
+    @property
+    def target(self):
+        return ISchoolToolApplication(None)
+
+
+class RequestStudentCompetencyArchive(RequestReportArchiveDialog):
+
+    report_builder = 'student_competency_archive.zip'
 
     @property
     def target(self):

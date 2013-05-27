@@ -324,4 +324,40 @@
       permission="schooltool.view"
       />
 
+
+  <flourish:page
+       name="request_student_competency_archive.html"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       class=".request_reports.RequestStudentCompetencyArchive"
+       permission="schooltool.edit"
+       />
+
+  <view
+       name="student_competency_archive.zip"
+       for="schooltool.app.interfaces.ISchoolToolApplication"
+       layer="zope.publisher.interfaces.browser.IBrowserRequest"
+       class=".gradebook.StudentCompetencyArchivePage"
+       permission="schooltool.edit"
+       />
+
+  <flourish:viewlet
+      name="archive-section-competency-pdfs"
+      manager="schooltool.report.browser.report.ArchiveFileManager"
+      class="schooltool.cando.browser.gradebook.ArchiveCompetencySectionReports"
+      view="schooltool.cando.browser.gradebook.StudentCompetencyArchivePage"
+      title="Skill Gradebooks"
+      permission="schooltool.edit"
+      />
+
+  <report:reportLink
+       name="global_skills_export"
+       layer="schooltool.skin.flourish.IFlourishLayer"
+       permission="schooltool.edit"
+       group="School"
+       description="Archive all student skill gradebooks."
+       title="Skill Gradebook Archive"
+       file_type="zip"
+       link="request_student_competency_archive.html"
+       />
+
 </configure>
