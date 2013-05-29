@@ -2,9 +2,10 @@
 CHANGES
 =======
 
-0.7.1 (unreleased)
+0.7.1 (2013-05-29)
 ------------------
 
+- Renamed Section Competencies reports to Student Skill Reports
 - Fixed Add Skill exception when z3c.form >= 2.9 is used (https://launchpad.net/bugs/1185433)
 
 
