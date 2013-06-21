@@ -358,6 +358,7 @@
        title="Skill Gradebook Archive"
        file_type="zip"
        link="request_student_competency_archive.html"
+       view="schooltool.app.browser.app.ManageSchool"
        />
 
 </configure>
