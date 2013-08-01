@@ -17,7 +17,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-04-18 16:34+0300\n"
+"POT-Creation-Date: 2013-05-29 19:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -516,12 +516,13 @@ msgstr ""
 msgid "Rating"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:1731
+#: /src/schooltool/cando/browser/gradebook.py:1736
+#: /src/schooltool/cando/browser/gradebook.py:1951
 #: /src/schooltool/cando/browser/gradebook.zcml:770
-msgid "Section Competencies"
+msgid "Student Skill Report"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:1754
+#: /src/schooltool/cando/browser/gradebook.py:1759
 msgid "Teacher(s): ${teachers}"
 msgstr ""
 
@@ -616,7 +617,8 @@ msgid "Summary of a student scores in a section exceeding a selected minimum sco
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:794
-msgid "Student Competency Report (Section)"
+#: /src/schooltool/cando/browser/gradebook.zcml:806
+msgid "Aggregated Student Skill Reports"
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:794

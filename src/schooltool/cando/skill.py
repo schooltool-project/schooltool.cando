@@ -194,7 +194,6 @@ def querySkillScoreSystem():
     ss = ssc.get(SkillScoreSystem.__name__, None)
     if ss is not None:
         return ss
-    ssc = IScoreSystemContainer(ISchoolToolApplication(None))
     if len(ssc) > 0:
         return ssc.values()[0]
     return None
@@ -205,7 +204,7 @@ def getDefaultSkillScoreSystem(person):
     if default_ss is None:
         return None
 
-    default = default_ss.__name__.encode('punycode')
+    default = [default_ss.__name__.encode('punycode')]
     if person is None:
         return default
     ann = IAnnotations(removeSecurityProxy(person))

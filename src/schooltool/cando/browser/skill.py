@@ -273,6 +273,10 @@ class SkillAddView(flourish.form.AddForm):
 
     def updateWidgets(self):
         super(SkillAddView, self).updateWidgets()
+
+        scoresystem = self.widgets['scoresystem'].value
+        if scoresystem:
+            return
         person = IPerson(self.request.principal, None)
         default = getDefaultSkillScoreSystem(person)
         if default is not None:
