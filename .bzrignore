@@ -6,6 +6,7 @@
 ./python
 ./.installed.cfg
 ./instance
+**/LC_MESSAGES/*.mo
 ./src/schooltool.cando.egg-info/
 ./src/schooltool/cando/locales/??
 ./src/schooltool/cando/locales/??_??

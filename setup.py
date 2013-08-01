@@ -62,7 +62,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=["schooltool"],
     install_requires=['schooltool >= 2.5dev',
-                      'schooltool.gradebook >= 2.4a1',
+                      'schooltool.gradebook >= 2.5dev',
                       'setuptools',
                       'zope.i18n',
                       'zope.i18nmessageid'],
