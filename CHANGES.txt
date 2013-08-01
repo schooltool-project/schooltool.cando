@@ -2,11 +2,12 @@
 CHANGES
 =======
 
-0.8.0 (unreleased)
+0.8.0 (2013-08-01)
 ------------------
 
+- Background PDF reports
 - Moved in Per Student Skills Report and Skills Completion Report from schooltool.virginia
-- Made PDF reports to use remote tasks
+- Added Student skill completion (by section) pdf archive report.
 
 
 0.7.1 (2013-05-29)
