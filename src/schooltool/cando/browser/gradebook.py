@@ -1003,6 +1003,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
+            found_in_catalog = self.removeRetired(catalog, found_in_catalog)
             found_ids.update(found_in_catalog)
             request_layer_ids.remove(self.skill_layer_id)
 
@@ -1013,6 +1014,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
+            found_in_catalog = self.removeRetired(catalog, found_in_catalog)
             found_ids.update(found_in_catalog)
             request_layer_ids.remove(self.skillset_layer_id)
 
@@ -1022,6 +1024,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
             found_in_catalog = set(index.apply(query))
         else:
             found_in_catalog = set(catalog.extent)
+        found_in_catalog = self.removeRetired(catalog, found_in_catalog)
         index = getNodeCatalog()['layers']
         if self.no_layer_id in request_layer_ids:
             found_no_layers = set(catalog.extent).difference(index.ids())
@@ -1035,6 +1038,12 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
 
         result = filter(lambda i: i['id'] in found_ids, items)
         return result
+
+    def removeRetired(self, catalog, found_ids):
+        retired = set()
+        index = catalog['retired']
+        retired = index.values_to_documents.get(True, set())
+        return set(found_ids).difference(retired)
 
 
 class AggregateNodesSkillsSearchTable(table.ajax.IndexedTable):

@@ -167,15 +167,17 @@ class Node(Persistent, Contained):
     title = u''
     description = u''
     label = u''
+    retired = False
     layers = RelationshipProperty(URINodeLayer, URINode, URILayer)
     parents = RelationshipProperty(URINodeLink, URINode, URIParentNode)
     children = RelationshipProperty(URINodeLink, URIParentNode, URINode)
     skillsets = RelationshipProperty(URINodeSkillSets, URINode, URISkillSet)
 
-    def __init__(self, title=u'', description=u'', label=u''):
+    def __init__(self, title=u'', description=u'', label=u'', retired=False):
         self.title = title
         self.description = description
         self.label = label
+        self.retired = retired
 
     def findPaths(self):
         paths = [(self,)]

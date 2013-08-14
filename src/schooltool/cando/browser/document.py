@@ -854,7 +854,7 @@ class DocumentNodeAddSkillSetView(DocumentAddSkillSetBase, DocumentNodeMixin):
 class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('description', 'label')
+    fields = fields.select('description', 'label', 'retired')
 
     @property
     def subtitle(self):

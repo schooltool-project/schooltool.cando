@@ -43,7 +43,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
     def export_skillsets(self, wb):
         ws = wb.add_sheet('SkillSets')
 
-        headers = ['ID', 'Title', 'Description', 'Label']
+        headers = ['ID', 'Title', 'Description', 'Label', 'Deprecated']
         for index, header in enumerate(headers):
             self.write_header(ws, 0, index, header)
 
@@ -53,6 +53,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
             self.write(ws, index + 1, 1, skillset.title)
             self.write(ws, index + 1, 2, skillset.description)
             self.write(ws, index + 1, 3, skillset.label)
+            self.write(ws, index + 1, 4, skillset.retired)
             self.progress('skills', export.normalized_progress(
                     0, 2,
                     index, len(skillsets)))
@@ -61,7 +62,7 @@ class ExportGlobalSkillsView(export.ExcelExportView, flourish.page.Page):
         ws = wb.add_sheet('Skills')
 
         headers = ['SkillSet ID', 'Skill ID', 'Title', 'Equivalent',
-                   'Description', 'External ID', 'Label', 'Required', 'Retired']
+                   'Description', 'External ID', 'Label', 'Required', 'Deprecated']
         for index, header in enumerate(headers):
             self.write_header(ws, 0, index, header)
 

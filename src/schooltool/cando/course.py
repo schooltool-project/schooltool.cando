@@ -295,6 +295,15 @@ class GlobalSkillSetModified(ObjectEventAdapterSubscriber,
         if not is_global_skillset(None, None, skillset):
             return
         self.updateSkillSet(skillset)
+        if skillset.retired:
+            self.retireSkills(skillset)
+
+    def retireSkills(self, skillset):
+        for skill_id in skillset:
+            skill = skillset[skill_id]
+            if not skill.retired:
+                skill.retired = True
+                zope.lifecycleevent.modified(skill)
 
 
 class GlobalSkillModified(ObjectEventAdapterSubscriber,

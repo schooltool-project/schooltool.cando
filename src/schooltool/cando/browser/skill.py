@@ -186,12 +186,12 @@ class SkillSetAddView(flourish.form.AddForm):
 class SkillSetView(flourish.form.DisplayForm):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('description', 'label')
+    fields = fields.select('description', 'label', 'retired')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'description', 'label')
+    fields = fields.select('title', 'description', 'label', 'retired')
 
     legend = _('Skill set')
 
@@ -321,7 +321,7 @@ class SkillView(flourish.form.DisplayForm):
 
     fields = z3c.form.field.Fields(ISkill)
     fields = fields.select('scoresystem', 'description', 'label', 'required',
-                           'external_id')
+                           'retired', 'external_id')
 
     @property
     def title(self):

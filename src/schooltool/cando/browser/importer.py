@@ -102,6 +102,7 @@ class SkillSetsImporter(ImporterBase):
             title = self.getRequiredTextFromCell(sh, row, 1)
             description = self.getTextFromCell(sh, row, 2)
             label = self.getTextFromCell(sh, row, 3)
+            retired = self.getBoolFromCell(sh, row, 4)
             if num_errors < len(self.errors):
                 continue
 
@@ -114,6 +115,7 @@ class SkillSetsImporter(ImporterBase):
                 changes = Changer(skillset, ignore=True)
             changes['description'] = description
             changes['label'] = label
+            changes['retired'] = bool(retired)
             changes.notify()
 
 
@@ -308,6 +310,7 @@ class NodesImporter(ImporterBase):
             title = self.getRequiredTextFromCell(sh, row, 1)
             description = self.getTextFromCell(sh, row, 2)
             label = self.getTextFromCell(sh, row, 3)
+            retired = self.getBoolFromCell(sh, row, 8)
             if num_errors < len(self.errors):
                 continue
 
@@ -319,8 +322,9 @@ class NodesImporter(ImporterBase):
                 nodes[name].title = title
                 nodes[name].description = description
                 nodes[name].label = label
+                nodes[name].retired = retired
             else:
-                nodes[name] = Node(title, description, label)
+                nodes[name] = Node(title, description, label, retired)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':

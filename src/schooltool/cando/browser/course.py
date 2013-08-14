@@ -315,7 +315,7 @@ class SkillsetNodesTable(table.ajax.Table):
         nodes = INodeContainer(app)
         result = {}
         for node in nodes.values():
-            if node.skillsets:
+            if node.skillsets and not node.retired:
                 result[node.__name__] = node
         return result
 
@@ -824,7 +824,8 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 for node in nodes:
                     node_attr_value = getattr(node, node_attr, '')
                     if node_attr_value:
-                        if node_attr_value == course_attr_value:
+                        if (node_attr_value == course_attr_value and
+                            not node.retired):
                             assignments.append({
                                     'course': course,
                                     'course_attr': course_attr_value,
@@ -848,6 +849,7 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
         self.not_matched = not_assigned
 
     def update(self):
+        collator = ICollator(self.request.locale)
         if 'CANCEL' in self.request:
             self.request.response.redirect(self.nextURL())
             return
@@ -863,10 +865,16 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 self.request.response.redirect(self.nextURL())
                 return
             if 'SEARCH_BUTTON' in self.request:
-                self.matched = sorted(self.matched,
-                                      key=lambda x:x['course_attr'])
-                self.not_matched = sorted(self.not_matched,
-                                          key=lambda x:x['course_attr'])
+                self.matched = sorted(
+                    self.matched,
+                    key=lambda x:(x['course_attr'],
+                                  collator.key(x['course'].title))
+                    )
+                self.not_matched = sorted(
+                    self.not_matched,
+                    key=lambda x:(x['course_attr'],
+                                  collator.key(x['course'].title))
+                    )
 
 
 class BatchAssignSkillsLinkViewlet(flourish.page.LinkViewlet):

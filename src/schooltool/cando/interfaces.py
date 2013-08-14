@@ -68,8 +68,9 @@ class ISkill(IRequirement, IAttributeAnnotatable, ILabel):
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)
     required = SkillRequiredBool(title=_("Required?"))
-    retired = zope.schema.Bool(title=_("Retired"),
-                               description=_("Skill is no longer used"))
+    retired = zope.schema.Bool(title=_("Deprecated"),
+                               description=_("Skill is no longer used"),
+                               default=False)
 
     description = HtmlFragment(title=_("Description"), required=False)
 
@@ -95,6 +96,10 @@ class ISkillSetContainer(IContainer):
 class ISkillSet(IRequirement, IAttributeAnnotatable, ILabel):
 
     description = HtmlFragment(title=_("Description"), required=False)
+
+    retired = zope.schema.Bool(title=_("Deprecated"),
+                               description=_("Skill set is no longer used"),
+                               default=False)
 
 
 class ILayerContainer(IContainer):
@@ -126,6 +131,10 @@ class INode(ILabel):
         title=_("Description"),
         required=False,
         default=u'')
+    retired = zope.schema.Bool(
+        title=_("Deprecated"),
+        description=_("Node is no longer used"),
+        default=False)
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")

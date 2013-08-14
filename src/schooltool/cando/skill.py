@@ -131,6 +131,7 @@ class SkillSet(Requirement):
 
     description = u''
     label = u''
+    retired = False
 
     def __init__(self, title, description=u'', label=u''):
         Requirement.__init__(self, title)
@@ -277,9 +278,9 @@ class SearchableTextSkill(object):
 
 class SkillSetCatalog(AttributeCatalog):
 
-    version = '1 - attributes and text indexes'
+    version = '1.1 - update retired'
     interface = interfaces.ISkillSet
-    attributes = ('title', 'label', 'description',)
+    attributes = ('title', 'label', 'description', 'retired')
 
     def createCatalog(self):
         return zc.catalog.extentcatalog.Catalog(
