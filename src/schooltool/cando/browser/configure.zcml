@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <configure xmlns="http://namespaces.zope.org/browser"
            xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:security="http://schooltool.org/securitypolicy"
            xmlns:flourish="http://schooltool.org/flourish"
            xmlns:report="http://namespaces.schooltool.org/report"
            i18n_domain="schooltool.cando">
@@ -839,6 +840,11 @@
        class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
        permission="schooltool.edit" />
 
+    <security:allow
+        interface="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+        crowds="managers clerks"
+        permission="schooltool.edit" />
+
   </configure>
 
   <flourish:viewlet
@@ -847,7 +853,7 @@
       template="templates/f_import_related.pt"
       view=".importer.GlobalSkillsMegaImporter"
       manager="schooltool.skin.flourish.page.IPageRelatedManager"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <resource

@@ -1043,3 +1043,7 @@ class DocumentSkillEditView(SkillEditView, DocumentSkillMixin):
                                                node=self.get_node())
         return '%s/document.html%s' % (url, query_string)
 
+
+class CustomizeDocumentLink(flourish.page.LinkViewlet):
+    pass
+

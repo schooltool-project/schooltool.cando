@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <configure xmlns="http://namespaces.zope.org/browser"
            xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns:security="http://schooltool.org/securitypolicy"
            xmlns:flourish="http://schooltool.org/flourish"
            xmlns:report="http://namespaces.schooltool.org/report"
            i18n_domain="schooltool.cando">
@@ -70,7 +71,8 @@
        name="completion_report"
        for="schooltool.term.interfaces.ITerm"
        layer="schooltool.skin.flourish.IFlourishLayer"
-       permission="schooltool.edit"
+       class="schooltool.gradebook.browser.gradebook.TermReportLinkViewlet"
+       permission="schooltool.view"
        group="Term"
        description="An overview of each section's aggregate achievement of skills."
        title="Skills Completion"
@@ -255,6 +257,11 @@
       permission="schooltool.edit"
       />
 
+  <security:allow
+     interface=".report.SkillsCompletionReportView"
+     crowds="managers administrators clerks"
+     permission="schooltool.edit" />
+
   <flourish:viewlet
       name="course-details"
       view=".report.SkillsCompletionReportViewBase"
@@ -352,13 +359,13 @@
   <report:reportLink
        name="global_skills_export"
        layer="schooltool.skin.flourish.IFlourishLayer"
+       view="schooltool.app.browser.app.ManageSchool"
        permission="schooltool.edit"
        group="School"
        description="Archive all student skill gradebooks."
        title="Skill Gradebook Archive"
        file_type="zip"
        link="request_student_competency_archive.html"
-       view="schooltool.app.browser.app.ManageSchool"
        />
 
 </configure>
