@@ -34,9 +34,9 @@
       />
 
   <security:allow
-     interface=".document.CustomizeDocumentLink"
-     crowds="administrators clerks"
-     permission="schooltool.edit" />
+      interface=".document.CustomizeDocumentLink"
+      crowds="managers clerks"
+      permission="schooltool.edit" />
 
   <flourish:page
       name="index.html"

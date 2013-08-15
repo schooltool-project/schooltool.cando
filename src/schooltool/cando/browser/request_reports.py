@@ -22,6 +22,7 @@ Request Report Views
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.export.export import RequestXLSReportDialog
+from schooltool.report.report import ReportLinkViewlet
 from schooltool.report.browser.report import RequestReportArchiveDialog
 
 
@@ -41,3 +42,7 @@ class RequestStudentCompetencyArchive(RequestReportArchiveDialog):
     @property
     def target(self):
         return ISchoolToolApplication(None)
+
+
+class GradebookArchiveLinkViewlet(ReportLinkViewlet):
+    pass
