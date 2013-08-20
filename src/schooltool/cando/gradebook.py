@@ -272,9 +272,9 @@ class CanDoStudentGradebook(StudentGradebook):
     implements(ICanDoStudentGradebook)
     adapts(IBasicPerson, ICanDoGradebook)
 
-    def __init__(self, *args, **kw):
-        super(CanDoStudentGradebook, self).__init__(*args, **kw)
-        self.__parent__ = self.gradebook.__parent__
+    @property
+    def __parent__(self):
+        return self.gradebook.__parent__
 
 
 class CanDoStudentGradebookTraverser(object):
