@@ -5,7 +5,8 @@ CHANGES
 0.8.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Nodes and skill sets can now be deprecated.
+- Update permissions: clerks and site managers can access the skills
 
 
 0.8.0 (2013-08-01)
