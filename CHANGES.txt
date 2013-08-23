@@ -7,6 +7,7 @@ CHANGES
 
 - Nodes and skill sets can now be deprecated.
 - Update permissions: clerks and site managers can access the skills
+- Update GPL license and file headers from gnu.org (https://launchpad.net/bugs/1211145)
 
 
 0.8.0 (2013-08-01)
