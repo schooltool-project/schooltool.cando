@@ -1441,12 +1441,15 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
 
+    @property
+    def worksheets(self):
+        return self.context.__parent__.__parent__.__parent__
+
     def items(self):
         result = []
         iep = IStudentIEP(self.context.student)
         iep_skills = iep.getIEPSkills(self.view.gradebook.section)
-        worksheets = self.context.__parent__.__parent__.__parent__
-        for worksheet in worksheets.values():
+        for worksheet in self.worksheets.values():
             if self.view.isSkillsGradebook:
                 gradebook = ISkillsGradebook(worksheet)
                 skillset_label = worksheet.label
@@ -1673,6 +1676,10 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
     table_formatter = StudentCompetencyRecordTableFormatter
     visible_column_names = ['label', 'required', 'skill', 'date', 'rating']
 
+    @property
+    def worksheets(self):
+        return self.context.__parent__.__parent__
+
     def columns(self):
         skillset = SkillSetColumn(
             name='skillset',
@@ -1783,7 +1790,6 @@ class CanDoStudentGradebookReportTask(ReportTask):
         gradebook = ISkillsGradebook(worksheet)
         student_gradebook = getMultiAdapter((student, gradebook),
                                             ICanDoStudentGradebook)
-        student_gradebook.__parent__ = gradebook
         return student_gradebook
 
     @context.setter
@@ -2048,7 +2054,6 @@ class StudentCompetencySectionReportPDFStory(flourish.report.PDFStory):
                               cmp=collator.cmp):
             student_gradebook = getMultiAdapter((student, gradebook),
                                                 ICanDoStudentGradebook)
-            student_gradebook.__parent__ = gradebook
             student_scr = getMultiAdapter(
                 (student_gradebook, self.request, self.view, self),
                 name="student_scr")
