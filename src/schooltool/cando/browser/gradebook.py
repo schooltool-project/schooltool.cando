@@ -1432,6 +1432,12 @@ def skill_score_formatter(score, item, formatter):
     return ''
 
 
+def get_worksheets(student_gradebook):
+    skills_gradebook = student_gradebook.gradebook
+    section = ISection(proxy.removeSecurityProxy(skills_gradebook))
+    return ISectionSkills(section)
+
+
 class CanDoGradeStudentTableBase(table.ajax.Table):
 
     batch_size = 0
@@ -1443,7 +1449,7 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
 
     @property
     def worksheets(self):
-        return self.context.__parent__.__parent__.__parent__
+        return get_worksheets(self.context)
 
     def items(self):
         result = []
@@ -1676,10 +1682,6 @@ class StudentCompetencyRecordTable(CanDoGradeStudentTableBase):
     table_formatter = StudentCompetencyRecordTableFormatter
     visible_column_names = ['label', 'required', 'skill', 'date', 'rating']
 
-    @property
-    def worksheets(self):
-        return self.context.__parent__.__parent__
-
     def columns(self):
         skillset = SkillSetColumn(
             name='skillset',
@@ -1831,10 +1833,9 @@ class RMLSkillColumn(table.pdf.RMLGetterColumn):
             self.style.para_class, self.escape(value))
 
 
-def getScoreSystems(gradebook):
+def getScoreSystems(student_gradebook):
     result = {}
-    worksheet = gradebook.__parent__.__parent__
-    worksheets = worksheet.__parent__
+    worksheets = get_worksheets(student_gradebook)
     for worksheet in worksheets.values():
         for activity in worksheet.values():
             scoresystem = proxy.removeSecurityProxy(activity.scoresystem)
