@@ -5,13 +5,13 @@ CHANGES
 0.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add a view to batch-retire skills, skill sets and nodes.
 
 
 0.8.1 (2013-08-23)
 ------------------
 
-- Nodes and skill sets can now be deprecated.
+- Nodes and skill sets can now be retired.
 - Allow clerks and managers to access skills and reports.
 - Update GPL license and file headers from gnu.org (https://launchpad.net/bugs/1211145)
 
