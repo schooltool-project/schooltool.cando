@@ -296,6 +296,18 @@ class NodesView(flourish.page.Page):
         return INodeContainer(ISchoolToolApplication(None))
 
 
+class RetireNodesView(NodesView):
+
+    content_template = InlineViewPageTemplate('''
+      <div tal:content="structure context/schooltool:content/ajax/view/container/retire" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
+    ''')
+
+    @Lazy
+    def container(self):
+        return INodeContainer(ISchoolToolApplication(None))
+
+
 class NodesAddLinks(flourish.page.RefineLinksViewlet):
     """Manager for Add links in NodesView"""
 
@@ -652,7 +664,7 @@ def skillset_title_formatter(value, item, formatter):
 
 
 class NodeSkillSetsTable(table.ajax.Table):
-    
+
     batch_size = 0
 
     def items(self):
@@ -681,3 +693,19 @@ class NodeSkillSetsTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+class NodesLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def container(self):
+        return INodeContainer(ISchoolToolApplication(None))
+
+    @property
+    def url(self):
+        link = self.link
+        if not link:
+            return None
+        return "%s/%s" % (absoluteURL(self.container, self.request),
+                          self.link)
+

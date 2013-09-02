@@ -1,0 +1,12 @@
+<div i18n:domain="schooltool.cando" class="buttons">
+  <input id="form-buttons-add"
+         class="submit-widget button-field button-ok"
+         type="submit"
+         value="Save"
+         i18n:attributes="value"
+         tal:attributes="name view/button_name;
+                         onclick view/onclick;
+                         id view/html_id" />
+    <tal:script replace="structure scriptlocal: container_id view/manager/html_id;
+                                                save_button_id view/html_id" />
+</div>

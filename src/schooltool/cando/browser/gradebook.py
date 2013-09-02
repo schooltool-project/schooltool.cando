@@ -1162,8 +1162,108 @@ class NodesSearchTable(AggregateNodesSkillsSearchTable):
         return [label, title, layers]
 
 
+class RetireNodeColumn(table.column.CheckboxColumn):
+
+    tokens_name = None
+
+    def __init__(self, *args, **kw):
+        if 'tokens_name' in kw:
+            self.tokens_name = kw.pop('tokens_name')
+        else:
+            prefix = kw.get('prefix')
+            self.tokens_name = '.'.join(filter(None, ["displayed", prefix, "tokens"]))
+        table.column.CheckboxColumn.__init__(self, *args, **kw)
+
+
+    def renderHeader(self, formatter):
+        cell = table.column.CheckboxColumn.renderHeader(self, formatter)
+        cell += ('<input type="checkbox" '
+                 'onclick="return ST.table.check_children(this);" />')
+        return cell
+
+    def renderCell(self, item, formatter):
+        cell = table.column.CheckboxColumn.renderCell(self, item, formatter)
+        cell += ('\n<input name="%(tokens_name)s" value="%(tokens_value)s" '
+                 'type="hidden" />') % (
+            {'tokens_name': self.tokens_name,
+             'tokens_value': self.id_getter(item)})
+        return cell
+
+
+class RetireNodesTable(NodesSearchTable):
+
+    def columns(self):
+        columns = NodesSearchTable.columns(self)
+        int_ids = getUtility(IIntIds)
+        columns.append(RetireNodeColumn(
+                prefix="active", name="active",
+                title=_('Active'),
+                id_getter=lambda node: str(int_ids.getId(node)),
+                value_getter=lambda node: not node.retired))
+        return columns
+
+
 class NodesSearchTableFilter(AggregateNodesTableFilter):
     pass
+
+
+class RetireNodesTableFilter(AggregateNodesTableFilter):
+
+    def removeRetired(self, catalog, found_ids):
+        return set(found_ids)
+
+
+class SaveRetiredButton(flourish.viewlet.Viewlet):
+
+    template = flourish.templates.File('templates/retire_nodes_save_button.pt')
+
+    button_name = 'SAVE_RESULTS'
+    token_key = 'displayed.active.tokens'
+    checkbox_key = 'active.'
+
+    @property
+    def onclick(self):
+        return "$('#%(button_id)s').attr('disabled', 'disabled'); "\
+               "return ST.table.on_form_submit('%(container_id)s', '#%(button_id)s')" % ({
+                'container_id': self.manager.html_id,
+                'button_id': self.html_id,
+                })
+
+    @property
+    def html_id(self):
+        return '-'.join(filter(None, [self.manager.html_id, 'save_button']))
+
+    def saveChanges(self):
+        changed = False
+        checkbox_key = self.checkbox_key
+        checked_ids = [iid[len(checkbox_key):]
+                       for iid in self.request
+                       if (iid.startswith(checkbox_key) and
+                           self.request[iid])]
+        displayed_ids = self.request.get(self.token_key, ())
+        int_ids = getUtility(IIntIds)
+        for sid in displayed_ids:
+            retired = sid not in checked_ids
+            try:
+                iid = int(sid)
+            except (TypeError, ValueError):
+                continue
+            node = int_ids.queryObject(iid)
+            if node is None:
+                continue
+            if node.retired != retired:
+                node.retired = retired
+                changed = True
+        return changed
+
+    def update(self):
+        if self.button_name in self.request:
+            self.saveChanges()
+
+    def render(self, *args, **kw):
+        if not self.manager._items:
+            return ''
+        return self.template(*args, **kw)
 
 
 class NodeChildrenTable(SkillSearchTable):

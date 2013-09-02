@@ -126,6 +126,35 @@
       />
 
   <flourish:viewlet
+      name="skillset_container_actions"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class=".skill.SkillSetContainerActionLinks"
+      for="schooltool.cando.interfaces.INodeContainer"
+      title="Actions"
+      view=".model.NodesView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="retire.html"
+      title="Retire Skills"
+      for="schooltool.cando.interfaces.INodeContainer"
+      class="schooltool.skin.flourish.page.LinkViewlet"
+      manager=".skill.SkillSetContainerActionLinks"
+      view=".model.NodesView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
+      name="retire.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      class="schooltool.skin.flourish.Empty"
+      manager=".skill.SkillSetContainerActionLinks"
+      view=".model.RetireNodesView"
+      permission="schooltool.edit"
+      />
+
+  <flourish:viewlet
       name="add.html"
       title="Skill Set"
       class="schooltool.skin.flourish.page.LinkViewlet"
@@ -612,6 +641,15 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="retire.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      title="Documents and Skills"
+      subtitle="Retire"
+      class=".model.RetireNodesView"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="table"
       class=".model.NodesTable"
@@ -650,11 +688,36 @@
       />
 
   <flourish:viewlet
+      name="retire"
+      class=".gradebook.RetireNodesTable"
+      for="schooltool.cando.interfaces.INodeContainer"
+      manager="schooltool.skin.flourish.interfaces.IAJAXParts"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="filter"
       before="batch table"
       class=".gradebook.NodesSearchTableFilter"
       manager=".gradebook.NodesSearchTable"
       render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="filter"
+      before="batch table"
+      class=".gradebook.RetireNodesTableFilter"
+      manager=".gradebook.RetireNodesTable"
+      render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="save_results_button"
+      after="table"
+      manager=".gradebook.RetireNodesTable"
+      class=".gradebook.SaveRetiredButton"
       permission="schooltool.view"
       />
 
@@ -831,6 +894,14 @@
         permission="schooltool.edit"
         />
 
+    <flourish:viewlet
+        name="retire.html"
+        title="Retire Skills"
+        class="schooltool.cando.browser.model.NodesLinkViewlet"
+        manager="schooltool.cando.browser.document.DocumentsActionsLinks"
+        permission="schooltool.edit"
+        />
+
     <flourish:page
        name="import-skills.html"
        title="Skills"
@@ -875,7 +946,7 @@
       class=".course.CanDoCoursesActionsLinks"
       view="schooltool.course.browser.course.FlourishCoursesView"
       title="Actions"
-      permission="schooltool.edit"
+      permission="schooltool.view"
       />
 
   <flourish:viewlet
