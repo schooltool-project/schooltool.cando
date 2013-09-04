@@ -238,9 +238,22 @@ def is_global_skill(index, docid, item):
     return True
 
 
+searchable_common_indexes = {
+    'text_ID': 'getSearchableID',
+    'text_title': 'getSearchableTitle',
+    'text_label': 'getSearchableLabel',
+    }
+
+
+def setSearchableIndexes(catalog):
+    catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+    for index_id, method_name in searchable_common_indexes.items():
+        catalog[index_id] = TextIndex(method_name, ISearchableText, True)
+
+
 class SkillCatalog(AttributeCatalog):
 
-    version = '1.1 - index only global skills'
+    version = '1.2 - update common searchable attributes'
     interface = interfaces.ISkill
     attributes = ('title', 'external_id', 'label', 'description',
                   'required', 'retired')
@@ -251,13 +264,25 @@ class SkillCatalog(AttributeCatalog):
 
     def setIndexes(self, catalog):
         super(SkillCatalog, self).setIndexes(catalog)
-        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        setSearchableIndexes(catalog)
 
 
 getSkillCatalog = SkillCatalog.get
 
 
-class SearchableTextSkill(object):
+class SearchableTextMixin(object):
+
+    def getSearchableID(self):
+        return self.context.__name__
+
+    def getSearchableTitle(self):
+        return self.context.title
+
+    def getSearchableLabel(self):
+        return self.context.label or ''
+
+
+class SearchableTextSkill(SearchableTextMixin):
 
     adapts(interfaces.ISkill)
     implements(ISearchableText)
@@ -277,7 +302,7 @@ class SearchableTextSkill(object):
 
 class SkillSetCatalog(AttributeCatalog):
 
-    version = '1.1 - update retired'
+    version = '1.2 - update common searchable attributes'
     interface = interfaces.ISkillSet
     attributes = ('title', 'label', 'description', 'retired')
 
@@ -287,13 +312,13 @@ class SkillSetCatalog(AttributeCatalog):
 
     def setIndexes(self, catalog):
         super(SkillSetCatalog, self).setIndexes(catalog)
-        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        setSearchableIndexes(catalog)
 
 
 getSkillSetCatalog = SkillSetCatalog.get
 
 
-class SearchableTextSkillSet(object):
+class SearchableTextSkillSet(SearchableTextMixin):
 
     adapts(interfaces.ISkillSet)
     implements(ISearchableText)

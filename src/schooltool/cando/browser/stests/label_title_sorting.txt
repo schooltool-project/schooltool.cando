@@ -384,9 +384,9 @@ Same in the Remove skills view:
 
     >>> manager.query.name('CANCEL').click()
 
-and the Set Required/Visible view:
+and the Set Required / Deprecated view:
 
-    >>> manager.query.link('Set Required/Visible').click()
+    >>> manager.query.link('Set Required / Deprecated').click()
     >>> sel = 'table tbody th'
     >>> for title in manager.query_all.css(sel):
     ...     print title.text
@@ -395,7 +395,7 @@ and the Set Required/Visible view:
     00: Preparing for Business Law Careers
     01: Exploring Tort Law
 
-The skills in the Set Required/Visible view should be also sorted:
+The skills in the Set Required / Deprecated view should be also sorted:
 
     >>> sel = 'table tbody tr'
     >>> for row in manager.query_all.css(sel):

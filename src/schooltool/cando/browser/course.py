@@ -708,16 +708,16 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     if course_skill.required != required:
                         course_skill.required = required
                         skillset_modified = True
-                    hidden = not visible_name in self.request
-                    if course_skill.retired != hidden:
-                        course_skill.retired = hidden
+                    deprecated = visible_name in self.request
+                    if course_skill.retired != deprecated:
+                        course_skill.retired = deprecated
                         skillset_modified = True
                 skills.append({
                         'id': skill_id,
                         'title': skill_title,
                         'required_checked': course_skill.required,
                         'required_name': required_name,
-                        'visible_checked': not course_skill.retired,
+                        'visible_checked': course_skill.retired,
                         'visible_name': visible_name,
                         })
             skillsets.append({

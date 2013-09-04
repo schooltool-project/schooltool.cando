@@ -22,6 +22,7 @@ CanDo view components.
 import pytz
 from xml.sax.saxutils import quoteattr
 
+import zope.lifecycleevent
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import queryMultiAdapter
@@ -102,6 +103,7 @@ from schooltool.cando.model import getNodeCatalog
 from schooltool.cando.model import getOrderedByHierarchy
 from schooltool.cando.skill import getSkillCatalog, getSkillSetCatalog
 from schooltool.cando.skill import querySkillScoreSystem
+from schooltool.cando.skill import searchable_common_indexes
 from schooltool.cando.browser.skill import SkillAddView
 from schooltool.cando import CanDoMessage as _
 
@@ -946,6 +948,10 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         return self.manager.html_id+'-title'
 
     @property
+    def search_index_id(self):
+        return self.manager.html_id+'-index'
+
+    @property
     def search_layer_ids(self):
         return self.manager.html_id+"-layers"
 
@@ -995,10 +1001,16 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         found_ids = set()
         query = buildQueryString(self.request.get('SEARCH', ''))
 
+        searchable_index_id = 'text'
+        if self.search_index_id in self.request:
+            index_id = self.request[self.search_index_id]
+            if index_id in searchable_common_indexes:
+                searchable_index_id = index_id
+
         if self.skill_layer_id in request_layer_ids:
             catalog = getSkillCatalog()
             if query:
-                index = catalog['text']
+                index = catalog[searchable_index_id]
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
@@ -1009,7 +1021,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         if self.skillset_layer_id in request_layer_ids:
             catalog = getSkillSetCatalog()
             if query:
-                index = catalog['text']
+                index = catalog[searchable_index_id]
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
@@ -1019,7 +1031,7 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
 
         catalog = getNodeCatalog()
         if query:
-            index = catalog['text']
+            index = catalog[searchable_index_id]
             found_in_catalog = set(index.apply(query))
         else:
             found_in_catalog = set(catalog.extent)
@@ -1043,6 +1055,21 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         index = catalog['retired']
         retired = index.values_to_documents.get(True, set())
         return set(found_ids).difference(retired)
+
+    @Lazy
+    def search_indexes(self):
+        order = (
+            ('text_ID', _('ID')),
+            ('text_label', _('Label')),
+            ('text_title', _('Title')),
+            )
+        result = []
+        for index_id, title in order:
+            result.append({
+                    'id': index_id,
+                    'title': title,
+                    })
+        return result
 
 
 class AggregateNodesSkillsSearchTable(table.ajax.IndexedTable):
@@ -1197,9 +1224,9 @@ class RetireNodesTable(NodesSearchTable):
         int_ids = getUtility(IIntIds)
         columns.append(RetireNodeColumn(
                 prefix="active", name="active",
-                title=_('Active'),
+                title=_('Deprecated'),
                 id_getter=lambda node: str(int_ids.getId(node)),
-                value_getter=lambda node: not node.retired))
+                value_getter=lambda node: node.retired))
         return columns
 
 
@@ -1240,10 +1267,12 @@ class SaveRetiredButton(flourish.viewlet.Viewlet):
                        for iid in self.request
                        if (iid.startswith(checkbox_key) and
                            self.request[iid])]
-        displayed_ids = self.request.get(self.token_key, ())
+        displayed_ids = self.request.get(self.token_key, [])
+        if not isinstance(displayed_ids, list):
+            displayed_ids = [displayed_ids]
         int_ids = getUtility(IIntIds)
         for sid in displayed_ids:
-            retired = sid not in checked_ids
+            retired = sid in checked_ids
             try:
                 iid = int(sid)
             except (TypeError, ValueError):
@@ -1254,6 +1283,7 @@ class SaveRetiredButton(flourish.viewlet.Viewlet):
             if node.retired != retired:
                 node.retired = retired
                 changed = True
+                zope.lifecycleevent.modified(node)
         return changed
 
     def update(self):

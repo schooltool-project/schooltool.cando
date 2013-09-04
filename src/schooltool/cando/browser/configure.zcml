@@ -137,7 +137,7 @@
 
   <flourish:viewlet
       name="retire.html"
-      title="Retire Skills"
+      title="Deprecate Skills"
       for="schooltool.cando.interfaces.INodeContainer"
       class="schooltool.skin.flourish.page.LinkViewlet"
       manager=".skill.SkillSetContainerActionLinks"
@@ -317,7 +317,7 @@
   <flourish:viewlet
       name="edit-skills.html"
       after="remove-skills.html"
-      title="Set Required/Visible"
+      title="Set Required / Deprecated"
       class=".course.EditSkillsLinkViewlet"
       manager=".course.CourseSkillsLinks"
       permission="schooltool.edit"
@@ -333,7 +333,7 @@
 
   <flourish:page
       name="edit-skills.html"
-      subtitle="Set Required/Visible"
+      subtitle="Set Required / Deprecated"
       for="schooltool.cando.interfaces.ICourseSkills"
       class=".course.EditCourseSkillsView"
       permission="schooltool.edit"
@@ -645,7 +645,7 @@
       name="retire.html"
       for="schooltool.cando.interfaces.INodeContainer"
       title="Documents and Skills"
-      subtitle="Retire"
+      subtitle="Deprecate"
       class=".model.RetireNodesView"
       permission="schooltool.view"
       />
@@ -896,7 +896,7 @@
 
     <flourish:viewlet
         name="retire.html"
-        title="Retire Skills"
+        title="Deprecate Skills"
         class="schooltool.cando.browser.model.NodesLinkViewlet"
         manager="schooltool.cando.browser.document.DocumentsActionsLinks"
         permission="schooltool.edit"
