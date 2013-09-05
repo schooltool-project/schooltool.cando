@@ -253,7 +253,7 @@ def setSearchableIndexes(catalog):
 
 class SkillCatalog(AttributeCatalog):
 
-    version = '1.2 - update common searchable attributes'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.ISkill
     attributes = ('title', 'external_id', 'label', 'description',
                   'required', 'retired')
@@ -292,6 +292,7 @@ class SearchableTextSkill(SearchableTextMixin):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.external_id or '',
             self.context.label or '',
@@ -302,7 +303,7 @@ class SearchableTextSkill(SearchableTextMixin):
 
 class SkillSetCatalog(AttributeCatalog):
 
-    version = '1.2 - update common searchable attributes'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.ISkillSet
     attributes = ('title', 'label', 'description', 'retired')
 
@@ -328,6 +329,7 @@ class SearchableTextSkillSet(SearchableTextMixin):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.label or '',
             self.context.description or '',

@@ -551,7 +551,7 @@ def get_node_layer_titles(node):
 
 class NodeCatalog(AttributeCatalog):
 
-    version = '1.2 - update searchable common attributes'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.INode
     attributes = ('title', 'label', 'description',
                   'required', 'retired')
@@ -576,6 +576,7 @@ class SearchableTextNode(SearchableTextMixin):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.label or '',
             self.context.description or '',
