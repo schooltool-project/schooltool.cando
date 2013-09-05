@@ -714,10 +714,19 @@
       />
 
   <flourish:viewlet
+      name="done"
+      class="schooltool.skin.flourish.Empty"
+      manager=".gradebook.RetireNodesTable"
+      permission="schooltool.view"
+      view=".model.RetireNodesView"
+      />
+
+  <flourish:viewlet
       name="save_results_button"
       after="table"
       manager=".gradebook.RetireNodesTable"
       class=".gradebook.SaveRetiredButton"
+      render="template"
       permission="schooltool.view"
       />
 

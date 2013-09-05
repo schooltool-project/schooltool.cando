@@ -1245,6 +1245,7 @@ class SaveRetiredButton(flourish.viewlet.Viewlet):
     template = flourish.templates.File('templates/retire_nodes_save_button.pt')
 
     button_name = 'SAVE_RESULTS'
+    cancel_name = 'CANCEL'
     token_key = 'displayed.active.tokens'
     checkbox_key = 'active.'
 
@@ -1287,13 +1288,14 @@ class SaveRetiredButton(flourish.viewlet.Viewlet):
         return changed
 
     def update(self):
+        if self.cancel_name in self.request:
+            app = ISchoolToolApplication(None)
+            container = IDocumentContainer(app)
+            url = absoluteURL(container, self.request)
+            self.request.response.redirect(url)
+            return
         if self.button_name in self.request:
             self.saveChanges()
-
-    def render(self, *args, **kw):
-        if not self.manager._items:
-            return ''
-        return self.template(*args, **kw)
 
 
 class NodeChildrenTable(SkillSearchTable):
