@@ -296,7 +296,7 @@ class NodesView(flourish.page.Page):
         return INodeContainer(ISchoolToolApplication(None))
 
 
-class RetireNodesView(NodesView):
+class RetireNodesView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
       <div tal:content="structure context/schooltool:content/ajax/view/container/retire" />
@@ -306,6 +306,38 @@ class RetireNodesView(NodesView):
     @Lazy
     def container(self):
         return INodeContainer(ISchoolToolApplication(None))
+
+
+class RetireNodesSuccessView(flourish.form.Dialog):
+
+    template = InlineViewPageTemplate('''
+    <div i18n:domain="schooltool.cando">
+      <h3 i18n:translate="">XXX The changes were saved successfully. XXX</h3>
+      <form tal:attributes="action request/URL">
+        <div class="buttons">
+          <input i18n:domain="schooltool" type="submit"
+                 class="button-ok" value="Done"
+                 name="DONE" i18n:attributes="value"
+                 onclick="return ST.dialogs.submit(this, this);" />
+        </div>
+      </form>
+    </div>
+    ''')
+
+    def initDialog(self):
+        super(RetireNodesSuccessView, self).initDialog()
+        self.ajax_settings['dialog']['dialogClass'] = 'explicit-close-dialog'
+        self.ajax_settings['dialog']['closeOnEscape'] = False
+
+    def update(self):
+        super(RetireNodesSuccessView, self).update()
+        if 'DONE' in self.request:
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        container = IDocumentContainer(app)
+        return absoluteURL(container, self.request)
 
 
 class NodesAddLinks(flourish.page.RefineLinksViewlet):

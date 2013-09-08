@@ -136,25 +136,6 @@
       />
 
   <flourish:viewlet
-      name="retire.html"
-      title="Deprecate Skills"
-      for="schooltool.cando.interfaces.INodeContainer"
-      class="schooltool.skin.flourish.page.LinkViewlet"
-      manager=".skill.SkillSetContainerActionLinks"
-      view=".model.NodesView"
-      permission="schooltool.edit"
-      />
-
-  <flourish:viewlet
-      name="retire.html"
-      for="schooltool.cando.interfaces.INodeContainer"
-      class="schooltool.skin.flourish.Empty"
-      manager=".skill.SkillSetContainerActionLinks"
-      view=".model.RetireNodesView"
-      permission="schooltool.edit"
-      />
-
-  <flourish:viewlet
       name="add.html"
       title="Skill Set"
       class="schooltool.skin.flourish.page.LinkViewlet"
@@ -650,6 +631,13 @@
       permission="schooltool.view"
       />
 
+  <flourish:page
+      name="retire_successful.html"
+      for="schooltool.cando.interfaces.INodeContainer"
+      class=".model.RetireNodesSuccessView"
+      permission="schooltool.view"
+      />
+
   <flourish:viewlet
       name="table"
       class=".model.NodesTable"
@@ -727,6 +715,14 @@
       manager=".gradebook.RetireNodesTable"
       class=".gradebook.SaveRetiredButton"
       render="template"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="success_dialog_script"
+      before="*"
+      manager=".gradebook.RetireNodesTable"
+      class=".gradebook.RetireNodesScript"
       permission="schooltool.view"
       />
 

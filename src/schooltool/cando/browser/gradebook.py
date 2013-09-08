@@ -1219,6 +1219,8 @@ class RetireNodeColumn(table.column.CheckboxColumn):
 
 class RetireNodesTable(NodesSearchTable):
 
+    display_success_dialog = 'DISPLAY_SUCCESS_DIALOG'
+
     def columns(self):
         columns = NodesSearchTable.columns(self)
         int_ids = getUtility(IIntIds)
@@ -1228,6 +1230,25 @@ class RetireNodesTable(NodesSearchTable):
                 id_getter=lambda node: str(int_ids.getId(node)),
                 value_getter=lambda node: node.retired))
         return columns
+
+    @property
+    def success_dialog_title(self):
+        return _('XXX Changes saved XXX')
+
+    @property
+    def success_dialog_url(self):
+        return '%s/retire_successful.html' % absoluteURL(self.context,
+                                                         self.request)
+
+
+class RetireNodesScript(flourish.viewlet.Viewlet):
+
+    template = ViewPageTemplateFile('templates/retire_nodes_script.pt')
+
+    def render(self, *args, **kw):
+        if self.manager.display_success_dialog in self.request:
+            return self.template(*args, **kw)
+        return ''
 
 
 class NodesSearchTableFilter(AggregateNodesTableFilter):
@@ -1288,14 +1309,17 @@ class SaveRetiredButton(flourish.viewlet.Viewlet):
         return changed
 
     def update(self):
-        if self.cancel_name in self.request:
-            app = ISchoolToolApplication(None)
-            container = IDocumentContainer(app)
-            url = absoluteURL(container, self.request)
-            self.request.response.redirect(url)
-            return
         if self.button_name in self.request:
-            self.saveChanges()
+            changed = self.saveChanges()
+            if changed:
+                self.request.form[self.manager.display_success_dialog] = True
+        if self.cancel_name in self.request:
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        container = IDocumentContainer(app)
+        return absoluteURL(container, self.request)
 
 
 class NodeChildrenTable(SkillSearchTable):
