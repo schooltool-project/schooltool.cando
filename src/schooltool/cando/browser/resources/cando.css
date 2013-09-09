@@ -67,6 +67,7 @@
 .skill-title p.optional,
 .color-codes .optional,
 .color-codes .iep,
+.grades thead th.optional,
 .grades thead th.optional > a {
     color: black;
 }
@@ -74,6 +75,7 @@
 ul.skills li.optional,
 .color-codes .optional,
 .grade-student .optional,
+.grades thead th.optional,
 .grades thead th.optional > a {
     background: #ACC4E4;
 }
