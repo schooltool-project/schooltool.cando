@@ -1224,16 +1224,16 @@ class RetireNodesTable(NodesSearchTable):
     def columns(self):
         columns = NodesSearchTable.columns(self)
         int_ids = getUtility(IIntIds)
-        columns.append(RetireNodeColumn(
+        columns.insert(0, RetireNodeColumn(
                 prefix="active", name="active",
-                title=_('Deprecated'),
+                title='',
                 id_getter=lambda node: str(int_ids.getId(node)),
                 value_getter=lambda node: node.retired))
         return columns
 
     @property
     def success_dialog_title(self):
-        return _('XXX Changes saved XXX')
+        return _('Changes saved')
 
     @property
     def success_dialog_url(self):
@@ -1249,6 +1249,20 @@ class RetireNodesScript(flourish.viewlet.Viewlet):
         if self.manager.display_success_dialog in self.request:
             return self.template(*args, **kw)
         return ''
+
+
+class RetireNodesInstructionViewlet(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <h3 i18n:domain="schooltool.cando" i18n:translate="">
+        Select items to deprecate:
+      </h3>
+    ''')
+
+    def render(self, *args, **kw):
+        if not self.manager._items:
+            return ''
+        return self.template(*args, **kw)
 
 
 class NodesSearchTableFilter(AggregateNodesTableFilter):

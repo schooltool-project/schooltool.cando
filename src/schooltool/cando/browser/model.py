@@ -312,7 +312,7 @@ class RetireNodesSuccessView(flourish.form.Dialog):
 
     template = InlineViewPageTemplate('''
     <div i18n:domain="schooltool.cando">
-      <h3 i18n:translate="">XXX The changes were saved successfully. XXX</h3>
+      <h3 i18n:translate="">The changes were saved successfully.</h3>
       <form tal:attributes="action request/URL">
         <div class="buttons">
           <input i18n:domain="schooltool" type="submit"

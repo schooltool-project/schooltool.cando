@@ -693,6 +693,23 @@
       />
 
   <flourish:viewlet
+      name="cando-resources"
+      view=".model.RetireNodesView"
+      manager="schooltool.skin.flourish.page.IPageContentManager"
+      template="templates/cando_resources.pt"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
+      name="retire_instructions"
+      after="filter"
+      before="batch table"
+      class=".gradebook.RetireNodesInstructionViewlet"
+      manager=".gradebook.RetireNodesTable"
+      permission="schooltool.view"
+      />
+
+  <flourish:viewlet
       name="filter"
       before="batch table"
       class=".gradebook.RetireNodesTableFilter"

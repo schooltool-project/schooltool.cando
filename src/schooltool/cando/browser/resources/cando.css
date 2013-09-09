@@ -226,3 +226,8 @@ input[type="checkbox"].select-all {
 .request-competency-certificate-form select {
     width: 288px;
 }
+
+#retire-ajax-view-container-retire- div.no-batch-navigation {
+    padding: 0 8px;
+    margin-top: 0;
+}
