@@ -1591,7 +1591,7 @@ class CanDoGradeStudentTableFormatter(table.ajax.AJAXFormSortFormatter):
 def label_title_formatter(obj, item, formatter):
     title = obj.title
     label = getattr(obj, 'label')
-    if label is not None:
+    if label:
         title = '%s: %s' % (label, title)
     return title
 
@@ -1608,6 +1608,12 @@ def get_worksheets(student_gradebook):
     return ISectionSkills(section)
 
 
+def get_projects(student_gradebook):
+    project_gradebook = student_gradebook.gradebook
+    section = ISection(proxy.removeSecurityProxy(project_gradebook))
+    return IProjects(section)
+
+
 class CanDoGradeStudentTableBase(table.ajax.Table):
 
     batch_size = 0
@@ -1619,7 +1625,10 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
 
     @property
     def worksheets(self):
-        return get_worksheets(self.context)
+        if self.view.isSkillsGradebook:
+            return get_worksheets(self.context)
+        else:
+            return get_projects(self.context)
 
     def items(self):
         result = []
