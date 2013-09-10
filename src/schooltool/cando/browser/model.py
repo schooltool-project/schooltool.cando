@@ -299,6 +299,7 @@ class NodesView(flourish.page.Page):
 class RetireNodesView(flourish.page.Page):
 
     content_template = InlineViewPageTemplate('''
+      <div id="dialog-container"></div>
       <div tal:content="structure context/schooltool:content/ajax/view/container/retire" />
       <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
     ''')

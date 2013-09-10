@@ -8,5 +8,3 @@
                              ST.local.dialog_title);
 </script>
 <script>ST.state.pop()</script>
-<div id="dialog-container">
-</div>
