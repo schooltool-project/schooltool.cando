@@ -29,6 +29,7 @@ from zope.container.contained import containedEvent
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 from zope.proxy.decorator import SpecificationDecoratorBase
 from zope.proxy import getProxiedObject
 from zope.security.proxy import removeSecurityProxy
@@ -258,6 +259,16 @@ class CourseWorksheetRemoved(CourseWorksheetEventSubscriber):
                 del worksheets[skillset.__name__]
 
 
+class ICustomObjectModifiedEvent(IObjectModifiedEvent):
+
+    pass
+
+
+class CustomObjectModifiedEvent(ObjectModifiedEvent):
+
+    implements(ICustomObjectModifiedEvent)
+
+
 class GlobalSkillSetUpdateMixin(object):
 
     def yearsToUpdate(self):
@@ -282,7 +293,7 @@ class GlobalSkillSetUpdateMixin(object):
                 course_skills = annotations[COURSE_SKILLS_KEY]
                 for course_skillset in course_skills.values():
                     if course_skillset.__name__ == skillset.__name__:
-                        zope.lifecycleevent.modified(course_skillset)
+                        notify(CustomObjectModifiedEvent(course_skillset))
 
 
 class GlobalSkillSetModified(ObjectEventAdapterSubscriber,
@@ -316,7 +327,10 @@ class GlobalSkillModified(ObjectEventAdapterSubscriber,
         self.updateSkillSet(skillset)
 
 
-def updateCourseSkillSet(skillset, section):
+def updateCourseSkillSet(skillset, section, update_all_attrs=True):
+    attrs = ('external_id', 'label', 'description', 'title')
+    if update_all_attrs:
+        attrs += ('required', 'retired', 'scoresystem')
     int_ids = getUtility(IIntIds)
     worksheets = ISectionSkills(section)
     section_intid = int_ids.getId(section)
@@ -325,7 +339,6 @@ def updateCourseSkillSet(skillset, section):
         worksheet = worksheets[skillset.__name__] = SectionSkillSet(unproxied_skillset)
     else:
         worksheet = worksheets[skillset.__name__]
-
     delete_skills = list(worksheet.all_keys())
     for skill_name in skillset.all_keys():
         skill = skillset[skill_name]
@@ -337,8 +350,7 @@ def updateCourseSkillSet(skillset, section):
                 delete_skills.remove(skill_name)
             target_skill = worksheet[skill_name]
 
-        for attr in ('external_id', 'label', 'description', 'title',
-                     'required', 'retired', 'scoresystem'):
+        for attr in attrs:
             val = getattr(skill, attr, None)
             if getattr(target_skill, attr, None) != val:
                 setattr(target_skill, attr, val)
@@ -365,6 +377,16 @@ class CourseSkillSetModified(CourseWorksheetEventSubscriber):
         for section in self.sections:
             updateCourseSkillSet(skillset, section)
 
+
+class CustomCourseSkillSetModified(CourseWorksheetEventSubscriber):
+
+    adapts(ICustomObjectModifiedEvent, ICourseSkillSet)
+
+    def __call__(self):
+        skillset = removeSecurityProxy(self.object)
+        skillset.title = skillset.skillset.title
+        for section in self.sections:
+            updateCourseSkillSet(skillset, section, update_all_attrs=False)
 
 
 class CourseWorksheetAdded(CourseSkillSetModified):
