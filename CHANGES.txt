@@ -2,10 +2,15 @@
 CHANGES
 =======
 
-0.8.2 (unreleased)
+0.8.2 (2013-09-14)
 ------------------
 
-- Add a view to batch-retire skills, skill sets and nodes.
+- Add a view to batch-deprecate skills, skill sets and nodes.
+- Added field to node search table to filter by common text
+- Fixed Save button in deprecate skills view when there's only one result
+- Changed wording and functionality of Visible/Active/Retired to Deprecated
+- Changed wording attribute to field in batch assign view
+- Fixed score student view for projects
 
 
 0.8.1 (2013-08-23)
