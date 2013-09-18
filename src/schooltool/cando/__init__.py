@@ -24,3 +24,6 @@ import model
 import skill
 import project
 import stesting
+import schooltool.common
+
+schooltool.common.register_lauchpad_project(__package__, 'schooltool.cando')
