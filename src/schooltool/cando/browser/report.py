@@ -22,6 +22,7 @@ CanDo report views.
 import math
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
+from zope.component import getUtility
 from zope.i18n.interfaces.locales import ICollator
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser.absoluteurl import absoluteURL
@@ -34,6 +35,7 @@ from schooltool.basicperson.interfaces import IDemographics
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.course.interfaces import ISection, ISectionContainer
 from schooltool.course.interfaces import ICourseContainer
+from schooltool.person.interfaces import IPersonFactory
 from schooltool.report.report import ReportLinkViewlet
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.resource.interfaces import ILocation
@@ -828,8 +830,11 @@ def get_section_instructors(item, formatter):
     if section is placeholder:
         return ''
     collator = ICollator(formatter.request.locale)
-    instructors = [person.title for person in section.instructors]
-    return ', '.join(sorted(instructors, cmp=collator.cmp))
+    factory = getUtility(IPersonFactory)
+    sorting_key = lambda x: factory.getSortingKey(x, collator)
+    sorted_instructors = sorted(section.instructors, key=sorting_key)
+    instructors = [person.title for person in sorted_instructors]
+    return ', '.join(instructors)
 
 
 def section_instructors_formatter(value, item, formatter):
@@ -837,8 +842,11 @@ def section_instructors_formatter(value, item, formatter):
     if section is placeholder:
         return ''
     collator = ICollator(formatter.request.locale)
-    instructors = [person.title for person in section.instructors]
-    return '<br />'.join(sorted(instructors, cmp=collator.cmp))
+    factory = getUtility(IPersonFactory)
+    sorting_key = lambda x: factory.getSortingKey(x, collator)
+    sorted_instructors = sorted(section.instructors, key=sorting_key)
+    instructors = [person.title for person in sorted_instructors]
+    return '<br />'.join(instructors)
 
 
 class SkillsCompletionReportTable(SectionReportChartsTable):
