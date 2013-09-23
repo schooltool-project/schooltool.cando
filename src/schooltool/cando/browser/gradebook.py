@@ -68,6 +68,7 @@ from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import FlourishGradebookPDFView
 from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
+from schooltool.person.interfaces import IPersonFactory
 from schooltool.report.browser.report import RequestRemoteReportDialog
 from schooltool.report.report import ReportTask
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
@@ -2229,9 +2230,9 @@ class StudentCompetencySectionReportPDFStory(flourish.report.PDFStory):
         collator = ICollator(self.request.locale)
         gradebook = proxy.removeSecurityProxy(self.context)
         section = gradebook.section
-        for student in sorted(section.members,
-                              key=lambda x: x.title,
-                              cmp=collator.cmp):
+        factory = getUtility(IPersonFactory)
+        sorting_key = lambda x: factory.getSortingKey(x, collator)
+        for student in sorted(section.members, key=sorting_key):
             student_gradebook = getMultiAdapter((student, gradebook),
                                                 ICanDoStudentGradebook)
             student_scr = getMultiAdapter(
