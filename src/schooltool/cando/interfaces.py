@@ -254,6 +254,10 @@ class IMySkillsGrades(IMyGrades):
     pass
 
 
+class IMyProjectsGrades(IMyGrades):
+    pass
+
+
 class ICanDoStudentGradebook(IStudentGradebook):
     pass
 

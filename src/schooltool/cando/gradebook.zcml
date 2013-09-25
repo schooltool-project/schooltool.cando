@@ -69,7 +69,26 @@
   <adapter
       for=".interfaces.IMySkillsGrades"
       provides="schooltool.course.interfaces.ISection"
-      factory=".gradebook.getMySkillsGradesSection"
+      factory="schooltool.gradebook.gradebook.getMyGradesSection"
+      />
+
+  <class class=".gradebook.MyProjectsGrades">
+    <require
+        permission="schooltool.view"
+        interface=".interfaces.IMyProjectsGrades" />
+  </class>
+
+  <adapter
+      for=".interfaces.IProject"
+      provides=".interfaces.IMyProjectsGrades"
+      factory=".gradebook.MyProjectsGrades"
+      trusted="true"
+      />
+
+  <adapter
+      for=".interfaces.IMyProjectsGrades"
+      provides="schooltool.course.interfaces.ISection"
+      factory="schooltool.gradebook.gradebook.getMyGradesSection"
       />
 
   <class class=".gradebook.CanDoStudentGradebook">

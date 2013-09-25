@@ -39,6 +39,7 @@ from schooltool.requirement.interfaces import IScore
 
 from schooltool.cando.interfaces import ICanDoGradebook
 from schooltool.cando.interfaces import IMySkillsGrades
+from schooltool.cando.interfaces import IMyProjectsGrades
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
@@ -199,8 +200,15 @@ class MySkillsGrades(SkillsGradebook):
         self.__name__ = 'mygrades-skills'
 
 
-def getMySkillsGradesSection(gradebook):
-    return ISection(gradebook.context)
+class MyProjectsGrades(ProjectsGradebook):
+
+    implementsOnly(IMyProjectsGrades)
+    adapts(IProject)
+
+    def __init__(self, context):
+        super(MyProjectsGrades, self).__init__(context)
+        # To make URL creation happy
+        self.__name__ = 'mygrades-projects'
 
 
 @adapter(IHaveEvaluations, ISkill)
@@ -229,7 +237,10 @@ class ProjectGradebookTraverser(object):
                 gb.__setattr__('__parent__', gb.__parent__)
                 return gb
             elif name == 'mygrades':
-                pass
+                gb = IMyProjectsGrades(context)
+                gb = LocationProxy(gb, self.context, name)
+                gb.__setattr__('__parent__', gb.__parent__)
+                return gb
             else:
                 return queryMultiAdapter((self.context, request), name=name)
 

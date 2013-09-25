@@ -94,6 +94,8 @@ from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
+from schooltool.cando.interfaces import IMySkillsGrades
+from schooltool.cando.interfaces import IMyProjectsGrades
 from schooltool.cando.interfaces import IStudentIEP
 from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.interfaces import ICanDoStudentGradebook
@@ -329,6 +331,33 @@ class CanDoModesViewlet(flourish.viewlet.Viewlet):
 
     def render(self, *args, **kw):
         return self.template(*args, **kw)
+
+
+class MyGradesCanDoModes(flourish.page.RefineLinksViewlet):
+
+    pass
+
+
+class MyGradesCanDoModesViewlet(CanDoModesViewlet):
+
+    def items(self):
+        section = ISection(proxy.removeSecurityProxy(self.context))
+        section_url = absoluteURL(section, self.request)
+        result = []
+        if ISectionSkills(section):
+            result.append({
+                    'id': 'skills',
+                    'label': _('Skill Sets'),
+                    'url': section_url + '/mygrades-skills',
+                    'selected': IMySkillsGrades.providedBy(self.context),
+                    })
+        result.append({
+                'id': 'projects',
+                'label': _('Projects'),
+                'url': section_url + '/mygrades-projects',
+                'selected': IMyProjectsGrades.providedBy(self.context),
+                })
+        return result
 
 
 class SkillAddLink(flourish.page.LinkViewlet):
@@ -1426,6 +1455,11 @@ class MySkillsGradesView(FlourishMyGradesView):
             SkillsGradebookOverview, self).getActivityAttrs(activity)
         longTitle = activity.label + ': ' + longTitle
         return shortTitle, longTitle, bestScore
+
+
+class MyProjectsGradesView(MySkillsGradesView):
+
+    pass
 
 
 class SkillSortingColumn(table.column.LocaleAwareGetterColumn):
