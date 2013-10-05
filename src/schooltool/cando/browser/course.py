@@ -29,6 +29,7 @@ import zc.table.column
 from zc.table.interfaces import ISortableColumn
 
 from schooltool.app.browser.app import RelationshipAddTableMixin
+from schooltool.app.browser.app import ActiveSchoolYearContentMixin
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.course.interfaces import ICourseContainer
 from schooltool.cando.course import CourseSkillSet
@@ -744,7 +745,7 @@ class CanDoCoursesActionsLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
-class CoursesSkillsAssignmentView(flourish.page.Page):
+class CoursesSkillsAssignmentView(flourish.page.Page, ActiveSchoolYearContentMixin):
 
     matched = []
     not_matched = []
@@ -794,11 +795,13 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 return False
         return True
 
+    @property
+    def schoolyear(self):
+        return ISchoolYear(self.context)
+
     def nextURL(self):
         app = ISchoolToolApplication(None)
-        schoolyear = ISchoolYear(self.context)
-        return '%s/courses?schoolyear_id=%s' % (absoluteURL(app, self.request),
-                                                schoolyear.__name__)
+        return self.url_with_schoolyear_id(app, view_name='courses')
 
     def updateMatches(self):
         assignments = []
