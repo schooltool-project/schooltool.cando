@@ -59,6 +59,7 @@ View the skill set:
     >>> print_form_fields(manager)
     Description:
     Label:
+    Deprecated: No
 
 Edit the skill set and print the label widget:
 
@@ -78,6 +79,7 @@ If we try to set the label with 10 characters, it will store only 7:
     >>> print_form_fields(manager)
     Description:
     Label: 1234567
+    Deprecated: No
 
 Add another skill set with a long label:
 
@@ -92,6 +94,7 @@ Add another skill set with a long label:
     >>> print_form_fields(manager)
     Description:
     Label: ABCDEFG
+    Deprecated: No
 
 This checking proccess should be the same for Nodes. Let's print the
 label widget for adding nodes:
@@ -176,6 +179,7 @@ View the skill. Note how the label is set differently:
     Description:
     Label: 01
     Required?: Required
+    Deprecated: No
     External ID:
 
 Edit the skill and print the label widget:
@@ -199,6 +203,7 @@ If we try to set the label with 10 characters, it will store only 7:
     Description:
     Label: 1234567
     Required?: Required
+    Deprecated: No
     External ID:
 
 Add another skill with a long label:
@@ -216,4 +221,5 @@ Add another skill with a long label:
     Description:
     Label: ABCDEFG
     Required?: Required
+    Deprecated: No
     External ID:

@@ -170,14 +170,14 @@ Set up three skills in the default project:
 
 Grade the project skills:
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '3')
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '01', '3')
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '01', '4')
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '09', '2')
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '09', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '09', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '09', '1')
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '14', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '14', '4')
 
     >>> teacher.query.name('UPDATE_SUBMIT').click()
 
@@ -187,14 +187,14 @@ Print the project's gradebook:
     +------------+
     | *Project1* |
     +------------+
-    +------------------+----+----+----+
-    | Name             | 01 | 09 | 14 |
-    |                  | 4  | 4  | 4  |
-    +------------------+----+----+----+
-    | Cerna, Camila    | 3  | 2  | 4  |
-    | Tejada, Mario    | 3  |    |    |
-    | Vividor, Liliana | 4  | 1  |    |
-    +------------------+----+----+----+
+    +-----------+------------+----+----+----+
+    | Last Name | First Name | 01 | 09 | 14 |
+    |           |            | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+
+    | Cerna     | Camila     | 3  | 2  | 4  |
+    | Tejada    | Mario      | 3  |    |    |
+    | Vividor   | Liliana    | 4  | 1  |    |
+    +-----------+------------+----+----+----+
 
 Print every worksheet in the skills gradebook to see how the grades
 are updated from the project:
@@ -209,14 +209,14 @@ are updated from the project:
     +--------------------------+---------------------------------------------+------------+-------------+
     | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors | 04: Strings |
     +--------------------------+---------------------------------------------+------------+-------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  |    |
-    | Tejada, Mario    | 3  |    |
-    | Vividor, Liliana | 4  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  |    |
+    | Tejada    | Mario      | 3  |    |
+    | Vividor   | Liliana    | 4  |    |
+    +-----------+------------+----+----+
 
     >>> sel = 'a[title="02: Data Types, Statements, and Expressions"]'
     >>> link = teacher.query.css(sel)
@@ -226,14 +226,14 @@ are updated from the project:
     +------------------------+-----------------------------------------------+------------+-------------+
     | 01: Python Environment | *02: Data Types, Statements, and Expressions* | 03: Errors | 04: Strings |
     +------------------------+-----------------------------------------------+------------+-------------+
-    +------------------+----+----+----+----+----+----+
-    | Name             | 03 | 04 | 05 | 06 | 07 | 08 |
-    |                  | 4  | 4  | 4  | 4  | 4  | 4  |
-    +------------------+----+----+----+----+----+----+
-    | Cerna, Camila    |    |    |    |    |    |    |
-    | Tejada, Mario    |    |    |    |    |    |    |
-    | Vividor, Liliana |    |    |    |    |    |    |
-    +------------------+----+----+----+----+----+----+
+    +-----------+------------+----+----+----+----+----+----+
+    | Last Name | First Name | 03 | 04 | 05 | 06 | 07 | 08 |
+    |           |            | 4  | 4  | 4  | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+----+----+----+
+    | Cerna     | Camila     |    |    |    |    |    |    |
+    | Tejada    | Mario      |    |    |    |    |    |    |
+    | Vividor   | Liliana    |    |    |    |    |    |    |
+    +-----------+------------+----+----+----+----+----+----+
 
     >>> sel = 'a[title="03: Errors"]'
     >>> link = teacher.query.css(sel)
@@ -243,14 +243,14 @@ are updated from the project:
     +------------------------+---------------------------------------------+--------------+-------------+
     | 01: Python Environment | 02: Data Types, Statements, and Expressions | *03: Errors* | 04: Strings |
     +------------------------+---------------------------------------------+--------------+-------------+
-    +------------------+----+----+
-    | Name             | 09 | 10 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  |    |
-    | Tejada, Mario    |    |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 09 | 10 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  |    |
+    | Tejada    | Mario      |    |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+
 
     >>> sel = 'a[title="04: Strings"]'
     >>> link = teacher.query.css(sel)
@@ -260,11 +260,11 @@ are updated from the project:
     +------------------------+---------------------------------------------+------------+---------------+
     | 01: Python Environment | 02: Data Types, Statements, and Expressions | 03: Errors | *04: Strings* |
     +------------------------+---------------------------------------------+------------+---------------+
-    +------------------+----+----+----+----+
-    | Name             | 11 | 12 | 13 | 14 |
-    |                  | 4  | 4  | 4  | 4  |
-    +------------------+----+----+----+----+
-    | Cerna, Camila    |    |    |    | 4  |
-    | Tejada, Mario    |    |    |    |    |
-    | Vividor, Liliana |    |    |    |    |
-    +------------------+----+----+----+----+
+    +-----------+------------+----+----+----+----+
+    | Last Name | First Name | 11 | 12 | 13 | 14 |
+    |           |            | 4  | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+----+
+    | Cerna     | Camila     |    |    |    | 4  |
+    | Tejada    | Mario      |    |    |    |    |
+    | Vividor   | Liliana    |    |    |    |    |
+    +-----------+------------+----+----+----+----+

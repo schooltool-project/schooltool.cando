@@ -347,19 +347,19 @@ Log in as instructor:
 Students with IEP activated are shown differently in the skills
 gradebook:
 
-    >>> sel = '#students-part tbody tr td'
+    >>> sel = '#students-part tbody tr td:first-child'
     >>> for td in teacher.query_all.css(sel):
-    ...     print '%s%s' % (td.query.css('a.popup_link').text,
+    ...     print '%s%s' % (td.query.css('a.popup_link').get_attribute('title'),
     ...                     ['', ' (IEP)'][bool(td.get_attribute('class'))])
-    Cerna, Camila (IEP)
-    Tejada, Mario
-    Vividor, Liliana
+    Camila Cerna (IEP)
+    Mario Tejada
+    Liliana Vividor
 
 and the IEP information is shown in the Score student view:
 
-    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Camila').click()
     >>> camila_menu.query.link('Score').click()
 
     >>> sel = '.additional .content:first-child h3'

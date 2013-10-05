@@ -31,6 +31,7 @@ We see that it was added.
     >>> print_attrs()
     Description:
     Label: Carplab
+    Deprecated: No
 
 Now, we'll add a skill to it.  We see that the scoresystem field is set to the
 default, one the user hasn't even chosen yet.
@@ -56,6 +57,7 @@ We see that it was added.
     Description:
     Label: 01
     Required?: Required
+    Deprecated: No
     External ID:
 
 We'll add another skill.  We see that the scoresystem field is not set to the
@@ -80,6 +82,7 @@ after we submit it.
     Description:
     Label: 02
     Required?: Required
+    Deprecated: No
     External ID:
 
 We'll add one last skill.  Again, it remembered the last scoresystem we chose.
@@ -98,6 +101,7 @@ We'll add one last skill.  Again, it remembered the last scoresystem we chose.
     Description:
     Label: 03
     Required?: Required
+    Deprecated: No
     External ID:
 
 We see our skillset now has three skills.

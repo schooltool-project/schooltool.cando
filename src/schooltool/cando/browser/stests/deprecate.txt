@@ -164,7 +164,7 @@ Log in as instructor:
 
 Set a score and print the gradebook:
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '01', '3')
     >>> teacher.query.name('UPDATE_SUBMIT').click()
 
     >>> sel = 'a[title="01: Python Environment"]'
@@ -175,12 +175,12 @@ Set a score and print the gradebook:
     +--------------------------+---------------------------------------------+------------+
     | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors |
     +--------------------------+---------------------------------------------+------------+
-    +---------------+----+----+
-    | Name          | 01 | 02 |
-    |               | 4  | 4  |
-    +---------------+----+----+
-    | Cerna, Camila | 3  |    |
-    +---------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  |    |
+    +-----------+------------+----+----+
 
 Now, let's deprecate the Python Environment skillset:
 
@@ -209,9 +209,9 @@ Let's print the gradebook again:
     +--------------------------+---------------------------------------------+------------+
     | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors |
     +--------------------------+---------------------------------------------+------------+
-    +---------------+----+----+
-    | Name          | 01 | 02 |
-    |               | 4  | 4  |
-    +---------------+----+----+
-    | Cerna, Camila | 3  |    |
-    +---------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  |    |
+    +-----------+------------+----+----+

@@ -208,7 +208,7 @@ Add scores for the students:
     ...         ('14', '3'),
     ...         ],
     ...     }
-    >>> gradeStudent(teacher, 'Cerna, Camila', camila_scores)
+    >>> gradeStudent(teacher, 'Camila Cerna', camila_scores)
 
     >>> mario_scores = {
     ...     '01: Python Environment': [
@@ -234,7 +234,7 @@ Add scores for the students:
     ...         ('14', ''),
     ...         ],
     ...     }
-    >>> gradeStudent(teacher, 'Tejada, Mario', mario_scores)
+    >>> gradeStudent(teacher, 'Mario Tejada', mario_scores)
 
     >>> liliana_scores = {
     ...     '01: Python Environment': [
@@ -260,7 +260,7 @@ Add scores for the students:
     ...         ('14', ''),
     ...         ],
     ...     }
-    >>> gradeStudent(teacher, 'Vividor, Liliana', liliana_scores)
+    >>> gradeStudent(teacher, 'Liliana Vividor', liliana_scores)
 
 Print the Per Student Skills report details:
 

@@ -41,6 +41,7 @@ attributes that we specified.  We also see that there are no skills yet.
     Title: Basic Algebra
     Description: 
     Label: BA
+    Deprecated: No
     >>> print manager.query_all.css('.data tbody')
     <tbody> </tbody>
 
@@ -59,6 +60,7 @@ the title back.
     Title: Basic Algebra changed
     Description:
     Label: 02
+    Deprecated: No
 
     >>> manager.query.xpath('//a[@title="Edit this skill set"]').click()
     >>> manager.query.name('form.widgets.title').clear()
@@ -70,6 +72,7 @@ the title back.
     Title: Basic Algebra
     Description:
     Label: 02
+    Deprecated: No
 
 Let's add a couple skills for Algebra.  We then see them appear in the list
 of skills for Basic Algebra.
@@ -90,6 +93,7 @@ We'll look at the skills and see their attributes.
     Description: 
     Label: 01
     Required?: Required
+    Deprecated: No
     External ID: 
 
     >>> manager.query.link('Done').click()
@@ -100,6 +104,7 @@ We'll look at the skills and see their attributes.
     Description: 
     Label: L2
     Required?: Optional
+    Deprecated: No
     External ID: ext
 
 We can edit the attributes of one of the skills and see them change in the view.
@@ -121,6 +126,7 @@ We can edit the attributes of one of the skills and see them change in the view.
     Description: 
     Label: 02
     Required?: Required
+    Deprecated: No
     External ID: ext2
 
 When we return to the skillset view, we see the change in the list.

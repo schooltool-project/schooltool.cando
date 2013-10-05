@@ -205,7 +205,7 @@ Add scores for the students:
     ...         ('14', '3'),
     ...         ],
     ...     }
-    >>> gradeStudent(teacher, 'Cerna, Camila', camila_scores)
+    >>> gradeStudent(teacher, 'Camila Cerna', camila_scores)
 
     >>> mario_scores = {
     ...     '01: Python Environment': [
@@ -257,7 +257,7 @@ Add scores for the students:
     ...         ('14', ''),
     ...         ],
     ...     }
-    >>> gradeStudent(teacher, 'Vividor, Liliana', liliana_scores)
+    >>> gradeStudent(teacher, 'Liliana Vividor', liliana_scores)
 
 Print the Per Student Skills report details:
 
@@ -571,7 +571,7 @@ Print students above passing target:
     ...     print row
     <tr class="above-passing-target">
       <td>
-        Cerna, Camila
+        Camila Cerna
       </td>
       ...
     </tr>
@@ -587,13 +587,13 @@ target:
     ...     print row
     <tr class="above-passing-target">
       <td>
-        Cerna, Camila
+        Camila Cerna
       </td>
       ...
     </tr>
     <tr class="above-passing-target">
       <td>
-        Vividor, Liliana
+        Liliana Vividor
       </td>
       ...
     </tr>
