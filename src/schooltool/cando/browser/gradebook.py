@@ -424,11 +424,11 @@ class ProjectAddView(flourish.form.AddForm):
 
 class CanDoNamePopupMenuView(FlourishNamePopupMenuView):
 
-    def options(self, worksheet):
+    def options(self, worksheet, column_id='student'):
         options = [
             {
                 'label': self.translate(_('Sort by')),
-                'url': '?sort_by=student',
+                'url': '?sort_by=%s' % column_id,
                 },
             ]
         return options
