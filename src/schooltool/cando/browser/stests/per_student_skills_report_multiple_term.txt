@@ -8,9 +8,8 @@ Helpers:
     ...     for skillset, grades in scores.items():
     ...         active = browser.query.css('.third-nav li.active a')
     ...         if active.text != skillset:
-    ...             link = browser.query.link(skillset)
-    ...             # XXX: fix this, use clicks instead of open
-    ...             browser.open(link.get_attribute('href'))
+    ...             browser.query.css('#navbar-list-worksheets').click()
+    ...             browser.query.link(skillset).click()
     ...         for label, grade in grades:
     ...             browser.ui.gradebook.worksheet.score(student, label, grade)
     ...         browser.query.name('UPDATE_SUBMIT').click()
