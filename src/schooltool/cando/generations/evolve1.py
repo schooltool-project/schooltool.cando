@@ -164,7 +164,7 @@ def evolveCourse(app, course):
                         worksheet_cache[id(target_section)] = getSectionSkills(target_section)
                     reassignScoreSkill(worksheet_cache[id(target_section)],
                                        student_evaluations, score)
-        transaction.savepoint(True)
+            transaction.savepoint(True)
 
 
 def evolve(context):
