@@ -20,6 +20,7 @@ Evolve database to generation 1.
 
 Sections get copies of skils instead of proxies.
 """
+import transaction
 
 from zope.annotation.interfaces import IAnnotations
 from zope.app.generations.utility import findObjectsProviding, getRootFolder
@@ -122,8 +123,11 @@ def evolveCourse(app, course):
                 instructor_sections[instructor.__name__] = {}
             instructor_sections[instructor.__name__][sid] = section
 
+    transaction.savepoint(True)
+
     for course_skillset in courseskills.values():
         deploySkillSet(course_skillset, course_sections)
+        transaction.savepoint(True)
 
     worksheet_cache = {}
 
@@ -160,6 +164,7 @@ def evolveCourse(app, course):
                         worksheet_cache[id(target_section)] = getSectionSkills(target_section)
                     reassignScoreSkill(worksheet_cache[id(target_section)],
                                        student_evaluations, score)
+        transaction.savepoint(True)
 
 
 def evolve(context):
