@@ -16,7 +16,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-09-14 00:17+0300\n"
+"POT-Creation-Date: 2013-10-10 16:06+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -606,7 +606,16 @@ msgstr ""
 msgid "My Skills Grades"
 msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.zcml:546
+#: /src/schooltool/cando/browser/gradebook.zcml:579
+msgid "My Projects Grades"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:596
+#: /src/schooltool/cando/browser/gradebook.zcml:827
+#: /src/schooltool/cando/browser/gradebook.zcml:839
+#: /src/schooltool/cando/browser/report.py:878
+#: /src/schooltool/cando/browser/report.zcml:47
+#: /src/schooltool/cando/browser/report.zcml:58
 msgid "Section"
 msgstr ""
 
@@ -673,7 +682,43 @@ msgstr ""
 msgid "Individualized Educational Plan"
 msgstr ""
 
-#: /src/schooltool/cando/browser/model.py:95
+#: /src/schooltool/cando/browser/importer.py:44
+msgid "has an invalid document id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:45
+msgid "has an invalid parent id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:46
+msgid "has an invalid layer id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:47
+msgid "has an invalid skillset id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:48
+msgid "is missing a skillset id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:49
+msgid "has an invalid equivalent skill id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:50
+msgid "node label has more than seven characters"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:51
+msgid "has an invalid scoresystem"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:52
+msgid "has an invalid node id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:94
 msgid "Layer Information"
 msgstr ""
 

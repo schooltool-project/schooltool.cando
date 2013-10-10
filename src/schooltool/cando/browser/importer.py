@@ -38,7 +38,7 @@ from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
 from schooltool.cando.model import Layer, Node, Document
 from schooltool.cando.skill import SkillSet, Skill
 
-from schooltool.common import SchoolToolMessage as _
+from schooltool.cando import CanDoMessage as _
 
 
 ERROR_INVALID_DOCUMENTS = _("has an invalid document id")
