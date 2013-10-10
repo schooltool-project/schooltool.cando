@@ -102,14 +102,14 @@ Log in as instructor and grade some skills in the first term section:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  | 3  |
-    | Tejada, Mario    | 4  | 3  |
-    | Vividor, Liliana |    |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  | 3  |
+    | Tejada    | Mario      | 4  | 3  |
+    | Vividor   | Liliana    |    |    |
+    +-----------+------------+----+----+
 
 Now, let's go to the following terms section and see the most recent
 grades:
@@ -122,14 +122,14 @@ grades:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  | 3  |
-    | Tejada, Mario    | 4  | 3  |
-    | Vividor, Liliana |    |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  | 3  |
+    | Tejada    | Mario      | 4  | 3  |
+    | Vividor   | Liliana    |    |    |
+    +-----------+------------+----+----+
 
     >>> navigator = teacher.query_all.css('.refine .navigator')[1]
     >>> page = teacher.query.tag('html')
@@ -139,14 +139,14 @@ grades:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  | 3  |
-    | Tejada, Mario    | 4  | 3  |
-    | Vividor, Liliana |    |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  | 3  |
+    | Tejada    | Mario      | 4  | 3  |
+    | Vividor   | Liliana    |    |    |
+    +-----------+------------+----+----+
 
 Let's go to the Q3 term and grade some skills there:
 
@@ -163,14 +163,14 @@ Let's go to the Q3 term and grade some skills there:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  | 3  |
-    | Tejada, Mario    | 4  |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  | 3  |
+    | Tejada    | Mario      | 4  |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+
 
 If we go back to the Q4 section, we'll see some grades from the Q1
 section and some from the Q3 section:
@@ -183,14 +183,14 @@ section and some from the Q3 section:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  | 3  |
-    | Tejada, Mario    | 4  |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  | 3  |
+    | Tejada    | Mario      | 4  |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+
 
 Let's add a new student and enroll him in the middle of the year:
 
@@ -209,14 +209,14 @@ add a score for him in Q3 and check it in Q4:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  | 3  |
-    | Tejada, Mario    | 4  | 3  |
-    | Vividor, Liliana |    |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  | 3  |
+    | Tejada    | Mario      | 4  | 3  |
+    | Vividor   | Liliana    |    |    |
+    +-----------+------------+----+----+
 
     >>> navigator = teacher.query_all.css('.refine .navigator')[1]
     >>> page = teacher.query.tag('html')
@@ -226,14 +226,14 @@ add a score for him in Q3 and check it in Q4:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 3  | 3  |
-    | Tejada, Mario    | 4  | 3  |
-    | Vividor, Liliana |    |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  | 3  |
+    | Tejada    | Mario      | 4  | 3  |
+    | Vividor   | Liliana    |    |    |
+    +-----------+------------+----+----+
 
     >>> navigator = teacher.query_all.css('.refine .navigator')[1]
     >>> page = teacher.query.tag('html')
@@ -243,15 +243,15 @@ add a score for him in Q3 and check it in Q4:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  | 3  |
-    | Guzman, Nestor   |    |    |
-    | Tejada, Mario    | 4  |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  | 3  |
+    | Nestor    | Guzman     |    |    |
+    | Tejada    | Mario      | 4  |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+
 
     >>> teacher.ui.gradebook.worksheet.score('Guzman, Nestor', '02', '0')
     >>> teacher.query.name('UPDATE_SUBMIT').click()
@@ -259,15 +259,15 @@ add a score for him in Q3 and check it in Q4:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  | 3  |
-    | Guzman, Nestor   |    | 0  |
-    | Tejada, Mario    | 4  |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  | 3  |
+    | Nestor    | Guzman     |    | 0  |
+    | Tejada    | Mario      | 4  |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+
 
     >>> navigator = teacher.query_all.css('.refine .navigator')[1]
     >>> page = teacher.query.tag('html')
@@ -277,12 +277,12 @@ add a score for him in Q3 and check it in Q4:
     +--------------------------+
     | *01: Python Environment* |
     +--------------------------+
-    +------------------+----+----+
-    | Name             | 01 | 02 |
-    |                  | 4  | 4  |
-    +------------------+----+----+
-    | Cerna, Camila    | 2  | 3  |
-    | Guzman, Nestor   |    | 0  |
-    | Tejada, Mario    | 4  |    |
-    | Vividor, Liliana | 1  |    |
-    +------------------+----+----+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 2  | 3  |
+    | Nestor    | Guzman     |    | 0  |
+    | Tejada    | Mario      | 4  |    |
+    | Vividor   | Liliana    | 1  |    |
+    +-----------+------------+----+----+

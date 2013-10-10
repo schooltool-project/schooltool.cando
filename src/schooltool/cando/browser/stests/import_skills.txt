@@ -62,6 +62,7 @@ It has three skills.
     +-------------+------------+
     | Description | ext_carp   |
     | Label       | Carp label |
+    | Deprecated  | No         |
     +-------------+------------+
 
     >>> print_table(manager, '//table[@class="data"]')
@@ -81,6 +82,7 @@ Let's visit each skill and print their attrs.
     Description:
     Label:
     Required?: Required
+    Deprecated: No
     External ID: ext_123
     >>> manager.query.link('Done').click()
 
@@ -90,6 +92,7 @@ Let's visit each skill and print their attrs.
     Description: Whacking desc.
     Label:
     Required?: Optional
+    Deprecated: No
     External ID:
     >>> manager.query.link('Done').click()
 
@@ -99,6 +102,7 @@ Let's visit each skill and print their attrs.
     Description: This is hammering.
     Label: Label
     Required?: Optional
+    Deprecated: Yes
     External ID:
 
 There are five layers.
@@ -179,6 +183,7 @@ We can filter out some of the layers.
 
     >>> print '\n'.join([e.text for e in manager.query_all.xpath('//fieldset//div[@class="row"]//label')])
     Search
+    Field
     Craft
     Branch
     Topic

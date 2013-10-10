@@ -1,0 +1,26 @@
+<div class="section-report-accordion"
+     i18n:domain="schooltool.cando">
+  <h2 i18n:translate="">Details</h2>
+  <div>
+    <table class="form-fields">
+      <tbody>
+        <tr>
+          <td class="label" i18n:translate="">Course</td>
+          <td tal:content="view/course/title" />
+        </tr>
+        <tr>
+          <td class="label" i18n:translate="">Government ID</td>
+          <td tal:content="view/course/government_id" />
+        </tr>
+        <tr>
+          <td class="label" i18n:translate="">Teachers</td>
+          <td tal:content="structure view/instructors" />
+        </tr>
+        <tr>
+          <td class="label" i18n:translate="">Skills</td>
+          <td tal:content="python:len(view.view.skills)" />
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

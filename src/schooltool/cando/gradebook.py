@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """CanDo Gradebook."""
 
@@ -40,6 +39,7 @@ from schooltool.requirement.interfaces import IScore
 
 from schooltool.cando.interfaces import ICanDoGradebook
 from schooltool.cando.interfaces import IMySkillsGrades
+from schooltool.cando.interfaces import IMyProjectsGrades
 from schooltool.cando.interfaces import IProject
 from schooltool.cando.interfaces import IProjects
 from schooltool.cando.interfaces import IProjectsGradebook
@@ -200,8 +200,15 @@ class MySkillsGrades(SkillsGradebook):
         self.__name__ = 'mygrades-skills'
 
 
-def getMySkillsGradesSection(gradebook):
-    return ISection(gradebook.context)
+class MyProjectsGrades(ProjectsGradebook):
+
+    implementsOnly(IMyProjectsGrades)
+    adapts(IProject)
+
+    def __init__(self, context):
+        super(MyProjectsGrades, self).__init__(context)
+        # To make URL creation happy
+        self.__name__ = 'mygrades-projects'
 
 
 @adapter(IHaveEvaluations, ISkill)
@@ -230,7 +237,10 @@ class ProjectGradebookTraverser(object):
                 gb.__setattr__('__parent__', gb.__parent__)
                 return gb
             elif name == 'mygrades':
-                pass
+                gb = IMyProjectsGrades(context)
+                gb = LocationProxy(gb, self.context, name)
+                gb.__setattr__('__parent__', gb.__parent__)
+                return gb
             else:
                 return queryMultiAdapter((self.context, request), name=name)
 
@@ -272,9 +282,9 @@ class CanDoStudentGradebook(StudentGradebook):
     implements(ICanDoStudentGradebook)
     adapts(IBasicPerson, ICanDoGradebook)
 
-    def __init__(self, *args, **kw):
-        super(CanDoStudentGradebook, self).__init__(*args, **kw)
-        self.__parent__ = self.gradebook.__parent__
+    @property
+    def __parent__(self):
+        return self.gradebook.__parent__
 
 
 class CanDoStudentGradebookTraverser(object):

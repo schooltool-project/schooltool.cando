@@ -1,0 +1,10 @@
+<script>ST.state.push()</script>
+<tal:script tal:replace="structure scriptlocal:
+                         dialog_url view/manager/success_dialog_url;
+                         dialog_title view/manager/success_dialog_title;" />
+<script type="text/javascript">
+  ST.dialogs.open_modal_form(ST.local.dialog_url,
+                             'dialog-container',
+                             ST.local.dialog_title);
+</script>
+<script>ST.state.pop()</script>

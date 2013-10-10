@@ -67,6 +67,7 @@
 .skill-title p.optional,
 .color-codes .optional,
 .color-codes .iep,
+.grades thead th.optional,
 .grades thead th.optional > a {
     color: black;
 }
@@ -74,6 +75,7 @@
 ul.skills li.optional,
 .color-codes .optional,
 .grade-student .optional,
+.grades thead th.optional,
 .grades thead th.optional > a {
     background: #ACC4E4;
 }
@@ -225,4 +227,9 @@ input[type="checkbox"].select-all {
 
 .request-competency-certificate-form select {
     width: 288px;
+}
+
+#retire-ajax-view-container-retire- div.no-batch-navigation {
+    padding: 0 8px;
+    margin-top: 0;
 }

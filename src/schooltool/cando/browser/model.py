@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Model views.
@@ -295,6 +294,51 @@ class NodesView(flourish.page.Page):
     @Lazy
     def container(self):
         return INodeContainer(ISchoolToolApplication(None))
+
+
+class RetireNodesView(flourish.page.Page):
+
+    content_template = InlineViewPageTemplate('''
+      <div id="dialog-container"></div>
+      <div tal:content="structure context/schooltool:content/ajax/view/container/retire" />
+      <h3 tal:condition="python: not len(context)" i18n:domain="schooltool">There are no nodes.</h3>
+    ''')
+
+    @Lazy
+    def container(self):
+        return INodeContainer(ISchoolToolApplication(None))
+
+
+class RetireNodesSuccessView(flourish.form.Dialog):
+
+    template = InlineViewPageTemplate('''
+    <div i18n:domain="schooltool.cando">
+      <h3 i18n:translate="">The changes were saved successfully.</h3>
+      <form tal:attributes="action request/URL">
+        <div class="buttons">
+          <input i18n:domain="schooltool" type="submit"
+                 class="button-ok" value="Done"
+                 name="DONE" i18n:attributes="value"
+                 onclick="return ST.dialogs.submit(this, this);" />
+        </div>
+      </form>
+    </div>
+    ''')
+
+    def initDialog(self):
+        super(RetireNodesSuccessView, self).initDialog()
+        self.ajax_settings['dialog']['dialogClass'] = 'explicit-close-dialog'
+        self.ajax_settings['dialog']['closeOnEscape'] = False
+
+    def update(self):
+        super(RetireNodesSuccessView, self).update()
+        if 'DONE' in self.request:
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        container = IDocumentContainer(app)
+        return absoluteURL(container, self.request)
 
 
 class NodesAddLinks(flourish.page.RefineLinksViewlet):
@@ -653,7 +697,7 @@ def skillset_title_formatter(value, item, formatter):
 
 
 class NodeSkillSetsTable(table.ajax.Table):
-    
+
     batch_size = 0
 
     def items(self):
@@ -682,3 +726,19 @@ class NodeSkillSetsTable(table.ajax.Table):
                        batch_size=self.batch_size,
                        prefix=self.__name__,
                        css_classes={'table': 'data'})
+
+
+class NodesLinkViewlet(flourish.page.LinkViewlet):
+
+    @property
+    def container(self):
+        return INodeContainer(ISchoolToolApplication(None))
+
+    @property
+    def url(self):
+        link = self.link
+        if not link:
+            return None
+        return "%s/%s" % (absoluteURL(self.container, self.request),
+                          self.link)
+

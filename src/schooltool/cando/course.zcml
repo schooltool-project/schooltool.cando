@@ -46,6 +46,9 @@
   <adapter factory=".course.CourseSkillSetModified"
            name="update_section_skills" />
 
+  <adapter factory=".course.CustomCourseSkillSetModified"
+           name="update_section_skills" />
+
   <adapter factory=".course.GlobalSkillSetModified"
            name="update_course_skillsets" />
 

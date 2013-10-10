@@ -2,10 +2,47 @@
 CHANGES
 =======
 
-0.7.2 (unreleased)
+2.6.1 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+2.6.0 (2013-10-10)
+------------------
+
+- Add student's view for projects (https://launchpad.net/bugs/1070278)
+- Fix student and teacher sorting in some reports.
+- Allow sorting gradebook by first or last name (https://launchpad.net/bugs/1234284)
+- Fix navigation when schoolear has non-ascii chars (https://launchpad.net/bugs/1234690)
+- Fix forbidden attribute error on login after timeout (https://launchpad.net/bugs/1154662)
+
+
+0.8.2 (2013-09-14)
+------------------
+
+- Add a view to batch-deprecate skills, skill sets and nodes.
+- Added field to node search table to filter by common text
+- Fixed Save button in deprecate skills view when there's only one result
+- Changed wording and functionality of Visible/Active/Retired to Deprecated
+- Changed wording attribute to field in batch assign view
+- Fixed score student view for projects
+
+
+0.8.1 (2013-08-23)
+------------------
+
+- Nodes and skill sets can now be retired.
+- Allow clerks and managers to access skills and reports.
+- Update GPL license and file headers from gnu.org (https://launchpad.net/bugs/1211145)
+
+
+0.8.0 (2013-08-01)
+------------------
+
+- Background PDF reports
+- Moved in Per Student Skills Report and Skills Completion Report from schooltool.virginia
+- Added Student skill completion (by section) pdf archive report.
 
 
 0.7.1 (2013-05-29)

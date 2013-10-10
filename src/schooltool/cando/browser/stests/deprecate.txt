@@ -1,8 +1,26 @@
-Test for current worksheet functionality
-========================================
+Test for the deprecate skills view
+==================================
 
-We'll check what happens to the gradebook when the current skillset
-for the user is deleted.
+We are going to test that when skillsets are deprecated, section
+gradebooks keep untouched.
+
+Helpers:
+
+    >>> def print_checkbox(browser, cell):
+    ...     checked = browser.driver.execute_script(
+    ...         'return $(arguments[0]).find("input:checked").length', cell)
+    ...     is_checked = bool(checked)
+    ...     return ['[ ]', '[X]'][is_checked]
+    >>> def print_skills_table(browser):
+    ...     for row in browser.query_all.css('table tbody tr'):
+    ...         cells = browser.driver.execute_script(
+    ...                     'return $(arguments[0]).find("td")', row)
+    ...         if cells:
+    ...             title, required, deprecated = cells
+    ...             print '%s | %s | %s' % (
+    ...                 title.text,
+    ...                 print_checkbox(browser, required),
+    ...                 print_checkbox(browser, deprecated))
 
 Log in as manager:
 
@@ -13,19 +31,18 @@ Set up persons:
 
     >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
     >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
-    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
-    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+    >>> manager.ui.person.add('Mario',  'Tejada', 'mario', 'pwd')
 
 Set up a section:
 
-    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
-    >>> manager.ui.term.add('2012', '2012', '2012-01-01', '2012-12-31')
-    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
-    >>> manager.ui.section.add('2012', '2012', 'Programming')
-    >>> manager.ui.section.instructors.add('2012', '2012', 'Programming (1)',
-    ...                                    ['jeffrey'])
-    >>> manager.ui.section.students.add('2012', '2012', 'Programming (1)',
-    ...                                 ['camila', 'liliana', 'mario'])
+    >>> manager.ui.schoolyear.add('2013', '2013-01-01', '2013-12-31')
+    >>> manager.ui.term.add('2013', '2013', '2013-01-01', '2013-12-31')
+    >>> manager.ui.course.add('2013', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2013', '2013', 'Programming')
+    >>> manager.ui.section.instructors.add('2013', '2013', 'Programming (1)',
+    ...                                    ['jeffrey'])    
+    >>> manager.ui.section.students.add('2013', '2013', 'Programming (1)',
+    ...                                 ['camila'])
 
 Set up skills:
 
@@ -35,7 +52,6 @@ Set up skills:
     >>> manager.ui.skillset.add('Python Environment', '01')
     >>> manager.ui.skillset.add('Data Types, Statements, and Expressions', '02')
     >>> manager.ui.skillset.add('Errors', '03')
-    >>> manager.ui.skillset.add('Strings', '04')
 
     >>> manager.ui.skill.add(
     ...     'Python Environment',
@@ -79,24 +95,6 @@ Set up skills:
     ...     'Errors',
     ...     'Read and interpret stack traceback messages.',
     ...     '10')
-    >>> manager.ui.skill.add(
-    ...     'Strings',
-    ...     'Create string literals with single, double, and triple quotes.',
-    ...     '11')
-    >>> manager.ui.skill.add(
-    ...     'Strings',
-    ...     'Use the len() function to return the length of a string.',
-    ...     '12')
-    >>> manager.ui.skill.add(
-    ...     'Strings',
-    ...     'Use the find(...) method to locate substrings in a string.',
-    ...     '13',
-    ...     required=False)
-    >>> manager.ui.skill.add(
-    ...     'Strings',
-    ...     'Use the split() method to break a string into a list.',
-    ...     '14',
-    ...     required=False)
 
     >>> manager.query.link('Search').click()
     >>> manager.query.button('Search').click()
@@ -140,96 +138,80 @@ Assign the skills to the course:
     >>> manager.query.name('SEARCH_BUTTON').click()
     >>> manager.query.name('ASSIGN_BUTTON').click()
 
+Check the course skills:
+
+    >>> manager.query.link('Programming').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Set Required / Deprecated').click()
+    >>> course_skills_url = manager.url
+    >>> print_skills_table(manager)
+    01: Use the Python shell for interactive evaluation | [X] | [ ]
+    02: Make Python scripts with a text editor | [ ] | [ ]
+    03: Recognize int, float, str, list, tuple, and dict. | [X] | [ ]
+    04: Use type(...) to determine the data type of a given value. | [X] | [ ]
+    05: Use assignment statements to assign names (variables) to values. | [X] | [ ]
+    06: Use the input function to read user input. | [X] | [ ]
+    07: Define keyword and recognize keywords in Python. | [X] | [ ]
+    08: Create legal variable names and recognize illegal ones. | [ ] | [ ]
+    09: Recognize and differentiate among errors. | [X] | [ ]
+    10: Read and interpret stack traceback messages. | [X] | [ ]
+
 Log in as instructor:
 
     >>> teacher = browsers.teacher
     >>> teacher.ui.login('jeffrey', 'pwd')
     >>> teacher.query.link('CanDo').click()
 
-Go to the Errors worksheet:
+Set a score and print the gradebook:
 
-    >>> sel = 'a[title="03: Errors"]'
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '01', '3')
+    >>> teacher.query.name('UPDATE_SUBMIT').click()
+
+    >>> sel = 'a[title="01: Python Environment"]'
     >>> link = teacher.query.css(sel)
     >>> # XXX: fix this, use clicks instead of open
     >>> teacher.open(link.get_attribute('href'))
     >>> teacher.ui.gradebook.worksheet.pprint()
-    +------------------------+---------------------------------------------+--------------+-------------+
-    | 01: Python Environment | 02: Data Types, Statements, and Expressions | *03: Errors* | 04: Strings |
-    +------------------------+---------------------------------------------+--------------+-------------+
-    +-----------+------------+----+----+
-    | Last Name | First Name | 09 | 10 |
-    |           |            | 4  | 4  |
-    +-----------+------------+----+----+
-    | Cerna     | Camila     |    |    |
-    | Tejada    | Mario      |    |    |
-    | Vividor   | Liliana    |    |    |
-    +-----------+------------+----+----+
-
-Log in as student:
-
-    >>> student = browsers.student
-    >>> student.ui.login('camila', 'pwd')
-    >>> student.query.link('CanDo').click()
-
-Go to the Errors worksheet:
-
-    >>> sel = 'a[title="03: Errors"]'
-    >>> link = student.query.css(sel)
-    >>> # XXX: fix this, use clicks instead of open
-    >>> student.open(link.get_attribute('href'))
-
-    >>> sel = '.third-nav li a'
-    >>> for a in student.query_all.css(sel):
-    ...     print a.text
-    01: Python Environment
-    02: Data Types, Statements, and Expressions
-    03: Errors
-    04: Strings
-
-    >>> sel = 'table tbody tr td:first-child'
-    >>> for td in student.query_all.css(sel):
-    ...     print td.text
-    09: Recognize and differentiate among errors.
-    10: Read and interpret stack traceback messages.
-
-Let's delete the worksheet from the course skills:
-
-    >>> manager.query.link('School').click()
-    >>> manager.query.link('Courses').click()
-    >>> manager.query.link('Programming').click()
-    >>> manager.query.link('Skills').click()
-    >>> manager.query.link('Remove Skills').click()
-    >>> manager.query.css('input[value="Errors-3"]').click()
-    >>> manager.query.name('SUBMIT_BUTTON').click()
-
-Let's check the new current worksheet for the teacher:
-
-    >>> teacher.query.link('CanDo').click()
-    >>> teacher.ui.gradebook.worksheet.pprint()
-    +--------------------------+---------------------------------------------+-------------+
-    | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 04: Strings |
-    +--------------------------+---------------------------------------------+-------------+
+    +--------------------------+---------------------------------------------+------------+
+    | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors |
+    +--------------------------+---------------------------------------------+------------+
     +-----------+------------+----+----+
     | Last Name | First Name | 01 | 02 |
     |           |            | 4  | 4  |
     +-----------+------------+----+----+
-    | Cerna     | Camila     |    |    |
-    | Tejada    | Mario      |    |    |
-    | Vividor   | Liliana    |    |    |
+    | Cerna     | Camila     | 3  |    |
     +-----------+------------+----+----+
 
-Let's check the new current worksheet for the student:
+Now, let's deprecate the Python Environment skillset:
 
-    >>> student.query.link('CanDo').click()
-    >>> sel = '.third-nav li a'
-    >>> for a in student.query_all.css(sel):
-    ...     print a.text
-    01: Python Environment
-    02: Data Types, Statements, and Expressions
-    04: Strings
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Deprecate Skills').click()
+    >>> manager.query.id('SEARCH').ui.set_value('Python Environment')
+    >>> selector = '#retire-ajax-view-container-retire- table'
+    >>> table = manager.query.css(selector)
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.wait(lambda: table.expired)
+    >>> manager.query.css('th.active input[type="checkbox"]').click()
+    >>> manager.query.name('SAVE_RESULTS').click()
 
-    >>> sel = 'table tbody tr td:first-child'
-    >>> for td in student.query_all.css(sel):
-    ...     print td.text
-    01: Use the Python shell for interactive evaluation
-    02: Make Python scripts with a text editor
+    >>> dialog = manager.query.css('.ui-dialog')
+    >>> print dialog.query.css('.ui-dialog-title').text
+    Changes saved
+
+Let's print the gradebook again:
+
+    >>> sel = 'a[title="01: Python Environment"]'
+    >>> link = teacher.query.css(sel)
+    >>> # XXX: fix this, use clicks instead of open
+    >>> teacher.open(link.get_attribute('href'))
+    >>> teacher.ui.gradebook.worksheet.pprint()
+    +--------------------------+---------------------------------------------+------------+
+    | *01: Python Environment* | 02: Data Types, Statements, and Expressions | 03: Errors |
+    +--------------------------+---------------------------------------------+------------+
+    +-----------+------------+----+----+
+    | Last Name | First Name | 01 | 02 |
+    |           |            | 4  | 4  |
+    +-----------+------------+----+----+
+    | Cerna     | Camila     | 3  |    |
+    +-----------+------------+----+----+

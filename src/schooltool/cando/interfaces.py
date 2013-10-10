@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 import zope.schema
@@ -68,8 +67,9 @@ class ISkill(IRequirement, IAttributeAnnotatable, ILabel):
     external_id = zope.schema.TextLine(title=_("External ID"),
                                        required=False)
     required = SkillRequiredBool(title=_("Required?"))
-    retired = zope.schema.Bool(title=_("Retired"),
-                               description=_("Skill is no longer used"))
+    retired = zope.schema.Bool(title=_("Deprecated"),
+                               description=_("Skill is no longer used"),
+                               default=False)
 
     description = HtmlFragment(title=_("Description"), required=False)
 
@@ -95,6 +95,10 @@ class ISkillSetContainer(IContainer):
 class ISkillSet(IRequirement, IAttributeAnnotatable, ILabel):
 
     description = HtmlFragment(title=_("Description"), required=False)
+
+    retired = zope.schema.Bool(title=_("Deprecated"),
+                               description=_("Skill set is no longer used"),
+                               default=False)
 
 
 class ILayerContainer(IContainer):
@@ -126,6 +130,10 @@ class INode(ILabel):
         title=_("Description"),
         required=False,
         default=u'')
+    retired = zope.schema.Bool(
+        title=_("Deprecated"),
+        description=_("Node is no longer used"),
+        default=False)
 
     layers = Attribute("Layers within this layer")
     parents = Attribute("Parent nodes")
@@ -243,6 +251,10 @@ class ISkillsGradebook(ICanDoGradebook):
 
 
 class IMySkillsGrades(IMyGrades):
+    pass
+
+
+class IMyProjectsGrades(IMyGrades):
     pass
 
 

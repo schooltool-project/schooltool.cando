@@ -109,13 +109,13 @@ This gives the teacher ability to see other teachers' gradebooks:
     +------------+
     | *Project1* |
     +------------+
-    +------------------+
-    | Name             |
-    |                  |
-    +------------------+
-    | Tejada, German   |
-    | Vividor, Liliana |
-    +------------------+
+    +-----------+------------+
+    | Last Name | First Name |
+    |           |            |
+    +-----------+------------+
+    | Tejada    | German     |
+    | Vividor   | Liliana    |
+    +-----------+------------+
 
 Go to Home page and back to the CanDo tab. Again, the current section
 should be Math (2), not Baseball (4):

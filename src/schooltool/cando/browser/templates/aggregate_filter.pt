@@ -28,6 +28,23 @@
                />
       </div>
     </div>
+    <div class="row" tal:define="index_id view/search_index_id">
+      <div class="label">
+        <label tal:attributes="for index_id">
+          <span i18n:translate="">Field</span>
+        </label>
+      </div>
+      <div class="widget">
+        <select tal:attributes="id index_id; name index_id"
+                class="select-widget">
+          <option i18n:translate="">All fields</option>
+          <option tal:repeat="index view/search_indexes"
+                  tal:content="index/title"
+                  tal:attributes="value index/id;
+                                  selected python:index['id'] == request.get(index_id)"/>
+        </select>
+      </div>
+    </div>
     <div class="row" tal:define="layer_ids view/search_layer_ids">
       <div class="label">
         <span i18n:translate="">Layers</span>

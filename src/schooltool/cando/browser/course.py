@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Course skill views.
@@ -30,6 +29,7 @@ import zc.table.column
 from zc.table.interfaces import ISortableColumn
 
 from schooltool.app.browser.app import RelationshipAddTableMixin
+from schooltool.app.browser.app import ActiveSchoolYearContentMixin
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.course.interfaces import ICourseContainer
 from schooltool.cando.course import CourseSkillSet
@@ -315,7 +315,7 @@ class SkillsetNodesTable(table.ajax.Table):
         nodes = INodeContainer(app)
         result = {}
         for node in nodes.values():
-            if node.skillsets:
+            if node.skillsets and not node.retired:
                 result[node.__name__] = node
         return result
 
@@ -709,16 +709,16 @@ class EditCourseSkillsView(UseCourseTitleMixin, flourish.page.Page):
                     if course_skill.required != required:
                         course_skill.required = required
                         skillset_modified = True
-                    hidden = not visible_name in self.request
-                    if course_skill.retired != hidden:
-                        course_skill.retired = hidden
+                    deprecated = visible_name in self.request
+                    if course_skill.retired != deprecated:
+                        course_skill.retired = deprecated
                         skillset_modified = True
                 skills.append({
                         'id': skill_id,
                         'title': skill_title,
                         'required_checked': course_skill.required,
                         'required_name': required_name,
-                        'visible_checked': not course_skill.retired,
+                        'visible_checked': course_skill.retired,
                         'visible_name': visible_name,
                         })
             skillsets.append({
@@ -745,7 +745,7 @@ class CanDoCoursesActionsLinks(flourish.page.RefineLinksViewlet):
     pass
 
 
-class CoursesSkillsAssignmentView(flourish.page.Page):
+class CoursesSkillsAssignmentView(flourish.page.Page, ActiveSchoolYearContentMixin):
 
     matched = []
     not_matched = []
@@ -795,11 +795,13 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 return False
         return True
 
+    @property
+    def schoolyear(self):
+        return ISchoolYear(self.context)
+
     def nextURL(self):
         app = ISchoolToolApplication(None)
-        schoolyear = ISchoolYear(self.context)
-        return '%s/courses?schoolyear_id=%s' % (absoluteURL(app, self.request),
-                                                schoolyear.__name__)
+        return self.url_with_schoolyear_id(app, view_name='courses')
 
     def updateMatches(self):
         assignments = []
@@ -824,7 +826,8 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 for node in nodes:
                     node_attr_value = getattr(node, node_attr, '')
                     if node_attr_value:
-                        if node_attr_value == course_attr_value:
+                        if (node_attr_value == course_attr_value and
+                            not node.retired):
                             assignments.append({
                                     'course': course,
                                     'course_attr': course_attr_value,
@@ -848,6 +851,7 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
         self.not_matched = not_assigned
 
     def update(self):
+        collator = ICollator(self.request.locale)
         if 'CANCEL' in self.request:
             self.request.response.redirect(self.nextURL())
             return
@@ -863,10 +867,16 @@ class CoursesSkillsAssignmentView(flourish.page.Page):
                 self.request.response.redirect(self.nextURL())
                 return
             if 'SEARCH_BUTTON' in self.request:
-                self.matched = sorted(self.matched,
-                                      key=lambda x:x['course_attr'])
-                self.not_matched = sorted(self.not_matched,
-                                          key=lambda x:x['course_attr'])
+                self.matched = sorted(
+                    self.matched,
+                    key=lambda x:(x['course_attr'],
+                                  collator.key(x['course'].title))
+                    )
+                self.not_matched = sorted(
+                    self.not_matched,
+                    key=lambda x:(x['course_attr'],
+                                  collator.key(x['course'].title))
+                    )
 
 
 class BatchAssignSkillsLinkViewlet(flourish.page.LinkViewlet):

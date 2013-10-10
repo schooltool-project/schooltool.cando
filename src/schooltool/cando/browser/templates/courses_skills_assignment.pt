@@ -12,14 +12,14 @@
       <div class="row">
         <div class="label">
           <label for="course_attr">
-            <span i18n:translate="">Course attribute</span>
+            <span i18n:translate="">Course field</span>
             <span class="required">*</span>
           </label>
         </div>
         <div class="widget">
           <select name="course_attr" class="select-widget required choice-field">
             <option i18n:translate="" value="">
-              Select an attribute
+              Select a field
             </option>
             <tal:block repeat="course_attr course_attrs">
               <option tal:define="value course_attr/value"
@@ -54,14 +54,14 @@
       <div class="row">
         <div class="label">
           <label for="node_attr">
-            <span i18n:translate="">Node attribute</span>
+            <span i18n:translate="">Node field</span>
             <span class="required">*</span>
           </label>
         </div>
         <div class="widget">
           <select name="node_attr" class="select-widget required choice-field">
             <option i18n:translate="" value="">
-              Select an attribute
+              Select a field
             </option>
             <tal:block repeat="node_attr node_attrs">
               <option tal:define="value node_attr/value"
@@ -84,7 +84,7 @@
       <table class="data">
         <thead>
           <tr>
-            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Field</th>
             <th i18n:translate="">Course</th>
             <th i18n:translate="">Reason</th>
           </tr>
@@ -103,9 +103,9 @@
       <table class="data">
         <thead>
           <tr>
-            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Field</th>
             <th i18n:translate="">Course</th>
-            <th i18n:translate="">Attribute</th>
+            <th i18n:translate="">Field</th>
             <th i18n:translate="">Node</th>
           </tr>
         </thead>

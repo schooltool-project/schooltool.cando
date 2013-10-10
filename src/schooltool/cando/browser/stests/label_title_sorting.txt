@@ -384,9 +384,9 @@ Same in the Remove skills view:
 
     >>> manager.query.name('CANCEL').click()
 
-and the Set Required/Visible view:
+and the Set Required / Deprecated view:
 
-    >>> manager.query.link('Set Required/Visible').click()
+    >>> manager.query.link('Set Required / Deprecated').click()
     >>> sel = 'table tbody th'
     >>> for title in manager.query_all.css(sel):
     ...     print title.text
@@ -395,7 +395,7 @@ and the Set Required/Visible view:
     00: Preparing for Business Law Careers
     01: Exploring Tort Law
 
-The skills in the Set Required/Visible view should be also sorted:
+The skills in the Set Required / Deprecated view should be also sorted:
 
     >>> sel = 'table tbody tr'
     >>> for row in manager.query_all.css(sel):
@@ -480,14 +480,14 @@ The skill sets dropdown should be sorted the same:
     +--------------------------+---------------+--------------+
     | *Arithmetic of Decimals* | 01: Fractions | 02: Percents |
     +--------------------------+---------------+--------------+
-    +------------------+----+----+----+
-    | Name             | 01 | 02 | 03 |
-    |                  | 4  | 4  | 4  |
-    +------------------+----+----+----+
-    | Cerna, Camila    |    |    |    |
-    | Tejada, Mario    |    |    |    |
-    | Vividor, Liliana |    |    |    |
-    +------------------+----+----+----+
+    +-----------+------------+----+----+----+
+    | Last Name | First Name | 01 | 02 | 03 |
+    |           |            | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+
+    | Cerna     | Camila     |    |    |    |
+    | Tejada    | Mario      |    |    |    |
+    | Vividor   | Liliana    |    |    |    |
+    +-----------+------------+----+----+----+
 
 Also the skill columns:
 
@@ -499,14 +499,14 @@ Also the skill columns:
     +------------------------+-----------------+--------------+
     | Arithmetic of Decimals | *01: Fractions* | 02: Percents |
     +------------------------+-----------------+--------------+
-    +------------------+-------+-------+----+----+----+
-    | Name             | Conve | Reada | 01 | 02 | 03 |
-    |                  | 4     | 4     | 4  | 4  | 4  |
-    +------------------+-------+-------+----+----+----+
-    | Cerna, Camila    |       |       |    |    |    |
-    | Tejada, Mario    |       |       |    |    |    |
-    | Vividor, Liliana |       |       |    |    |    |
-    +------------------+-------+-------+----+----+----+
+    +-----------+------------+-------+-------+----+----+----+
+    | Last Name | First Name | Conve | Reada | 01 | 02 | 03 |
+    |           |            | 4     | 4     | 4  | 4  | 4  |
+    +-----------+------------+-------+-------+----+----+----+
+    | Cerna     | Camila     |       |       |    |    |    |
+    | Tejada    | Mario      |       |       |    |    |    |
+    | Vividor   | Liliana    |       |       |    |    |    |
+    +-----------+------------+-------+-------+----+----+----+
 
 Now, let's list skill sets and skills in the Skills popup dialog:
 
@@ -531,7 +531,7 @@ Let's test the Score student view for Camila:
 
     >>> sel = '#students-part tbody ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Camila Cerna').click()
     >>> camila_menu.query.link('Score').click()
 
     >>> sel = '.grade-student tbody tr th'
@@ -562,7 +562,7 @@ Now her Student Competency Report:
 
     >>> sel = '#students-part tbody ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Camila Cerna').click()
     >>> camila_menu.query.link('Report').click()
 
     >>> sel = 'table tbody tr th'

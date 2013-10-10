@@ -1,0 +1,22 @@
+<div i18n:domain="schooltool" class="buttons">
+  <tal:block condition="view/manager/_items">
+    <input id="form-buttons-add"
+           class="submit-widget button-field button-ok"
+           type="submit"
+           value="Save"
+           i18n:attributes="value"
+           tal:attributes="name view/button_name;
+                           onclick view/onclick;
+                           id view/html_id" />
+    <tal:script replace="structure scriptlocal:
+                         container_id view/manager/html_id;
+                         save_button_id view/html_id" />
+  </tal:block>
+  <input id="form-buttons-cancel"
+         class="submit-widget button-field button-cancel"
+         type="submit"
+         value="Cancel"
+         i18n:attributes="value"
+         tal:attributes="name view/cancel_name;"
+         />
+</div>

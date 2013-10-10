@@ -20,7 +20,7 @@
         interface="zope.interface.common.mapping.IEnumerableMapping" />
     <require
         permission="schooltool.view"
-        attributes="title label description"
+        attributes="title label description retired"
         />
     <require
         permission="schooltool.edit"

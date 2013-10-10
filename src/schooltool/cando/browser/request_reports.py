@@ -13,23 +13,35 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Request Report Views
 """
 
-from zope.traversing.browser.absoluteurl import absoluteURL
-
 from schooltool.app.interfaces import ISchoolToolApplication
-from schooltool.report.browser.report import RequestReportDownloadDialog
+from schooltool.export.export import RequestXLSReportDialog
+from schooltool.report.report import ReportLinkViewlet
+from schooltool.report.browser.report import RequestReportArchiveDialog
 
 
-class RequestGlobalSkillsExportView(RequestReportDownloadDialog):
+class RequestGlobalSkillsExportView(RequestXLSReportDialog):
 
-    def nextURL(self):
-        app = ISchoolToolApplication(None)
-        url = absoluteURL(app, self.request)
-        return url + '/export_global_skills.xls'
+    report_builder = 'export_global_skills.xls'
 
+    @property
+    def target(self):
+        return ISchoolToolApplication(None)
+
+
+class RequestStudentCompetencyArchive(RequestReportArchiveDialog):
+
+    report_builder = 'student_competency_archive.zip'
+
+    @property
+    def target(self):
+        return ISchoolToolApplication(None)
+
+
+class GradebookArchiveLinkViewlet(ReportLinkViewlet):
+    pass

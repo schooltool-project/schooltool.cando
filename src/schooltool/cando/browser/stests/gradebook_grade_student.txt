@@ -145,13 +145,13 @@ Log in as instructor:
 
 Enter Camila's score view:
 
-    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Camila').click()
     >>> camila_menu.query.link('Score').click()
 
     >>> print teacher.query.css('.page .header h1').text
-    Cerna, Camila
+    Camila Cerna
     
     >>> sel = '.grade-student tbody tr th'
     >>> for th in teacher.query_all.css(sel):

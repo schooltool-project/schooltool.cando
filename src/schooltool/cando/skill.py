@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from decimal import Decimal
 
@@ -131,6 +130,7 @@ class SkillSet(Requirement):
 
     description = u''
     label = u''
+    retired = False
 
     def __init__(self, title, description=u'', label=u''):
         Requirement.__init__(self, title)
@@ -238,9 +238,22 @@ def is_global_skill(index, docid, item):
     return True
 
 
+searchable_common_indexes = {
+    'text_ID': 'getSearchableID',
+    'text_title': 'getSearchableTitle',
+    'text_label': 'getSearchableLabel',
+    }
+
+
+def setSearchableIndexes(catalog):
+    catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+    for index_id, method_name in searchable_common_indexes.items():
+        catalog[index_id] = TextIndex(method_name, ISearchableText, True)
+
+
 class SkillCatalog(AttributeCatalog):
 
-    version = '1.1 - index only global skills'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.ISkill
     attributes = ('title', 'external_id', 'label', 'description',
                   'required', 'retired')
@@ -251,13 +264,25 @@ class SkillCatalog(AttributeCatalog):
 
     def setIndexes(self, catalog):
         super(SkillCatalog, self).setIndexes(catalog)
-        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        setSearchableIndexes(catalog)
 
 
 getSkillCatalog = SkillCatalog.get
 
 
-class SearchableTextSkill(object):
+class SearchableTextMixin(object):
+
+    def getSearchableID(self):
+        return self.context.__name__
+
+    def getSearchableTitle(self):
+        return self.context.title
+
+    def getSearchableLabel(self):
+        return self.context.label or ''
+
+
+class SearchableTextSkill(SearchableTextMixin):
 
     adapts(interfaces.ISkill)
     implements(ISearchableText)
@@ -267,6 +292,7 @@ class SearchableTextSkill(object):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.external_id or '',
             self.context.label or '',
@@ -277,9 +303,9 @@ class SearchableTextSkill(object):
 
 class SkillSetCatalog(AttributeCatalog):
 
-    version = '1 - attributes and text indexes'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.ISkillSet
-    attributes = ('title', 'label', 'description',)
+    attributes = ('title', 'label', 'description', 'retired')
 
     def createCatalog(self):
         return zc.catalog.extentcatalog.Catalog(
@@ -287,13 +313,13 @@ class SkillSetCatalog(AttributeCatalog):
 
     def setIndexes(self, catalog):
         super(SkillSetCatalog, self).setIndexes(catalog)
-        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        setSearchableIndexes(catalog)
 
 
 getSkillSetCatalog = SkillSetCatalog.get
 
 
-class SearchableTextSkillSet(object):
+class SearchableTextSkillSet(SearchableTextMixin):
 
     adapts(interfaces.ISkillSet)
     implements(ISearchableText)
@@ -303,6 +329,7 @@ class SearchableTextSkillSet(object):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.label or '',
             self.context.description or '',

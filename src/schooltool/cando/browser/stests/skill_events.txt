@@ -121,33 +121,33 @@ Add some scores to the Fraktions skill set:
     >>> teacher.open(link.get_attribute('href'))
     >>> fractions_url = teacher.url
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', 'Conve', '4')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', 'Reada', '3')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '2')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '1')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', 'Conve', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', 'Reada', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '01', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '02', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '03', '0')
 
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', 'Conve', '0')
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', 'Reada', '1')
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', 'Conve', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', 'Reada', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', '02', '3')
 
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', 'Conve', '0')
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '4')
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '03', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', 'Conve', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '01', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '03', '1')
 
     >>> teacher.query.name('UPDATE_SUBMIT').click()
     >>> teacher.ui.gradebook.worksheet.pprint()
     +------------------------+-----------------+--------------+
     | Arithmetic of Decimals | *01: Fraktions* | 02: Percents |
     +------------------------+-----------------+--------------+
-    +------------------+-------+-------+----+----+----+
-    | Name             | Conve | Reada | 01 | 02 | 03 |
-    |                  | 4     | 4     | 4  | 4  | 4  |
-    +------------------+-------+-------+----+----+----+
-    | Cerna, Camila    | 4     | 3     | 2  | 1  | 0  |
-    | Tejada, Mario    | 0     | 1     |    | 3  |    |
-    | Vividor, Liliana | 0     |       | 4  |    | 1  |
-    +------------------+-------+-------+----+----+----+
+    +-----------+------------+-------+-------+----+----+----+
+    | Last Name | First Name | Conve | Reada | 01 | 02 | 03 |
+    |           |            | 4     | 4     | 4  | 4  | 4  |
+    +-----------+------------+-------+-------+----+----+----+
+    | Cerna     | Camila     | 4     | 3     | 2  | 1  | 0  |
+    | Tejada    | Mario      | 0     | 1     |    | 3  |    |
+    | Vividor   | Liliana    | 0     |       | 4  |    | 1  |
+    +-----------+------------+-------+-------+----+----+----+
 
 List the skills and their types in the Percents skill set:
 
@@ -184,29 +184,29 @@ List the skills and their types in the Percents skill set:
 
 Add some scores to the Percent skill set:
 
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '2')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '1')
-    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '0')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '01', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '02', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Camila Cerna', '03', '0')
 
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '02', '3')
-    >>> teacher.ui.gradebook.worksheet.score('Tejada, Mario', '03', '4')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', '02', '3')
+    >>> teacher.ui.gradebook.worksheet.score('Mario Tejada', '03', '4')
 
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '01', '1')
-    >>> teacher.ui.gradebook.worksheet.score('Vividor, Liliana', '02', '2')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '01', '1')
+    >>> teacher.ui.gradebook.worksheet.score('Liliana Vividor', '02', '2')
 
     >>> teacher.query.name('UPDATE_SUBMIT').click()
     >>> teacher.ui.gradebook.worksheet.pprint()
     +------------------------+---------------+----------------+
     | Arithmetic of Decimals | 01: Fraktions | *02: Percents* |
     +------------------------+---------------+----------------+
-    +------------------+----+----+----+
-    | Name             | 01 | 02 | 03 |
-    |                  | 4  | 4  | 4  |
-    +------------------+----+----+----+
-    | Cerna, Camila    | 2  | 1  | 0  |
-    | Tejada, Mario    |    | 3  | 4  |
-    | Vividor, Liliana | 1  | 2  |    |
-    +------------------+----+----+----+
+    +-----------+------------+----+----+----+
+    | Last Name | First Name | 01 | 02 | 03 |
+    |           |            | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+
+    | Cerna     | Camila     | 2  | 1  | 0  |
+    | Tejada    | Mario      |    | 3  | 4  |
+    | Vividor   | Liliana    | 1  | 2  |    |
+    +-----------+------------+----+----+----+
 
 Let's fix the typo in the Fraktions skill set:
 
@@ -229,14 +229,14 @@ The skill set should be updated in the teacher's gradebook:
     +------------------------+--------------+-----------------+
     | Arithmetic of Decimals | 02: Percents | *10: Fractions* |
     +------------------------+--------------+-----------------+
-    +------------------+-------+-------+----+----+----+
-    | Name             | Conve | Reada | 01 | 02 | 03 |
-    |                  | 4     | 4     | 4  | 4  | 4  |
-    +------------------+-------+-------+----+----+----+
-    | Cerna, Camila    | 4     | 3     | 2  | 1  | 0  |
-    | Tejada, Mario    | 0     | 1     |    | 3  |    |
-    | Vividor, Liliana | 0     |       | 4  |    | 1  |
-    +------------------+-------+-------+----+----+----+
+    +-----------+------------+-------+-------+----+----+----+
+    | Last Name | First Name | Conve | Reada | 01 | 02 | 03 |
+    |           |            | 4     | 4     | 4  | 4  | 4  |
+    +-----------+------------+-------+-------+----+----+----+
+    | Cerna     | Camila     | 4     | 3     | 2  | 1  | 0  |
+    | Tejada    | Mario      | 0     | 1     |    | 3  |    |
+    | Vividor   | Liliana    | 0     |       | 4  |    | 1  |
+    +-----------+------------+-------+-------+----+----+----+
 
 Now, let's change some information of the skills in the Percents skill
 set:
@@ -281,11 +281,11 @@ The skills should be updated in the teacher's gradebook:
     +------------------------+----------------+---------------+
     | Arithmetic of Decimals | *02: Percents* | 10: Fractions |
     +------------------------+----------------+---------------+
-    +------------------+----+----+----+
-    | Name             | 02 | 03 | 07 |
-    |                  | 4  | 4  | 4  |
-    +------------------+----+----+----+
-    | Cerna, Camila    | 1  | 0  | 2  |
-    | Tejada, Mario    | 3  | 4  |    |
-    | Vividor, Liliana | 2  |    | 1  |
-    +------------------+----+----+----+
+    +-----------+------------+----+----+----+
+    | Last Name | First Name | 02 | 03 | 07 |
+    |           |            | 4  | 4  | 4  |
+    +-----------+------------+----+----+----+
+    | Cerna     | Camila     | 1  | 0  | 2  |
+    | Tejada    | Mario      | 3  | 4  |    |
+    | Vividor   | Liliana    | 2  |    | 1  |
+    +-----------+------------+----+----+----+

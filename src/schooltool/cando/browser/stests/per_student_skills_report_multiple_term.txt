@@ -1,0 +1,421 @@
+Per Student Skills Report in Multiple Term sections
+===================================================
+
+Helpers:
+
+    >>> from pprint import pprint
+    >>> def gradeStudent(browser, student, scores):
+    ...     for skillset, grades in scores.items():
+    ...         active = browser.query.css('.third-nav li.active a')
+    ...         if active.text != skillset:
+    ...             browser.query.css('#navbar-list-worksheets').click()
+    ...             browser.query.link(skillset).click()
+    ...         for label, grade in grades:
+    ...             browser.ui.gradebook.worksheet.score(student, label, grade)
+    ...         browser.query.name('UPDATE_SUBMIT').click()
+    >>> def print_charts_info(browser):
+    ...     for chart in browser.query_all.css('.chart-container'):
+    ...         rects = []
+    ...         for rect in chart.query_all.css('svg > g > rect'):
+    ...             info = {
+    ...                 'fill': rect.get_attribute('fill'),
+    ...                 'title': rect.query.tag('title').text,
+    ...                 'width': rect.get_attribute('width'),
+    ...                 'x': rect.get_attribute('x'),
+    ...             }
+    ...             rects.append(info)
+    ...         pprint({
+    ...             'id': chart.get_attribute('id'),
+    ...             'rects': rects,
+    ...         })
+    >>> def print_score_colors(browser):
+    ...     result = []
+    ...     sel = '.score-colors-table .score-color-cell'
+    ...     for cell in browser.query_all.css(sel)[:-1]:
+    ...         title = cell.query.css('span.title')
+    ...         color = cell.query.css('span.color')
+    ...         print '%s: %s' % (title.text, color.get_attribute('style'))
+
+Log in as manager:
+
+    >>> manager = browsers.manager
+    >>> manager.ui.login('manager', 'schooltool')
+
+Set up persons:
+
+    >>> manager.ui.person.add('Jeffrey', 'Elkner', 'jeffrey', 'pwd')
+    >>> manager.ui.person.add('Camila', 'Cerna', 'camila', 'pwd')
+    >>> manager.ui.person.add('Liliana', 'Vividor', 'liliana', 'pwd')
+    >>> manager.ui.person.add('Mario', 'Tejada', 'mario', 'pwd')
+
+Set up multiple term sections:
+
+    >>> manager.ui.schoolyear.add('2012', '2012-01-01', '2012-12-31')
+    >>> manager.ui.term.add('2012', 'Q1', '2012-01-01', '2012-03-31')
+    >>> manager.ui.term.add('2012', 'Q2', '2012-04-01', '2012-06-30')
+    >>> manager.ui.term.add('2012', 'Q3', '2012-07-01', '2012-09-30')
+    >>> manager.ui.term.add('2012', 'Q4', '2012-10-01', '2012-12-31')
+    >>> manager.ui.course.add('2012', 'Programming', course_id='PRO')
+    >>> manager.ui.section.add('2012', 'Q1', 'Programming', ends='Q4')
+    >>> manager.ui.section.instructors.add('2012', 'Q1', 'Programming (1)',
+    ...                                    ['jeffrey'])
+    >>> manager.ui.section.students.add('2012', 'Q1', 'Programming (1)',
+    ...                                 ['camila', 'liliana', 'mario'])
+
+Set up skills:
+
+    >>> manager.ui.layer.add('Course')
+    >>> manager.ui.node.add('Programming', label='PRO')
+
+    >>> manager.ui.skillset.add('Python Environment', '01')
+    >>> manager.ui.skillset.add('Data Types, Statements, and Expressions', '02')
+    >>> manager.ui.skillset.add('Errors', '03')
+    >>> manager.ui.skillset.add('Strings', '04')
+
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Use the Python shell for interactive evaluation',
+    ...     '01')
+    >>> manager.ui.skill.add(
+    ...     'Python Environment',
+    ...     'Make Python scripts with a text editor',
+    ...     '02',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Recognize int, float, str, list, tuple, and dict.',
+    ...     '03')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use type(...) to determine the data type of a given value.',
+    ...     '04')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use assignment statements to assign names (variables) to values.',
+    ...     '05')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Use the input function to read user input.',
+    ...     '06')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Define keyword and recognize keywords in Python.',
+    ...     '07')
+    >>> manager.ui.skill.add(
+    ...     'Data Types, Statements, and Expressions',
+    ...     'Create legal variable names and recognize illegal ones.',
+    ...     '08',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Recognize and differentiate among errors.',
+    ...     '09')
+    >>> manager.ui.skill.add(
+    ...     'Errors',
+    ...     'Read and interpret stack traceback messages.',
+    ...     '10')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Create string literals with single, double, and triple quotes.',
+    ...     '11')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the len() function to return the length of a string.',
+    ...     '12')
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the find(...) method to locate substrings in a string.',
+    ...     '13',
+    ...     required=False)
+    >>> manager.ui.skill.add(
+    ...     'Strings',
+    ...     'Use the split() method to break a string into a list.',
+    ...     '14',
+    ...     required=False)
+
+    >>> manager.query.link('Search').click()
+    >>> manager.query.button('Search').click()
+    >>> manager.query.link('Programming').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> skillsets_accordion_header = accordion_headers[4]
+    >>> skillsets_accordion_header.click()
+    >>> skillsets_accordion_content = accordion_contents[4]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit skill sets"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Done').click()
+
+    >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
+    >>> accordion_headers = manager.query_all.xpath(sel)
+    >>> sel = 'div.ui-accordion-content'
+    >>> accordion_contents = manager.query_all.css(sel)
+    >>> information_accordion_content = accordion_contents[0]
+    >>> layers_accordion_header = accordion_headers[3]
+    >>> layers_accordion_header.click()
+    >>> layers_accordion_content = accordion_contents[3]
+    >>> manager.wait_no(information_accordion_content.is_displayed)
+    >>> sel = '//a[@title="Edit layers"]'
+    >>> manager.query.xpath(sel).click()
+    >>> manager.query.id('form-buttons-add').click()
+
+Assign the skills to the course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Batch Assign Skills').click()
+    >>> manager.query.name('course_attr').ui.set_value('Course ID')
+    >>> manager.query.name('layer').ui.set_value('Course')
+    >>> manager.query.name('node_attr').ui.set_value('Label')
+    >>> manager.query.name('SEARCH_BUTTON').click()
+    >>> manager.query.name('ASSIGN_BUTTON').click()
+
+Log in as instructor and grade some skills in the first term section:
+
+    >>> teacher = browsers.teacher
+    >>> teacher.ui.login('jeffrey', 'pwd')
+    >>> teacher.query.link('CanDo').click()
+
+Add scores for the students:
+
+    >>> camila_scores = {
+    ...     '01: Python Environment': [
+    ...         ('01', '4'),
+    ...         ('02', '3'),
+    ...         ],
+    ...     '02: Data Types, Statements, and Expressions': [
+    ...         ('03', '2'),
+    ...         ('04', '0'),
+    ...         ('05', '3'),
+    ...         ('06', '3'),
+    ...         ('07', '3'),
+    ...         ('08', '1'),
+    ...         ],
+    ...     '03: Errors': [
+    ...         ('09', '4'),
+    ...         ('10', '3'),
+    ...         ],
+    ...     '04: Strings': [
+    ...         ('11', '4'),
+    ...         ('12', '3'),
+    ...         ('13', '3'),
+    ...         ('14', '3'),
+    ...         ],
+    ...     }
+    >>> gradeStudent(teacher, 'Camila Cerna', camila_scores)
+
+    >>> mario_scores = {
+    ...     '01: Python Environment': [
+    ...         ('01', '3'),
+    ...         ('02', '4'),
+    ...         ],
+    ...     '02: Data Types, Statements, and Expressions': [
+    ...         ('03', '1'),
+    ...         ('04', '0'),
+    ...         ('05', '0'),
+    ...         ('06', '2'),
+    ...         ('07', '2'),
+    ...         ('08', '1'),
+    ...         ],
+    ...     '03: Errors': [
+    ...         ('09', ''),
+    ...         ('10', '3'),
+    ...         ],
+    ...     '04: Strings': [
+    ...         ('11', '3'),
+    ...         ('12', '2'),
+    ...         ('13', '1'),
+    ...         ('14', ''),
+    ...         ],
+    ...     }
+    >>> gradeStudent(teacher, 'Mario Tejada', mario_scores)
+
+    >>> liliana_scores = {
+    ...     '01: Python Environment': [
+    ...         ('01', '1'),
+    ...         ('02', ''),
+    ...         ],
+    ...     '02: Data Types, Statements, and Expressions': [
+    ...         ('03', '2'),
+    ...         ('04', '0'),
+    ...         ('05', '2'),
+    ...         ('06', '4'),
+    ...         ('07', '0'),
+    ...         ('08', '0'),
+    ...         ],
+    ...     '03: Errors': [
+    ...         ('09', '4'),
+    ...         ('10', '4'),
+    ...         ],
+    ...     '04: Strings': [
+    ...         ('11', '2'),
+    ...         ('12', '2'),
+    ...         ('13', ''),
+    ...         ('14', ''),
+    ...         ],
+    ...     }
+    >>> gradeStudent(teacher, 'Liliana Vividor', liliana_scores)
+
+Print the Per Student Skills report details:
+
+    >>> print teacher.url
+    http://localhost/schoolyears/2012/q1/sections/1/skills/.../gradebook
+    >>> teacher.query.link('Per Student Skills').click()
+    >>> print teacher.query.css('.page .header h1').text
+    Per Student Skills
+    >>> print teacher.query.css('.page .header h2').text
+    Programming (1)
+
+Print the students individual charts information:
+
+    >>> print_charts_info(teacher)
+    {'id': u'skills-data-camila-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 7.1%',
+                'width': u'21.42857142857143',
+                'x': u'78.57142857142857'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 7.1%',
+                'width': u'14.285714285714292',
+                'x': u'85.71428571428571'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 7.1%',
+                'width': u'7.142857142857153',
+                'x': u'92.85714285714285'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 21.4%',
+                'width': u'78.57142857142856',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 57.1%',
+                'width': u'57.14285714285714',
+                'x': u'100'}]}
+    {'id': u'skills-data-mario-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 14.3%',
+                'width': u'57.142857142857146',
+                'x': u'42.857142857142854'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 21.4%',
+                'width': u'42.85714285714286',
+                'x': u'57.14285714285714'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 21.4%',
+                'width': u'21.42857142857143',
+                'x': u'78.57142857142857'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 7.1%',
+                'width': u'28.571428571428555',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 21.4%',
+                'width': u'21.428571428571416',
+                'x': u'100'}]}
+    {'id': u'skills-data-liliana-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 21.4%',
+                'width': u'57.142857142857146',
+                'x': u'42.857142857142854'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 7.1%',
+                'width': u'35.71428571428572',
+                'x': u'64.28571428571428'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 28.6%',
+                'width': u'28.571428571428584',
+                'x': u'71.42857142857142'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 21.4%',
+                'width': u'21.428571428571416',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 0.0%',
+                'width': u'0',
+                'x': u'100'}]}
+
+If we go to the Q2 section we should see a similar report even if
+there are no grades yet for the Q2 section:
+
+    >>> teacher.query.link('Done').click()
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q2')
+    >>> teacher.wait(lambda: page.expired)
+
+    >>> print teacher.url
+    http://localhost/schoolyears/2012/q2/sections/1/skills/.../gradebook
+    >>> teacher.query.link('Per Student Skills').click()
+    >>> print teacher.query.css('.page .header h1').text
+    Per Student Skills
+    >>> print teacher.query.css('.page .header h2').text
+    Programming (1)
+
+    >>> print_charts_info(teacher)
+    {'id': u'skills-data-camila-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 7.1%',
+                'width': u'21.42857142857143',
+                'x': u'78.57142857142857'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 7.1%',
+                'width': u'14.285714285714292',
+                'x': u'85.71428571428571'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 7.1%',
+                'width': u'7.142857142857153',
+                'x': u'92.85714285714285'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 21.4%',
+                'width': u'78.57142857142856',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 57.1%',
+                'width': u'57.14285714285714',
+                'x': u'100'}]}
+    {'id': u'skills-data-mario-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 14.3%',
+                'width': u'57.142857142857146',
+                'x': u'42.857142857142854'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 21.4%',
+                'width': u'42.85714285714286',
+                'x': u'57.14285714285714'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 21.4%',
+                'width': u'21.42857142857143',
+                'x': u'78.57142857142857'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 7.1%',
+                'width': u'28.571428571428555',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 21.4%',
+                'width': u'21.428571428571416',
+                'x': u'100'}]}
+    {'id': u'skills-data-liliana-',
+     'rects': [{'fill': u'#f68e4d',
+                'title': u'Uninformed: 21.4%',
+                'width': u'57.142857142857146',
+                'x': u'42.857142857142854'},
+               {'fill': u'#f9b289',
+                'title': u'Beginning: 7.1%',
+                'width': u'35.71428571428572',
+                'x': u'64.28571428571428'},
+               {'fill': u'#fcd6c5',
+                'title': u'Practicing: 28.6%',
+                'width': u'28.571428571428584',
+                'x': u'71.42857142857142'},
+               {'fill': u'#6b3a89',
+                'title': u'Expert: 21.4%',
+                'width': u'21.428571428571416',
+                'x': u'100'},
+               {'fill': u'#d1c4da',
+                'title': u'Competent: 0.0%',
+                'width': u'0',
+                'x': u'100'}]}

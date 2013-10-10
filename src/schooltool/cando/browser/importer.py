@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Skills importer.
@@ -39,7 +38,7 @@ from schooltool.cando.interfaces import (ILayerContainer, INodeContainer,
 from schooltool.cando.model import Layer, Node, Document
 from schooltool.cando.skill import SkillSet, Skill
 
-from schooltool.common import SchoolToolMessage as _
+from schooltool.cando import CanDoMessage as _
 
 
 ERROR_INVALID_DOCUMENTS = _("has an invalid document id")
@@ -102,6 +101,7 @@ class SkillSetsImporter(ImporterBase):
             title = self.getRequiredTextFromCell(sh, row, 1)
             description = self.getTextFromCell(sh, row, 2)
             label = self.getTextFromCell(sh, row, 3)
+            retired = self.getBoolFromCell(sh, row, 4)
             if num_errors < len(self.errors):
                 continue
 
@@ -114,6 +114,7 @@ class SkillSetsImporter(ImporterBase):
                 changes = Changer(skillset, ignore=True)
             changes['description'] = description
             changes['label'] = label
+            changes['retired'] = bool(retired)
             changes.notify()
 
 
@@ -308,6 +309,7 @@ class NodesImporter(ImporterBase):
             title = self.getRequiredTextFromCell(sh, row, 1)
             description = self.getTextFromCell(sh, row, 2)
             label = self.getTextFromCell(sh, row, 3)
+            retired = self.getBoolFromCell(sh, row, 8)
             if num_errors < len(self.errors):
                 continue
 
@@ -319,8 +321,9 @@ class NodesImporter(ImporterBase):
                 nodes[name].title = title
                 nodes[name].description = description
                 nodes[name].label = label
+                nodes[name].retired = retired
             else:
-                nodes[name] = Node(title, description, label)
+                nodes[name] = Node(title, description, label, retired)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':

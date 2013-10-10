@@ -12,7 +12,7 @@
                    />
           </th>
           <th>
-            <span i18n:translate="">Visible</span>
+            <span i18n:translate="">Deprecated</span>
             <input class="select-all" type="checkbox" name="select_all"
                    onclick="return ST.cando.column_select_all(this);"
                    />

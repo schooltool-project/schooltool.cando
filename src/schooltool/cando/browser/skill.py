@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Skill views.
@@ -186,12 +185,12 @@ class SkillSetAddView(flourish.form.AddForm):
 class SkillSetView(flourish.form.DisplayForm):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('description', 'label')
+    fields = fields.select('description', 'label', 'retired')
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('title', 'description', 'label')
+    fields = fields.select('title', 'description', 'label', 'retired')
 
     legend = _('Skill set')
 
@@ -321,7 +320,7 @@ class SkillView(flourish.form.DisplayForm):
 
     fields = z3c.form.field.Fields(ISkill)
     fields = fields.select('scoresystem', 'description', 'label', 'required',
-                           'external_id')
+                           'retired', 'external_id')
 
     @property
     def title(self):

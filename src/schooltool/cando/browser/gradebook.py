@@ -13,17 +13,16 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 CanDo view components.
 """
 
-from urllib import urlencode
 import pytz
 from xml.sax.saxutils import quoteattr
 
+import zope.lifecycleevent
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import queryMultiAdapter
@@ -41,12 +40,14 @@ import zc.table.column
 from zc.catalog.interfaces import IExtentCatalog
 from zc.table.interfaces import ISortableColumn
 
+from z3c.rml import rml2pdf
 from z3c.form import form, field, button
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.interfaces import IApplicationPreferences
 from schooltool.app.catalog import buildQueryString
 from schooltool.course.interfaces import ISection
+from schooltool.course.interfaces import ISectionContainer
 from schooltool.common.inlinept import InheritTemplate
 from schooltool.common.inlinept import InlineViewPageTemplate
 from schooltool.gradebook.browser.gradebook import FlourishGradebookOverview
@@ -67,8 +68,12 @@ from schooltool.gradebook.browser.worksheet import FlourishWorksheetEditView
 from schooltool.gradebook.browser.pdf_views import FlourishGradebookPDFView
 from schooltool.gradebook.browser.pdf_views import WorksheetGrid
 from schooltool.person.interfaces import IPerson
-from schooltool.report.browser.report import RequestReportDownloadDialog
-from schooltool.report.report import ReportLinkViewlet
+from schooltool.person.interfaces import IPersonFactory
+from schooltool.report.browser.report import RequestRemoteReportDialog
+from schooltool.report.report import ReportTask
+from schooltool.schoolyear.interfaces import ISchoolYearContainer
+from schooltool.report.browser.report import FileArchiver
+from schooltool.report.browser.report import ReportArchivePage
 from schooltool.requirement.scoresystem import ScoreValidationError
 from schooltool.requirement.scoresystem import UNSCORED
 from schooltool.term.interfaces import ITerm, IDateManager
@@ -89,6 +94,8 @@ from schooltool.cando.interfaces import ILayerContainer
 from schooltool.cando.interfaces import INode
 from schooltool.cando.interfaces import INodeContainer
 from schooltool.cando.interfaces import ISkillsGradebook
+from schooltool.cando.interfaces import IMySkillsGrades
+from schooltool.cando.interfaces import IMyProjectsGrades
 from schooltool.cando.interfaces import IStudentIEP
 from schooltool.cando.interfaces import IDocumentContainer
 from schooltool.cando.interfaces import ICanDoStudentGradebook
@@ -99,6 +106,7 @@ from schooltool.cando.model import getNodeCatalog
 from schooltool.cando.model import getOrderedByHierarchy
 from schooltool.cando.skill import getSkillCatalog, getSkillSetCatalog
 from schooltool.cando.skill import querySkillScoreSystem
+from schooltool.cando.skill import searchable_common_indexes
 from schooltool.cando.browser.skill import SkillAddView
 from schooltool.cando import CanDoMessage as _
 
@@ -325,6 +333,33 @@ class CanDoModesViewlet(flourish.viewlet.Viewlet):
         return self.template(*args, **kw)
 
 
+class MyGradesCanDoModes(flourish.page.RefineLinksViewlet):
+
+    pass
+
+
+class MyGradesCanDoModesViewlet(CanDoModesViewlet):
+
+    def items(self):
+        section = ISection(proxy.removeSecurityProxy(self.context))
+        section_url = absoluteURL(section, self.request)
+        result = []
+        if ISectionSkills(section):
+            result.append({
+                    'id': 'skills',
+                    'label': _('Skill Sets'),
+                    'url': section_url + '/mygrades-skills',
+                    'selected': IMySkillsGrades.providedBy(self.context),
+                    })
+        result.append({
+                'id': 'projects',
+                'label': _('Projects'),
+                'url': section_url + '/mygrades-projects',
+                'selected': IMyProjectsGrades.providedBy(self.context),
+                })
+        return result
+
+
 class SkillAddLink(flourish.page.LinkViewlet):
 
     @property
@@ -389,11 +424,11 @@ class ProjectAddView(flourish.form.AddForm):
 
 class CanDoNamePopupMenuView(FlourishNamePopupMenuView):
 
-    def options(self, worksheet):
+    def options(self, worksheet, column_id='student'):
         options = [
             {
                 'label': self.translate(_('Sort by')),
-                'url': '?sort_by=student',
+                'url': '?sort_by=%s' % column_id,
                 },
             ]
         return options
@@ -943,6 +978,10 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         return self.manager.html_id+'-title'
 
     @property
+    def search_index_id(self):
+        return self.manager.html_id+'-index'
+
+    @property
     def search_layer_ids(self):
         return self.manager.html_id+"-layers"
 
@@ -992,32 +1031,41 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         found_ids = set()
         query = buildQueryString(self.request.get('SEARCH', ''))
 
+        searchable_index_id = 'text'
+        if self.search_index_id in self.request:
+            index_id = self.request[self.search_index_id]
+            if index_id in searchable_common_indexes:
+                searchable_index_id = index_id
+
         if self.skill_layer_id in request_layer_ids:
             catalog = getSkillCatalog()
             if query:
-                index = catalog['text']
+                index = catalog[searchable_index_id]
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
+            found_in_catalog = self.removeRetired(catalog, found_in_catalog)
             found_ids.update(found_in_catalog)
             request_layer_ids.remove(self.skill_layer_id)
 
         if self.skillset_layer_id in request_layer_ids:
             catalog = getSkillSetCatalog()
             if query:
-                index = catalog['text']
+                index = catalog[searchable_index_id]
                 found_in_catalog = index.apply(query)
             else:
                 found_in_catalog = tuple(catalog.extent)
+            found_in_catalog = self.removeRetired(catalog, found_in_catalog)
             found_ids.update(found_in_catalog)
             request_layer_ids.remove(self.skillset_layer_id)
 
         catalog = getNodeCatalog()
         if query:
-            index = catalog['text']
+            index = catalog[searchable_index_id]
             found_in_catalog = set(index.apply(query))
         else:
             found_in_catalog = set(catalog.extent)
+        found_in_catalog = self.removeRetired(catalog, found_in_catalog)
         index = getNodeCatalog()['layers']
         if self.no_layer_id in request_layer_ids:
             found_no_layers = set(catalog.extent).difference(index.ids())
@@ -1030,6 +1078,27 @@ class AggregateNodesTableFilter(schooltool.table.ajax.IndexedTableFilter):
         found_ids.update(found_in_catalog)
 
         result = filter(lambda i: i['id'] in found_ids, items)
+        return result
+
+    def removeRetired(self, catalog, found_ids):
+        retired = set()
+        index = catalog['retired']
+        retired = index.values_to_documents.get(True, set())
+        return set(found_ids).difference(retired)
+
+    @Lazy
+    def search_indexes(self):
+        order = (
+            ('text_ID', _('ID')),
+            ('text_label', _('Label')),
+            ('text_title', _('Title')),
+            )
+        result = []
+        for index_id, title in order:
+            result.append({
+                    'id': index_id,
+                    'title': title,
+                    })
         return result
 
 
@@ -1150,8 +1219,151 @@ class NodesSearchTable(AggregateNodesSkillsSearchTable):
         return [label, title, layers]
 
 
+class RetireNodeColumn(table.column.CheckboxColumn):
+
+    tokens_name = None
+
+    def __init__(self, *args, **kw):
+        if 'tokens_name' in kw:
+            self.tokens_name = kw.pop('tokens_name')
+        else:
+            prefix = kw.get('prefix')
+            self.tokens_name = '.'.join(filter(None, ["displayed", prefix, "tokens"]))
+        table.column.CheckboxColumn.__init__(self, *args, **kw)
+
+
+    def renderHeader(self, formatter):
+        cell = table.column.CheckboxColumn.renderHeader(self, formatter)
+        cell += ('<input type="checkbox" '
+                 'onclick="return ST.table.check_children(this);" />')
+        return cell
+
+    def renderCell(self, item, formatter):
+        cell = table.column.CheckboxColumn.renderCell(self, item, formatter)
+        cell += ('\n<input name="%(tokens_name)s" value="%(tokens_value)s" '
+                 'type="hidden" />') % (
+            {'tokens_name': self.tokens_name,
+             'tokens_value': self.id_getter(item)})
+        return cell
+
+
+class RetireNodesTable(NodesSearchTable):
+
+    display_success_dialog = 'DISPLAY_SUCCESS_DIALOG'
+
+    def columns(self):
+        columns = NodesSearchTable.columns(self)
+        int_ids = getUtility(IIntIds)
+        columns.insert(0, RetireNodeColumn(
+                prefix="active", name="active",
+                title='',
+                id_getter=lambda node: str(int_ids.getId(node)),
+                value_getter=lambda node: node.retired))
+        return columns
+
+    @property
+    def success_dialog_title(self):
+        return _('Changes saved')
+
+    @property
+    def success_dialog_url(self):
+        return '%s/retire_successful.html' % absoluteURL(self.context,
+                                                         self.request)
+
+
+class RetireNodesScript(flourish.viewlet.Viewlet):
+
+    template = ViewPageTemplateFile('templates/retire_nodes_script.pt')
+
+    def render(self, *args, **kw):
+        if self.manager.display_success_dialog in self.request:
+            return self.template(*args, **kw)
+        return ''
+
+
+class RetireNodesInstructionViewlet(flourish.viewlet.Viewlet):
+
+    template = InlineViewPageTemplate('''
+      <h3 i18n:domain="schooltool.cando" i18n:translate="">
+        Select items to deprecate:
+      </h3>
+    ''')
+
+    def render(self, *args, **kw):
+        if not self.manager._items:
+            return ''
+        return self.template(*args, **kw)
+
+
 class NodesSearchTableFilter(AggregateNodesTableFilter):
     pass
+
+
+class RetireNodesTableFilter(AggregateNodesTableFilter):
+
+    def removeRetired(self, catalog, found_ids):
+        return set(found_ids)
+
+
+class SaveRetiredButton(flourish.viewlet.Viewlet):
+
+    template = flourish.templates.File('templates/retire_nodes_save_button.pt')
+
+    button_name = 'SAVE_RESULTS'
+    cancel_name = 'CANCEL'
+    token_key = 'displayed.active.tokens'
+    checkbox_key = 'active.'
+
+    @property
+    def onclick(self):
+        return "$('#%(button_id)s').attr('disabled', 'disabled'); "\
+               "return ST.table.on_form_submit('%(container_id)s', '#%(button_id)s')" % ({
+                'container_id': self.manager.html_id,
+                'button_id': self.html_id,
+                })
+
+    @property
+    def html_id(self):
+        return '-'.join(filter(None, [self.manager.html_id, 'save_button']))
+
+    def saveChanges(self):
+        changed = False
+        checkbox_key = self.checkbox_key
+        checked_ids = [iid[len(checkbox_key):]
+                       for iid in self.request
+                       if (iid.startswith(checkbox_key) and
+                           self.request[iid])]
+        displayed_ids = self.request.get(self.token_key, [])
+        if not isinstance(displayed_ids, list):
+            displayed_ids = [displayed_ids]
+        int_ids = getUtility(IIntIds)
+        for sid in displayed_ids:
+            retired = sid in checked_ids
+            try:
+                iid = int(sid)
+            except (TypeError, ValueError):
+                continue
+            node = int_ids.queryObject(iid)
+            if node is None:
+                continue
+            if node.retired != retired:
+                node.retired = retired
+                changed = True
+                zope.lifecycleevent.modified(node)
+        return changed
+
+    def update(self):
+        if self.button_name in self.request:
+            changed = self.saveChanges()
+            if changed:
+                self.request.form[self.manager.display_success_dialog] = True
+        if self.cancel_name in self.request:
+            self.request.response.redirect(self.nextURL())
+
+    def nextURL(self):
+        app = ISchoolToolApplication(None)
+        container = IDocumentContainer(app)
+        return absoluteURL(container, self.request)
 
 
 class NodeChildrenTable(SkillSearchTable):
@@ -1243,6 +1455,11 @@ class MySkillsGradesView(FlourishMyGradesView):
             SkillsGradebookOverview, self).getActivityAttrs(activity)
         longTitle = activity.label + ': ' + longTitle
         return shortTitle, longTitle, bestScore
+
+
+class MyProjectsGradesView(MySkillsGradesView):
+
+    pass
 
 
 class SkillSortingColumn(table.column.LocaleAwareGetterColumn):
@@ -1409,7 +1626,7 @@ class CanDoGradeStudentTableFormatter(table.ajax.AJAXFormSortFormatter):
 def label_title_formatter(obj, item, formatter):
     title = obj.title
     label = getattr(obj, 'label')
-    if label is not None:
+    if label:
         title = '%s: %s' % (label, title)
     return title
 
@@ -1418,6 +1635,18 @@ def skill_score_formatter(score, item, formatter):
     if score is not None and score.value is not UNSCORED:
         return score.value
     return ''
+
+
+def get_worksheets(student_gradebook):
+    skills_gradebook = student_gradebook.gradebook
+    section = ISection(proxy.removeSecurityProxy(skills_gradebook))
+    return ISectionSkills(section)
+
+
+def get_projects(student_gradebook):
+    project_gradebook = student_gradebook.gradebook
+    section = ISection(proxy.removeSecurityProxy(project_gradebook))
+    return IProjects(section)
 
 
 class CanDoGradeStudentTableBase(table.ajax.Table):
@@ -1429,12 +1658,18 @@ class CanDoGradeStudentTableBase(table.ajax.Table):
         skillset = skill.__parent__
         return '%s.%s' % (skillset.__name__, skill.__name__)
 
+    @property
+    def worksheets(self):
+        if self.view.isSkillsGradebook:
+            return get_worksheets(self.context)
+        else:
+            return get_projects(self.context)
+
     def items(self):
         result = []
         iep = IStudentIEP(self.context.student)
         iep_skills = iep.getIEPSkills(self.view.gradebook.section)
-        worksheets = self.context.__parent__.__parent__.__parent__
-        for worksheet in worksheets.values():
+        for worksheet in self.worksheets.values():
             if self.view.isSkillsGradebook:
                 gradebook = ISkillsGradebook(worksheet)
                 skillset_label = worksheet.label
@@ -1723,13 +1958,6 @@ class CanDoGradeStudentValidateScoreView(FlourishGradebookValidateScoreView):
         return result
 
 
-class RequestStudentCompetencyReportView(RequestReportDownloadDialog):
-
-    def nextURL(self):
-        return '%s/student_competency_report.pdf' % absoluteURL(self.context,
-                                                                self.request)
-
-
 class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
                                      StudentCompetencyRecordView):
 
@@ -1760,6 +1988,44 @@ class StudentCompetencyReportPDFView(flourish.report.PlainPDFPage,
             _('Course: ${courses}', mapping={'courses': courses}),
             ]
 
+    @property
+    def base_filename(self):
+        return 'student_skill_report_%s_%s_%s' % (
+            self.student.last_name,
+            self.student.first_name,
+            self.student.username)
+
+
+class CanDoStudentGradebookReportTask(ReportTask):
+
+    @property
+    def context(self):
+        int_ids = getUtility(IIntIds)
+        student = int_ids.queryObject(self.student_intid)
+        worksheet = int_ids.queryObject(self.worksheet_intid)
+        gradebook = ISkillsGradebook(worksheet)
+        student_gradebook = getMultiAdapter((student, gradebook),
+                                            ICanDoStudentGradebook)
+        return student_gradebook
+
+    @context.setter
+    def context(self, value):
+        student_gradebook = proxy.removeSecurityProxy(value)
+        student = student_gradebook.student
+        gradebook = student_gradebook.gradebook
+        worksheet = gradebook.context
+        int_ids = getUtility(IIntIds)
+        student_intid = int_ids.getId(student)
+        worksheet_intid = int_ids.getId(worksheet)
+        self.student_intid = student_intid
+        self.worksheet_intid = worksheet_intid
+
+
+class RequestStudentCompetencyReportView(RequestRemoteReportDialog):
+
+    report_builder = StudentCompetencyReportPDFView
+    task_factory = CanDoStudentGradebookReportTask
+
 
 class StudentCompetencyReportSkillsTablePart(table.pdf.RMLTablePart):
 
@@ -1781,10 +2047,9 @@ class RMLSkillColumn(table.pdf.RMLGetterColumn):
             self.style.para_class, self.escape(value))
 
 
-def getScoreSystems(gradebook):
+def getScoreSystems(student_gradebook):
     result = {}
-    worksheet = gradebook.__parent__.__parent__
-    worksheets = worksheet.__parent__
+    worksheets = get_worksheets(student_gradebook)
     for worksheet in worksheets.values():
         for activity in worksheet.values():
             scoresystem = proxy.removeSecurityProxy(activity.scoresystem)
@@ -1804,46 +2069,6 @@ def getScoreSystems(gradebook):
                     'name': scoresystem.__name__,
                     }
     return result
-
-
-class RequestCompetencyCertificateView(RequestReportDownloadDialog):
-
-    template = ViewPageTemplateFile(
-        'templates/request_competency_certificate.pt')
-
-    @Lazy
-    def scoresystems(self):
-        result = getScoreSystems(self.context)
-        return result
-
-    def sorted_scoresystems(self):
-        collator = ICollator(self.request.locale)
-        return sorted(self.scoresystems.values(),
-                      key=lambda v: collator.key(v['obj'].title))
-
-    def is_selected(self, ss_info, score_info):
-        requested_passing_score = self.request.get(ss_info['name'])
-        if requested_passing_score is not None:
-            return requested_passing_score == score_info['label']
-        return score_info['value'] == ss_info['passing_score']
-
-    def nextURL(self):
-        url = '%s/competency_certificate.pdf' % absoluteURL(self.context,
-                                                            self.request)
-        params = {}
-        for ss_info in self.scoresystems.values():
-            requested_passing_score = self.request.get(ss_info['name'])
-            if requested_passing_score is not None:
-                params[ss_info['name']] = requested_passing_score
-        if params:
-            url += '?%s' % urlencode(params)
-        return url
-
-    def update(self):
-        if 'DOWNLOAD' in self.request:
-            self.request.response.redirect(self.nextURL())
-            return
-        super(RequestCompetencyCertificateView, self).update()
 
 
 class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
@@ -1892,6 +2117,47 @@ class CompetencyCertificatePDFView(flourish.report.PlainPDFPage,
                 result[ss_info['name']] = ss_info['passing_score']
         return result
 
+    @property
+    def base_filename(self):
+        return 'certificate_of_competency_%s_%s_%s' % (
+            self.student.last_name,
+            self.student.first_name,
+            self.student.username)
+
+
+class RequestCompetencyCertificateView(RequestRemoteReportDialog):
+
+    report_builder = CompetencyCertificatePDFView
+    task_factory = CanDoStudentGradebookReportTask
+
+    template = ViewPageTemplateFile(
+        'templates/request_competency_certificate.pt')
+
+    @Lazy
+    def scoresystems(self):
+        result = getScoreSystems(self.context)
+        return result
+
+    def sorted_scoresystems(self):
+        collator = ICollator(self.request.locale)
+        return sorted(self.scoresystems.values(),
+                      key=lambda v: collator.key(v['obj'].title))
+
+    def is_selected(self, ss_info, score_info):
+        requested_passing_score = self.request.get(ss_info['name'])
+        if requested_passing_score is not None:
+            return requested_passing_score == score_info['label']
+        return score_info['value'] == ss_info['passing_score']
+
+    def schedule(self, task):
+        params = {}
+        for ss_info in self.scoresystems.values():
+            requested_passing_score = self.request.get(ss_info['name'])
+            if requested_passing_score is not None:
+                params[ss_info['name']] = requested_passing_score
+        task.request_params.update(params)
+        task.schedule(self.request)
+
 
 class CompetencyCertificateSkillsTablePart(table.pdf.RMLTablePart):
 
@@ -1938,11 +2204,22 @@ class CompetencyCertificateTableFilter(table.ajax.TableFilter):
         return ''
 
 
-class RequestStudentCompetencySectionReportView(RequestReportDownloadDialog):
+class SkillsGradebookReportTask(ReportTask):
 
-    def nextURL(self):
-        return '%s/student_competency_section_report.pdf' % (
-            absoluteURL(self.context, self.request))
+    @property
+    def context(self):
+        int_ids = getUtility(IIntIds)
+        worksheet = int_ids.queryObject(self.worksheet_intid)
+        gradebook = ISkillsGradebook(worksheet)
+        return gradebook
+
+    @context.setter
+    def context(self, value):
+        gradebook = proxy.removeSecurityProxy(value)
+        worksheet = gradebook.context
+        int_ids = getUtility(IIntIds)
+        worksheet_intid = int_ids.getId(worksheet)
+        self.worksheet_intid = worksheet_intid
 
 
 class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
@@ -1956,6 +2233,19 @@ class StudentCompetencySectionReportPDFView(flourish.report.PlainPDFPage,
         term = ITerm(gradebook.section)
         schoolyear = ISchoolYear(term)
         return '%s | %s' % (term.title, schoolyear.title)
+
+    @property
+    def base_filename(self):
+        gradebook = proxy.removeSecurityProxy(self.context)
+        section = gradebook.section
+        courses = [c.__name__ for c in section.courses]
+        return 'aggregated_student_skill_reports_%s' % '_'.join(courses)
+
+
+class RequestStudentCompetencySectionReportView(RequestRemoteReportDialog):
+
+    report_builder = StudentCompetencySectionReportPDFView
+    task_factory = SkillsGradebookReportTask
 
 
 class NoHeaderPlainPageTemplate(flourish.report.PlainPageTemplate):
@@ -1974,16 +2264,16 @@ class StudentCompetencySectionReportPDFStory(flourish.report.PDFStory):
         collator = ICollator(self.request.locale)
         gradebook = proxy.removeSecurityProxy(self.context)
         section = gradebook.section
-        for student in sorted(section.members,
-                              key=lambda x: x.title,
-                              cmp=collator.cmp):
+        factory = getUtility(IPersonFactory)
+        sorting_key = lambda x: factory.getSortingKey(x, collator)
+        for student in sorted(section.members, key=sorting_key):
             student_gradebook = getMultiAdapter((student, gradebook),
                                                 ICanDoStudentGradebook)
-            student_gradebook.__parent__ = gradebook
             student_scr = getMultiAdapter(
                 (student_gradebook, self.request, self.view, self),
                 name="student_scr")
             student_scr.update()
+            student_scr.__name__ = 'student_scr'
             result.append(student_scr.render())
         return ''.join(result)
 
@@ -2009,33 +2299,112 @@ class StudentSCRPart(flourish.report.PDFPart):
         return courses
 
     def scr_table(self):
+        self.view.__name__ = 'foobar'
         view = getMultiAdapter(
             (self.context, self.request),
             name='student_competency_report.html')
+        view.__name__ = 'student_competency_report.html'
         grades_table = getMultiAdapter(
             (self.context, self.request, view, self.manager),
             name="student_grades_table")
+        grades_table.__name__ = 'student_grades_table'
         # XXX: make StudentCompetencyReportSkillsTablePart registration
         #      more generic and get rid of this awful monkey patching
         rml_table = getMultiAdapter(
             (self.context, self.request, view, grades_table),
             table.interfaces.IRMLTable)
+        rml_table.__name__ = 'rml_table'
         rml_table.getColumnWidths = lambda x: '7% 10% 53% 15% 15%'
         rml_table.update()
         return rml_table.render()
 
 
-class SkillsGradebookReportLink(ReportLinkViewlet):
+class StudentCompetencyArchivePage(ReportArchivePage):
+    message_title = _("skill gradebooks archive")
+    base_filename = 'skill_gradebooks'
 
-    @property
-    def report_link(self):
-        skills = ISectionSkills(self.context)
-        if skills:
-            skillset = skills.values()[0]
-            return '%s/gradebook/%s' % (absoluteURL(skillset, self.request),
-                                        self.link)
 
-    def render(self, *args, **kw):
-        if not self.report_link:
-            return ''
-        return super(SkillsGradebookReportLink, self).render(*args, **kw)
+class ArchiveCompetencySectionReports(FileArchiver):
+
+    sections_by_term = None
+
+    report_builder = 'student_competency_section_report.pdf'
+
+    def collectTerms(self, schoolyear_id=None):
+        app = ISchoolToolApplication(None)
+        syc = ISchoolYearContainer(app)
+        archive_terms = []
+        for year_id, year in syc.items():
+            if (schoolyear_id is None or
+                year_id == schoolyear_id):
+                for term in year.values():
+                    archive_terms.append(term)
+        return archive_terms
+
+    def collectSections(self, terms):
+        archive_sections = []
+        if not terms:
+            return archive_sections
+        for term in terms:
+            sections = []
+            sc = ISectionContainer(term)
+            for section in sc.values():
+                sections.append(section)
+            if sections:
+                archive_sections.append((term, sections))
+        return archive_sections
+
+    def updateTargets(self):
+        terms = self.collectTerms()
+        sections = self.collectSections(terms)
+        self.sections_by_term = sections
+
+    def update(self):
+        FileArchiver.update(self)
+        self.updateTargets()
+
+    def renderReport(self, renderer, filename, archive):
+        renderer.update()
+        rml = renderer.render()
+        pdf_filename = renderer.filename
+        pdf_stream = rml2pdf.parseString(rml, filename=pdf_filename or None)
+        data = pdf_stream.getvalue()
+        archive.writestr(filename, data)
+
+    def renderSection(self, section, filename, archive):
+        request = self.request
+        if hasattr(request, 'clone'):
+            request = request.clone()
+        skills = ISectionSkills(section)
+        if not skills:
+            return
+        worksheet = skills.values()[0]
+        gradebook = ISkillsGradebook(worksheet)
+        renderer = self.queryView(
+            gradebook, request, self.report_builder)
+        if renderer is None:
+            return
+        self.renderReport(renderer, filename, archive)
+
+    def getFullFilename(self, year, term, section):
+        filename = '%s/%s/%s-skills.pdf' % (
+            year.__name__, term.__name__, section.__name__)
+        return filename
+
+    def render(self, archive):
+        total_files = sum([len(sections) for term, sections in self.sections_by_term])
+        file_n = 0
+        first_run = True
+        for term, sections in self.sections_by_term:
+            year = ISchoolYear(term)
+            self.setTitle(u'%s, %s' % (year.title, term.title))
+            for section in sections:
+                filename = self.getFullFilename(year, term, section)
+                self.progress(filename, file_n, total_files)
+                if first_run:
+                    # Push out update progress immediately
+                    self.view.task_progress.force()
+                first_run = False
+                self.renderSection(section, filename, archive)
+                file_n += 1
+        self.finish()

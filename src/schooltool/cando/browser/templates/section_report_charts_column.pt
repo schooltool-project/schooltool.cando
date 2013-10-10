@@ -1,0 +1,40 @@
+<tal:block>
+  <script>ST.state.push()</script>
+  <tal:script
+      tal:replace="structure scriptlocal:
+                   container_id options/container_id;
+                   svg_size options/svg_size;
+                   container_size options/container_size;
+                   container_margins options/container_margins;
+                   skills_count options/skills_count;
+                   passing_target_size options/passing_target_size;
+                   scores options/scores;
+                   colors options/colors;" />
+  <script>
+    $(document).ready(function() {
+        var container_id = ST.dialogs.jquery_id(ST.local.container_id),
+            svg_size = ST.local.svg_size,
+            container_size = ST.local.container_size,
+            container_margins = ST.local.container_margins,
+            skills_count = ST.local.skills_count,
+            passing_target_size = ST.local.passing_target_size,
+            scores = ST.local.scores,
+            colors = ST.local.colors;
+        return function(e) {
+            ST.report.build_chart(
+                container_id,
+                svg_size,
+                container_size,
+                container_margins,
+                skills_count,
+                passing_target_size,
+                scores,
+                colors
+            );
+        };
+    }());
+  </script>
+  <script>ST.state.pop()</script>
+  <div tal:attributes="id options/container_id" class="chart-container">
+  </div>
+</tal:block>

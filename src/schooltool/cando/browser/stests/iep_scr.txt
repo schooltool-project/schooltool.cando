@@ -156,9 +156,9 @@ Log in as instructor:
 Check Camila's Student Competency Report and print its skills
 information (label, required, title):
 
-    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Camila').click()
     >>> camila_menu.query.link('Report').click()
     >>> camila_report_url = teacher.url
 

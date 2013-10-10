@@ -1,0 +1,21 @@
+<div tal:attributes="id options/container_id"
+     class="score-color-cell">
+  <script>ST.state.push()</script>
+  <tal:script
+      tal:replace="structure scriptlocal:
+                   container_id options/container_id;
+                   score options/score;
+                   colors options/colors;"
+      />
+  <script>
+    $(document).ready(function() {
+        var container_id = ST.dialogs.jquery_id(ST.local.container_id),
+            score = ST.local.score,
+            colors = ST.local.colors;
+        return function(e) {
+            ST.report.build_color_cell(container_id, score, colors);
+        };
+    }());
+  </script>
+  <script>ST.state.pop()</script>
+</div>

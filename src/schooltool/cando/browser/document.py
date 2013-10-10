@@ -13,8 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
 Document views.
@@ -854,7 +853,7 @@ class DocumentNodeAddSkillSetView(DocumentAddSkillSetBase, DocumentNodeMixin):
 class DocumentSkillSetView(flourish.form.DisplayForm, DocumentSkillSetMixin):
     template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
-    fields = fields.select('description', 'label')
+    fields = fields.select('description', 'label', 'retired')
 
     @property
     def subtitle(self):
@@ -1042,4 +1041,8 @@ class DocumentSkillEditView(SkillEditView, DocumentSkillMixin):
         query_string = self.build_query_string(layer=self.get_layer(),
                                                node=self.get_node())
         return '%s/document.html%s' % (url, query_string)
+
+
+class CustomizeDocumentLink(flourish.page.LinkViewlet):
+    pass
 

@@ -13,15 +13,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """Skills document model."""
 import itertools
 
 from persistent import Persistent
 import zope.lifecycleevent
-from zope.catalog.text import TextIndex
 from zope.container.btree import BTreeContainer
 from zope.container.contained import Contained
 from zope.component import adapts, adapter
@@ -33,7 +31,9 @@ from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.app.catalog import AttributeCatalog
 from zope.index.text.interfaces import ISearchableText
 from schooltool.cando import interfaces
+from schooltool.cando.skill import SearchableTextMixin
 from schooltool.cando.skill import URISkillSet
+from schooltool.cando.skill import setSearchableIndexes
 from schooltool.relationship import URIObject
 from schooltool.relationship import RelationshipSchema, RelationshipProperty
 from schooltool.relationship.interfaces import InvalidRelationship
@@ -167,15 +167,17 @@ class Node(Persistent, Contained):
     title = u''
     description = u''
     label = u''
+    retired = False
     layers = RelationshipProperty(URINodeLayer, URINode, URILayer)
     parents = RelationshipProperty(URINodeLink, URINode, URIParentNode)
     children = RelationshipProperty(URINodeLink, URIParentNode, URINode)
     skillsets = RelationshipProperty(URINodeSkillSets, URINode, URISkillSet)
 
-    def __init__(self, title=u'', description=u'', label=u''):
+    def __init__(self, title=u'', description=u'', label=u'', retired=False):
         self.title = title
         self.description = description
         self.label = label
+        self.retired = retired
 
     def findPaths(self):
         paths = [(self,)]
@@ -549,14 +551,14 @@ def get_node_layer_titles(node):
 
 class NodeCatalog(AttributeCatalog):
 
-    version = '1.1 - update layers and layer titles'
+    version = '1.3 - add __name__ to text index'
     interface = interfaces.INode
     attributes = ('title', 'label', 'description',
                   'required', 'retired')
 
     def setIndexes(self, catalog):
         super(NodeCatalog, self).setIndexes(catalog)
-        catalog['text'] = TextIndex('getSearchableText', ISearchableText, True)
+        setSearchableIndexes(catalog)
         catalog['layers'] = ConvertingSetIndex(converter=get_node_layer_names)
         catalog['layer_titles'] = ConvertingSetIndex(converter=get_node_layer_titles)
 
@@ -564,7 +566,7 @@ class NodeCatalog(AttributeCatalog):
 getNodeCatalog = NodeCatalog.get
 
 
-class SearchableTextNode(object):
+class SearchableTextNode(SearchableTextMixin):
 
     adapts(interfaces.INode)
     implements(ISearchableText)
@@ -574,6 +576,7 @@ class SearchableTextNode(object):
 
     def getSearchableText(self):
         result = [
+            self.context.__name__,
             self.context.title,
             self.context.label or '',
             self.context.description or '',

@@ -2,6 +2,28 @@
 <configure xmlns="http://schooltool.org/securitypolicy"
            xmlns:zope="http://namespaces.zope.org/zope">
 
-  <!-- XXX: TODO -->
+  <allow
+     interface=".interfaces.IDocumentContainer"
+     crowds="managers clerks"
+     permission="schooltool.edit"
+     />
+
+  <allow
+     interface=".interfaces.INodeContainer"
+     crowds="managers clerks"
+     permission="schooltool.edit"
+     />
+
+  <allow
+     interface=".interfaces.ISkillSetContainer"
+     crowds="managers clerks"
+     permission="schooltool.edit"
+     />
+
+  <allow
+     interface=".interfaces.ILayerContainer"
+     crowds="managers clerks"
+     permission="schooltool.edit"
+     />
 
 </configure>
