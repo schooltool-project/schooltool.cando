@@ -2,10 +2,14 @@
 CHANGES
 =======
 
-0.8.3 (unreleased)
+2.6.0 (2013-10-10)
 ------------------
 
-- Nothing changed yet.
+- Add student's view for projects (https://launchpad.net/bugs/1070278)
+- Fix student and teacher sorting in some reports.
+- Allow sorting gradebook by first or last name (https://launchpad.net/bugs/1234284)
+- Fix navigation when schoolear has non-ascii chars (https://launchpad.net/bugs/1234690)
+- Fix forbidden attribute error on login after timeout (https://launchpad.net/bugs/1154662)
 
 
 0.8.2 (2013-09-14)
