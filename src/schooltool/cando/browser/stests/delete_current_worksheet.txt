@@ -180,7 +180,7 @@ Go to the Errors worksheet:
 
     >>> sel = '.third-nav li a'
     >>> for a in student.query_all.css(sel):
-    ...     print a.text
+    ...     print a.get_attribute('title')
     01: Python Environment
     02: Data Types, Statements, and Expressions
     03: Errors
@@ -223,7 +223,7 @@ Let's check the new current worksheet for the student:
     >>> student.query.link('CanDo').click()
     >>> sel = '.third-nav li a'
     >>> for a in student.query_all.css(sel):
-    ...     print a.text
+    ...     print a.get_attribute('title')
     01: Python Environment
     02: Data Types, Statements, and Expressions
     04: Strings

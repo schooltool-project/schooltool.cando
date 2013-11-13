@@ -210,7 +210,7 @@ We'll need a helper for scoring.
     ...     cell.click()
     ...     cell.query.tag('input').type(teacher.keys.DELETE, grade)
 
-    >>> teacher.query.link('Cerna, Camila').click()
+    >>> teacher.query.link('Cerna').click()
     >>> menu = teacher.query.css('#students-part tbody ul.popup_menu')
     >>> menu.query.link('Score').click()
 

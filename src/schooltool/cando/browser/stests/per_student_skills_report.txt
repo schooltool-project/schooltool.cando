@@ -9,7 +9,10 @@ Helpers:
     ...         active = browser.query.css('.third-nav li.active a')
     ...         if active.text != skillset:
     ...             browser.query.css('#navbar-list-worksheets').click()
-    ...             browser.query.link(skillset).click()
+    ...             sel = 'a[title="%s"]' % skillset
+    ...             link = browser.query.css(sel)
+    ...             # XXX: fix this, use clicks instead of open
+    ...             browser.open(link.get_attribute('href'))
     ...         for label, grade in grades:
     ...             browser.ui.gradebook.worksheet.score(student, label, grade)
     ...         browser.query.name('UPDATE_SUBMIT').click()
