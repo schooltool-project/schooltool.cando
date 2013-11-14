@@ -217,6 +217,11 @@ class CanDoExternalActivityProjectTotal(CanDoExternalActivityProject):
             value = ev.scoreSystem.getNumericalValue(ev.value)
             totalPoints += value
         if numComps:
+            # XXX: should return a Decimal percentage representing the
+            # grade for the given student, i.e. a value between 0 and 1.
+            # ss = ev.scoreSystem
+            # bestScore = ss.getNumericalValue(ev.getBestScore())
+            # return Decimal(totalPoints) / Decimal(numComps) / bestScore
             return Decimal(totalPoints) / Decimal(numComps)
         return None
 
@@ -285,6 +290,8 @@ class CanDoExternalActivitySectionTotal(CanDoExternalActivitySection):
                 value = ev.scoreSystem.getNumericalValue(ev.value)
                 totalPoints += value
         if numComps:
+            # XXX: should return a Decimal percentage representing the
+            # grade for the given student, i.e. a value between 0 and 1.
             return Decimal(totalPoints) / Decimal(numComps)
         return None
 
