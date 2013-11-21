@@ -5,7 +5,8 @@ CHANGES
 2.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix Total points external activity to return a percentage of total possible
+  points.
 
 
 2.6.0 (2013-10-10)
