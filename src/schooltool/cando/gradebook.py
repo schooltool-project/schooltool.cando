@@ -75,7 +75,7 @@ class ProjectsGradebook(Gradebook):
         self.activities = []
         for activity in context.values():
             self.activities.append(activity)
-        self.students = list(self.section.members)
+        self.students = self.section.members.all()
         self.__name__ = 'gradebook-projects'
 
     def getCurrentWorksheet(self, person):
@@ -134,7 +134,7 @@ class SkillsGradebook(Gradebook):
         self.activities = []
         for activity in context.values():
             self.activities.append(activity)
-        self.students = list(self.section.members)
+        self.students = self.section.members.all()
         self.__name__ = 'gradebook-skills'
 
     def getCurrentWorksheet(self, person):
