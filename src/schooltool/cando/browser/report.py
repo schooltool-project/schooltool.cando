@@ -89,7 +89,7 @@ class SectionReportViewBase(flourish.page.Page):
 
     @Lazy
     def default_passing_score(self):
-        scores = self.scoresystem.scoresDict()
+        scores = self.scoresystem.scoresDict
         return scores[self.scoresystem._minPassingScore]
 
     @Lazy

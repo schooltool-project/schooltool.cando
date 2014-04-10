@@ -2059,7 +2059,7 @@ def getScoreSystems(student_gradebook):
                 scores = sorted(scoresByLabel.values(),
                                 key=lambda x:x['value'],
                                 reverse=not is_max_passing)
-                scoresDict = scoresystem.scoresDict()
+                scoresDict = scoresystem.scoresDict
                 result[scoresystem] = {
                     'obj': scoresystem,
                     'scoresDict': scoresDict,
