@@ -359,7 +359,7 @@ and the IEP information is shown in the Score student view:
 
     >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Camila').click()
+    >>> teacher.query.link('Cerna').click()
     >>> camila_menu.query.link('Score').click()
 
     >>> sel = '.additional .content:first-child h3'

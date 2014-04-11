@@ -529,9 +529,9 @@ Now, let's list skill sets and skills in the Skills popup dialog:
 
 Let's test the Score student view for Camila:
 
-    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Camila Cerna').click()
+    >>> teacher.query.link('Cerna').click()
     >>> camila_menu.query.link('Score').click()
 
     >>> sel = '.grade-student tbody tr th'
@@ -560,9 +560,9 @@ Let's test the Score student view for Camila:
 
 Now her Student Competency Report:
 
-    >>> sel = '#students-part tbody ul.popup_menu'
+    >>> sel = '#students-part tbody td:first-child ul.popup_menu'
     >>> camila_menu, mario_menu, liliana_menu = teacher.query_all.css(sel)
-    >>> teacher.query.link('Camila Cerna').click()
+    >>> teacher.query.link('Cerna').click()
     >>> camila_menu.query.link('Report').click()
 
     >>> sel = 'table tbody tr th'
@@ -597,7 +597,7 @@ Let's log in as Camila and check the sorting of her grades view:
 
     >>> sel = '.third-nav li a'
     >>> for a in camila.query_all.css(sel):
-    ...     print a.text
+    ...     print a.get_attribute('title')
     Arithmetic of Decimals
     01: Fractions
     02: Percents

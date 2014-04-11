@@ -89,7 +89,7 @@ class SectionReportViewBase(flourish.page.Page):
 
     @Lazy
     def default_passing_score(self):
-        scores = self.scoresystem.scoresDict()
+        scores = self.scoresystem.scoresDict
         return scores[self.scoresystem._minPassingScore]
 
     @Lazy
@@ -470,8 +470,19 @@ class SectionReportChartsTable(table.ajax.Table):
 class ByStudentChartsTable(SectionReportChartsTable):
 
     css_classes = 'section-report section-report-by-student'
+    visible_column_names = ['title', 'ID', 'skills']
 
     def columns(self):
+        first_name = table.column.LocaleAwareGetterColumn(
+            name='first_name',
+            title=_(u'First Name'),
+            getter=lambda i, f: i['student'].first_name,
+            subsort=True)
+        last_name = table.column.LocaleAwareGetterColumn(
+            name='last_name',
+            title=_(u'Last Name'),
+            getter=lambda i, f: i['student'].last_name,
+            subsort=True)
         title = table.column.LocaleAwareGetterColumn(
             name='title',
             title=_(u'Student'),
@@ -483,10 +494,10 @@ class ByStudentChartsTable(SectionReportChartsTable):
             getter=student_id_getter,
             subsort=True)
         skills = SkillsColumn(self.view.passing_target, self.view.colors)
-        return [title, ID, skills]
+        return [first_name, last_name, title, ID, skills]
 
     def sortOn(self):
-        return (('title', False),)
+        return getUtility(IPersonFactory).sortOn()
 
     def items(self):
         result = []

@@ -248,7 +248,7 @@ add a score for him in Q3 and check it in Q4:
     |           |            | 4  | 4  |
     +-----------+------------+----+----+
     | Cerna     | Camila     | 2  | 3  |
-    | Nestor    | Guzman     |    |    |
+    | Guzman    | Nestor     |    |    |
     | Tejada    | Mario      | 4  |    |
     | Vividor   | Liliana    | 1  |    |
     +-----------+------------+----+----+
@@ -264,7 +264,7 @@ add a score for him in Q3 and check it in Q4:
     |           |            | 4  | 4  |
     +-----------+------------+----+----+
     | Cerna     | Camila     | 2  | 3  |
-    | Nestor    | Guzman     |    | 0  |
+    | Guzman    | Nestor     |    | 0  |
     | Tejada    | Mario      | 4  |    |
     | Vividor   | Liliana    | 1  |    |
     +-----------+------------+----+----+
@@ -282,7 +282,7 @@ add a score for him in Q3 and check it in Q4:
     |           |            | 4  | 4  |
     +-----------+------------+----+----+
     | Cerna     | Camila     | 2  | 3  |
-    | Nestor    | Guzman     |    | 0  |
+    | Guzman    | Nestor     |    | 0  |
     | Tejada    | Mario      | 4  |    |
     | Vividor   | Liliana    | 1  |    |
     +-----------+------------+----+----+

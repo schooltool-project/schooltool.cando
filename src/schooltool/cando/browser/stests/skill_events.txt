@@ -257,8 +257,17 @@ set:
     >>> manager.query.css(sel).click()
     >>> manager.query.id('form-widgets-title').clear()
     >>> manager.query.id('form-widgets-title').ui.set_value('Write PERCENTS as decimal numbers.')
-    >>> manager.query.id('form-widgets-required-1').click()
     >>> manager.query.id('form-buttons-apply').click()
+
+Let's change one required skill to optional in the Math course:
+
+    >>> manager.query.link('School').click()
+    >>> manager.query.link('Courses').click()
+    >>> manager.query.link('Math').click()
+    >>> manager.query.link('Skills').click()
+    >>> manager.query.link('Set Required / Deprecated').click()
+    >>> manager.query.name('required.Percents2.Write pe3').click()
+    >>> manager.query.name('SUBMIT_BUTTON').click()
 
 The skills should be updated in the teacher's gradebook:
 

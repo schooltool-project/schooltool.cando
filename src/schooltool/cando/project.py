@@ -209,6 +209,7 @@ class CanDoExternalActivityProjectTotal(CanDoExternalActivityProject):
 
     def getGrade(self, student):
         numComps = totalPoints = 0
+        ss = None
         for competency in self.project.values():
             numComps += 1
             ev = self.gradebook.getScore(student, competency)
@@ -216,8 +217,13 @@ class CanDoExternalActivityProjectTotal(CanDoExternalActivityProject):
                 continue
             value = ev.scoreSystem.getNumericalValue(ev.value)
             totalPoints += value
+            if not ss:
+                ss = ev.scoreSystem
         if numComps:
-            return Decimal(totalPoints) / Decimal(numComps)
+            if not totalPoints:
+                return Decimal(0)
+            bestScore = ss.getNumericalValue(ss.getBestScore())
+            return Decimal(totalPoints) / Decimal(numComps) / bestScore
         return None
 
 
@@ -275,6 +281,7 @@ class CanDoExternalActivitySectionTotal(CanDoExternalActivitySection):
 
     def getGrade(self, student):
         numComps = totalPoints = 0
+        ss = None
         for skillset in ISectionSkills(self.section).values():
             gradebook = ISkillsGradebook(skillset)
             for competency in skillset.values():
@@ -284,8 +291,13 @@ class CanDoExternalActivitySectionTotal(CanDoExternalActivitySection):
                     continue
                 value = ev.scoreSystem.getNumericalValue(ev.value)
                 totalPoints += value
+                if not ss:
+                    ss = ev.scoreSystem
         if numComps:
-            return Decimal(totalPoints) / Decimal(numComps)
+            if not totalPoints:
+                return Decimal(0)
+            bestScore = ss.getNumericalValue(ss.getBestScore())
+            return Decimal(totalPoints) / Decimal(numComps) / bestScore
         return None
 
 

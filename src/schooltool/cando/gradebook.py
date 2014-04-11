@@ -18,6 +18,7 @@
 """CanDo Gradebook."""
 
 from zope.annotation.interfaces import IAnnotations
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapts, adapter, queryMultiAdapter
 from zope.component import getMultiAdapter
 from zope.interface import implements, implementer, implementsOnly
@@ -152,41 +153,29 @@ class SkillsGradebook(Gradebook):
         score = super(SkillsGradebook, self).getScore(student, activity)
         if score is not None:
             return score
-        return self.getPreviousScore(student, activity)
+        if self.section.previous is not None:
+            return self.getPreviousScore(student, activity, self.section.previous)
 
-    def getPreviousScore(self, student, activity):
-        equivalent = activity.findAllEquivalent()
-        previous = self.getPreviousSections(self.section)
-        for section in previous:
-            filtered = self.filterEquivalent(equivalent, section)
-            if filtered:
-                # XXX: could there be more than one equivalent
-                #      in a linked section?
-                skill = proxy.removeSecurityProxy(filtered[0])
-                worksheet = skill.__parent__
-                gradebook = ISkillsGradebook(worksheet, None)
-                if gradebook is not None:
-                    try:
-                        score = gradebook.getScore(student, skill)
-                    except (ValueError,):
-                        score = None
-                    if score is not None:
-                        return score
+    def getPreviousScore(self, student, activity, section):
+        equivalent = self.findEquivalent(activity, section)
+        if equivalent is not None:
+            skill = proxy.removeSecurityProxy(equivalent)
+            worksheet = skill.__parent__
+            gradebook = ISkillsGradebook(worksheet, None)
+            if gradebook is not None:
+                try:
+                    score = gradebook.getScore(student, skill)
+                except (ValueError,):
+                    score = None
+                if score is not None:
+                    return score
 
-    def getPreviousSections(self, section):
-        result = []
-        previous = section.previous
-        while previous:
-            result.append(previous)
-            previous = previous.previous
-        return result
-
-    def filterEquivalent(self, equivalent, section):
-        # select only equivalent skills that belong to this section
-        equivalent = [proxy.removeSecurityProxy(e) for e in equivalent]
-        return filter(
-            lambda e: ISection(e.__parent__, None) is section,
-            equivalent)
+    def findEquivalent(self, activity, section):
+        current_skillset_id = activity.__parent__.__name__
+        skillsets = ISectionSkills(section)
+        skillset = skillsets.get(current_skillset_id)
+        if skillset is not None:
+            return skillset.get(activity.__name__)
 
 
 class MySkillsGrades(SkillsGradebook):

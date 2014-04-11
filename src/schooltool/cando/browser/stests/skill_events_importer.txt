@@ -231,11 +231,14 @@ The Fraktions skill set should be updated in the teacher's gradebook:
     | Vividor   | Liliana    | 0     |       | 4  |    | 1  |
     +-----------+------------+-------+-------+----+----+----+
 
-So should be the skills in the Percents skill set:
+So should be the skills in the Percents skill set. Note that the XLS
+sets the "Write PERCENTS as decimal numbers" skill as optional, but
+that change doesn't propagate (XXX: test global import changes to
+deprecated and scoresystem attributes):
 
     >>> teacher.open(percents_url)
     >>> print_activity_columns(teacher)
-    optional
+    required
     <li class="header">
       02: Write PERCENTS as decimal numbers.
     </li>
