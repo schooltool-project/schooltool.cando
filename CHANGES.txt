@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-2.6.2 (unreleased)
+2.6.2 (2014-04-11)
 ------------------
 
-- Nothing changed yet.
+- Fixed access to scoresDict property (https://launchpad.net/bugs/1306778)
 
 
 2.6.1 (2013-11-24)
