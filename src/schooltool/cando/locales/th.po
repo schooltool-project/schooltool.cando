@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-03-25 13:54+0200\n"
+"POT-Creation-Date: 2013-10-10 16:06+0300\n"
 "PO-Revision-Date: 2013-03-27 14:27+0000\n"
 "Last-Translator: mathinan <mathinan@jaansi.com>\n"
 "Language-Team: Thai <th@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-28 05:12+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-11 05:28+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:9
 #: /src/schooltool/cando/browser/breadcrumbs.zcml:67
@@ -148,12 +148,12 @@ msgstr "ระบุทักษะ"
 msgid "Remove Skills"
 msgstr "ลบทักษะ"
 
-#: /src/schooltool/cando/browser/configure.zcml:287
-#: /src/schooltool/cando/browser/configure.zcml:304
-msgid "Set Required/Visible"
-msgstr "ตั้งเป็นต้องมี/สามารถมองเห็น"
+#: /src/schooltool/cando/browser/configure.zcml:298
+#: /src/schooltool/cando/browser/configure.zcml:315
+msgid "Set Required / Deprecated"
+msgstr ""
 
-#: /src/schooltool/cando/browser/configure.zcml:336
+#: /src/schooltool/cando/browser/configure.zcml:347
 msgid "Assign Skill Set"
 msgstr "ระบุกลุ่มทักษะ"
 
@@ -196,9 +196,17 @@ msgstr "ที่บรรจุโหนด"
 msgid "Search"
 msgstr "ค้นหา"
 
-#: /src/schooltool/cando/browser/configure.zcml:651
-#: /src/schooltool/cando/browser/model.py:357
-#: /src/schooltool/cando/browser/model.py:386
+#: /src/schooltool/cando/browser/configure.zcml:625
+msgid "Deprecate"
+msgstr ""
+
+#: /src/schooltool/cando/browser/configure.zcml:625
+msgid "Documents and Skills"
+msgstr ""
+
+#: /src/schooltool/cando/browser/configure.zcml:766
+#: /src/schooltool/cando/browser/model.py:398
+#: /src/schooltool/cando/browser/model.py:427
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:109
 msgid "Node"
 msgstr "โหนด"
@@ -224,7 +232,11 @@ msgstr "แก้ไขกลุ่มทักษะ"
 msgid "Import Skill Data"
 msgstr "นำเข้าข้อมูลทักษะ"
 
-#: /src/schooltool/cando/browser/configure.zcml:806
+#: /src/schooltool/cando/browser/configure.zcml:919
+msgid "Deprecate Skills"
+msgstr ""
+
+#: /src/schooltool/cando/browser/configure.zcml:974
 msgid "Batch Assign Skills"
 msgstr "ชุดทักษะ"
 
@@ -479,7 +491,11 @@ msgstr "การช่วยเหลือเรื่องรหัสสี
 msgid "No layer assigned"
 msgstr "ไม่ระบุลำดับชั้น"
 
-#: /src/schooltool/cando/browser/gradebook.py:1192
+#: /src/schooltool/cando/browser/gradebook.py:1236
+msgid "Changes saved"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.py:1392
 #: /src/schooltool/cando/browser/gradebook.zcml:140
 msgid "Search Skills"
 msgstr "ค้นหาทักษะ"
@@ -507,12 +523,13 @@ msgstr "วันที่"
 msgid "Rating"
 msgstr "จัดอันดับความพอใจ"
 
-#: /src/schooltool/cando/browser/gradebook.py:1731
+#: /src/schooltool/cando/browser/gradebook.py:1736
+#: /src/schooltool/cando/browser/gradebook.py:1951
 #: /src/schooltool/cando/browser/gradebook.zcml:770
-msgid "Section Competencies"
-msgstr "ส่วนของความสามารถ"
+msgid "Student Skill Report"
+msgstr ""
 
-#: /src/schooltool/cando/browser/gradebook.py:1754
+#: /src/schooltool/cando/browser/gradebook.py:1759
 msgid "Teacher(s): ${teachers}"
 msgstr "อาจารย์: ${teachers}"
 
@@ -525,6 +542,10 @@ msgstr "วิชา: ${courses}"
 #: /src/schooltool/cando/browser/gradebook.zcml:782
 msgid "Certificate of Competency"
 msgstr "ประกาศนียบัตรความสามารถ"
+
+#: /src/schooltool/cando/browser/gradebook.py:2288
+msgid "skill gradebooks archive"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:10
 #: /src/schooltool/cando/browser/gradebook.zcml:26
@@ -577,7 +598,16 @@ msgstr ""
 msgid "My Skills Grades"
 msgstr "ระดับทักษะของฉัน"
 
-#: /src/schooltool/cando/browser/gradebook.zcml:546
+#: /src/schooltool/cando/browser/gradebook.zcml:579
+msgid "My Projects Grades"
+msgstr ""
+
+#: /src/schooltool/cando/browser/gradebook.zcml:596
+#: /src/schooltool/cando/browser/gradebook.zcml:827
+#: /src/schooltool/cando/browser/gradebook.zcml:839
+#: /src/schooltool/cando/browser/report.py:878
+#: /src/schooltool/cando/browser/report.zcml:47
+#: /src/schooltool/cando/browser/report.zcml:58
 msgid "Section"
 msgstr "หัวข้อย่อย"
 
@@ -611,8 +641,9 @@ msgid ""
 msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:794
-msgid "Student Competency Report (Section)"
-msgstr "รายงานความสามารถของนักเรียน (เซกชั่น)"
+#: /src/schooltool/cando/browser/gradebook.zcml:806
+msgid "Aggregated Student Skill Reports"
+msgstr ""
 
 #: /src/schooltool/cando/browser/gradebook.zcml:794
 msgid ""
@@ -648,7 +679,43 @@ msgstr "แผนการเรียนเฉพาะบุคคล"
 msgid "Individualized Educational Plan"
 msgstr "แผนการเรียนเฉพาะบุคคล"
 
-#: /src/schooltool/cando/browser/model.py:95
+#: /src/schooltool/cando/browser/importer.py:44
+msgid "has an invalid document id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:45
+msgid "has an invalid parent id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:46
+msgid "has an invalid layer id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:47
+msgid "has an invalid skillset id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:48
+msgid "is missing a skillset id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:49
+msgid "has an invalid equivalent skill id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:50
+msgid "node label has more than seven characters"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:51
+msgid "has an invalid scoresystem"
+msgstr ""
+
+#: /src/schooltool/cando/browser/importer.py:52
+msgid "has an invalid node id"
+msgstr ""
+
+#: /src/schooltool/cando/browser/model.py:94
 msgid "Layer Information"
 msgstr "ลำดับชั้นข้อมูล"
 
@@ -696,7 +763,48 @@ msgstr "กลุ่มทักษะปัจจุบัน"
 msgid "Available node skill sets"
 msgstr "กลุ่มทักษะที่ว่าง"
 
-#: /src/schooltool/cando/browser/report.zcml:20
+#: /src/schooltool/cando/browser/report.py:199
+msgid "All"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:199
+msgid "Evaluated"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:380
+msgid "% of Skills Below and Above Passing"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:406
+msgid "Students (${count})"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:480
+msgid "Student ID #"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:640
+#: /src/schooltool/cando/browser/templates/section_report_score_colors.pt:19
+msgid "Score Colors"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:814
+msgid "Totals"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:866
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:88
+#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:107
+#: /src/schooltool/cando/browser/templates/section_report_details.pt:8
+msgid "Course"
+msgstr "หลักสูตร"
+
+#: /src/schooltool/cando/browser/report.py:874
+#: /src/schooltool/cando/browser/templates/section_report_details.pt:16
+msgid "Teachers"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:21
 msgid "Export global skills data for the school."
 msgstr "นำข้อมูลทักษะสำหรับโรงเรียนออกสู่ภายนอก"
 
@@ -708,7 +816,61 @@ msgstr "โรงเรียน"
 msgid "Skills Export"
 msgstr "ส"
 
-#: /src/schooltool/cando/browser/skill.py:87
+#: /src/schooltool/cando/browser/report.zcml:47
+#: /src/schooltool/cando/browser/report.zcml:58
+msgid ""
+"An overview of each student's achievement of skills within the section."
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:47
+#: /src/schooltool/cando/browser/report.zcml:58
+#: /src/schooltool/cando/browser/report.zcml:88
+#: /src/schooltool/cando/browser/report.zcml:244
+msgid "Per Student Skills"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:70
+msgid "An overview of each section's aggregate achievement of skills."
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:70
+msgid "Skills Completion"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:191
+msgid "Passing Score"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:208
+msgid "Type"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:226
+#: /src/schooltool/cando/browser/templates/section_report_score_colors.pt:28
+msgid "% Passing Target"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:252
+msgid "Skills Completion Report"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:298
+msgid "Location"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:360
+msgid "Skill Gradebooks"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:369
+msgid "Archive all student skill gradebooks."
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.zcml:369
+msgid "Skill Gradebook Archive"
+msgstr ""
+
+#: /src/schooltool/cando/browser/skill.py:98
 msgid "Title, description or label"
 msgstr "ชื่อเรื่อง, คำอธิบาย"
 
@@ -721,6 +883,11 @@ msgstr "กลุ่มทักษะ"
 msgid "Submit and add"
 msgstr "ส่งข้อมูล และ เพิ่มข้อมูล"
 
+#: /src/schooltool/cando/browser/skill.py:386
+#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
+msgid "Optional"
+msgstr "ซึ่งเป็นทางเลือก"
+
 #: /src/schooltool/cando/browser/templates/cando_third_nav.pt:2
 msgid "Scroll over a skill ID to see its description here"
 msgstr "ไปยัง skill ID เพื่อดูคอธิบาย"
@@ -728,10 +895,6 @@ msgstr "ไปยัง skill ID เพื่อดูคอธิบาย"
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:5
 msgid "Skill Color Code"
 msgstr "ทักษะด้านรหัสสี"
-
-#: /src/schooltool/cando/browser/templates/colorcodes_help.pt:13
-msgid "Optional"
-msgstr "ซึ่งเป็นทางเลือก"
 
 #: /src/schooltool/cando/browser/templates/colorcodes_help.pt:16
 msgid "Optional (IEP)"
@@ -788,12 +951,12 @@ msgid "Course Matching"
 msgstr "การจับคู่วิชา"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:15
-msgid "Course attribute"
+msgid "Course field"
 msgstr "คูณลักษณะรายวิชา"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:21
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:63
-msgid "Select an attribute"
+msgid "Select a field"
 msgstr "เลือกคุณสมบัติ"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:36
@@ -805,7 +968,7 @@ msgid "Select a layer"
 msgstr "เลือกระดับชั้น"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:57
-msgid "Node attribute"
+msgid "Node field"
 msgstr "ลักษณะโหนด"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:83
@@ -815,13 +978,8 @@ msgstr "หลักสูตรไม่ตรงกัน"
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:87
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:106
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:108
-msgid "Attribute"
+msgid "Field"
 msgstr "คุณลักษณะ"
-
-#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:88
-#: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:107
-msgid "Course"
-msgstr "หลักสูตร"
 
 #: /src/schooltool/cando/browser/templates/courses_skills_assignment.pt:89
 msgid "Reason"
@@ -845,10 +1003,11 @@ msgid "Edit this skill"
 msgstr "แก้ไขทักษะ"
 
 #: /src/schooltool/cando/browser/templates/edit_course_skills.pt:15
-#: /src/schooltool/cando/browser/templates/projects.pt:11
-#: /src/schooltool/cando/browser/templates/skillsets.pt:11
-msgid "Visible"
-msgstr "ปรากฏเห็น"
+#: /src/schooltool/cando/interfaces.py:70
+#: /src/schooltool/cando/interfaces.py:99
+#: /src/schooltool/cando/interfaces.py:134
+msgid "Deprecated"
+msgstr ""
 
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:33
 #: /src/schooltool/cando/browser/templates/gradebook_skills_dialog.pt:43
@@ -914,6 +1073,11 @@ msgstr "เรียงลำดับหรือซ่อนโครงกา
 msgid "Order"
 msgstr "ลำดับชั้น"
 
+#: /src/schooltool/cando/browser/templates/projects.pt:11
+#: /src/schooltool/cando/browser/templates/skillsets.pt:11
+msgid "Visible"
+msgstr "ปรากฏเห็น"
+
 #: /src/schooltool/cando/browser/templates/projects.pt:34
 msgid "Edit this project"
 msgstr "แก้ไขโครงการนี้"
@@ -932,19 +1096,40 @@ msgstr "ชนิดไฟล์"
 msgid "Select a minimum display score for ${scoresystem}"
 msgstr "เลือกแสดงคะแนนที่น้อยที่สุดสำหรับ ${scoresystem}"
 
-#: /src/schooltool/cando/browser/templates/request_competency_certificate.pt:41
-msgid "Download"
-msgstr "ดาวน์โหลด"
+#: /src/schooltool/cando/browser/templates/section_report_details.pt:3
+msgid "Details"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/section_report_details.pt:12
+msgid "Government ID"
+msgstr ""
+
+#: /src/schooltool/cando/browser/templates/section_report_score_colors.pt:33
+msgid "Meets target"
+msgstr ""
 
 #: /src/schooltool/cando/browser/templates/skillsets.pt:5
 msgid "Reorder or Hide Skill Sets"
 msgstr "เรียงลำดับหรือซ่อนกลุ่มทักษะ"
 
-#: /src/schooltool/cando/course.py:184
+#: /src/schooltool/cando/browser/xls_views.py:183
+msgid "Skill definitions"
+msgstr ""
+
+#: /src/schooltool/cando/browser/xls_views.py:186
+#: /src/schooltool/cando/course.py:187
 msgid "Course Skills"
 msgstr "ทักษะรายวิชา"
 
-#: /src/schooltool/cando/course.py:228
+#: /src/schooltool/cando/browser/xls_views.py:193
+msgid "Exporting skills"
+msgstr ""
+
+#: /src/schooltool/cando/browser/xls_views.py:212
+msgid "Export complete"
+msgstr ""
+
+#: /src/schooltool/cando/course.py:231
 msgid "Section Skills"
 msgstr "กลุ่มทักษะ"
 
@@ -952,32 +1137,23 @@ msgstr "กลุ่มทักษะ"
 msgid "Project1"
 msgstr "โครงการ 1"
 
-#: /src/schooltool/cando/interfaces.py:37
+#: /src/schooltool/cando/interfaces.py:60
+msgid "Limit to 7 characters or less."
+msgstr "จำกัดจำนวนที่ 7 ตัวอักษรหรือน้อยกว่า"
+
+#: /src/schooltool/cando/interfaces.py:68
 msgid "External ID"
 msgstr "รหัสจากภายนอก"
 
-#: /src/schooltool/cando/interfaces.py:40
-msgid "Is skill required or optional"
-msgstr "ทักษะนี้จำเป็นหรือเป็นเพียงตัวเลือก"
+#: /src/schooltool/cando/interfaces.py:70
+msgid "Required?"
+msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:41
-msgid "Retired"
-msgstr "เกษียณ"
-
-#: /src/schooltool/cando/interfaces.py:42
+#: /src/schooltool/cando/interfaces.py:71
 msgid "Skill is no longer used"
 msgstr "ทักษะที่ไม่ได้ใช้นานแล้ว"
 
-#: /src/schooltool/cando/interfaces.py:43
-msgid "Short label"
-msgstr "ฉลากแบบสั้น"
-
-#: /src/schooltool/cando/interfaces.py:45
-#: /src/schooltool/cando/interfaces.py:62
-msgid "Full description"
-msgstr "คำอธิบายแบบเต็ม"
-
-#: /src/schooltool/cando/interfaces.py:51
+#: /src/schooltool/cando/interfaces.py:79
 msgid "Scoresystem"
 msgstr "ระบบแสดงคะแนน"
 
@@ -985,11 +1161,15 @@ msgstr "ระบบแสดงคะแนน"
 msgid "The skill scoresystem."
 msgstr "ระบบคำนวณทักษะ"
 
-#: /src/schooltool/cando/interfaces.py:104
-msgid "Limit to 7 characters or less."
-msgstr "จำกัดจำนวนที่ 7 ตัวอักษรหรือน้อยกว่า"
+#: /src/schooltool/cando/interfaces.py:100
+msgid "Skill set is no longer used"
+msgstr ""
 
-#: /src/schooltool/cando/interfaces.py:150
+#: /src/schooltool/cando/interfaces.py:135
+msgid "Node is no longer used"
+msgstr ""
+
+#: /src/schooltool/cando/interfaces.py:186
 msgid "Project deployed"
 msgstr "โครงการที่นำออก"
 
