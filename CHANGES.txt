@@ -5,7 +5,13 @@ CHANGES
 2.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Temporal relationships support
+
+
+2.6.2 (2014-04-11)
+------------------
+
+- Fixed access to scoresDict property (https://launchpad.net/bugs/1306778)
 
 
 2.6.1 (2013-11-24)

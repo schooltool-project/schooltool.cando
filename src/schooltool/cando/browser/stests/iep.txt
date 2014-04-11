@@ -231,7 +231,7 @@ Let's activate IEP for Camila:
 
     >>> frame = manager.query.tag('iframe')
     >>> manager.driver.switch_to_frame(frame.get_attribute('id'))
-    >>> manager.driver.execute_script("FCKeditorAPI.Instances['form-widgets-description'].SetHTML('This is Camilas IEP')")
+    >>> manager.driver.execute_script("CKEDITOR.instances['form-widgets-description'].setData('This is Camilas IEP')")
     >>> manager.driver.switch_to_default_content()
 
     >>> manager.query.id('form-buttons-add').click()
