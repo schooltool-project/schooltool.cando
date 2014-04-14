@@ -9,6 +9,10 @@
     border-radius: 4px 0px 0px 0px;
 }
 
+.grid .third-nav li {
+    margin-left: -4px;
+}
+
 .grid .third-nav li a {
     width: 724px;
     text-align: left;
