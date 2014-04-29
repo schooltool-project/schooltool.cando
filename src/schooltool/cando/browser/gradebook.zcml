@@ -1067,4 +1067,12 @@
              set_schema="schooltool.report.interfaces.IReportTask" />
   </zope:class>
 
+  <flourish:viewlet
+      name="gradebook_column_preferences_menu"
+      manager="schooltool.skin.flourish.page.IPageRefineManager"
+      class="schooltool.skin.flourish.page.DisabledViewlet"
+      view=".gradebook.CanDoGradebookOverviewBase"
+      permission="schooltool.view"
+      />
+
 </configure>
