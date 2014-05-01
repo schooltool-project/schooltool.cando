@@ -16,7 +16,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: schooltool.cando\n"
-"POT-Creation-Date: 2013-10-10 16:06+0300\n"
+"POT-Creation-Date: 2014-05-01 20:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
@@ -782,7 +782,15 @@ msgstr ""
 msgid "Students (${count})"
 msgstr ""
 
-#: /src/schooltool/cando/browser/report.py:480
+#: /src/schooltool/cando/browser/report.py:478
+msgid "First Name"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:483
+msgid "Last Name"
+msgstr ""
+
+#: /src/schooltool/cando/browser/report.py:493
 msgid "Student ID #"
 msgstr ""
 
