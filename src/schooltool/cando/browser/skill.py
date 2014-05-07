@@ -132,6 +132,7 @@ class SkillSetContainerActionLinks(flourish.page.RefineLinksViewlet):
 
 class SkillSetAddView(flourish.form.AddForm):
 
+    template = InheritTemplate(flourish.page.Page.template)
     label = None
     legend = _('Skill set')
     add_next = False
@@ -189,6 +190,8 @@ class SkillSetView(flourish.form.DisplayForm):
 
 
 class SkillSetEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkillSet)
     fields = fields.select('title', 'description', 'label', 'retired')
 
@@ -242,6 +245,7 @@ class SkillSetLinks(flourish.page.RefineLinksViewlet):
 
 class SkillAddView(flourish.form.AddForm):
 
+    template = InheritTemplate(flourish.page.Page.template)
     label = None
     legend = _('Skill')
     add_next = False
@@ -340,6 +344,8 @@ class SkillView(flourish.form.DisplayForm):
 
 
 class SkillEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ISkill)
     fields = fields.select('title', 'description', 'label',
                            'required', 'external_id')

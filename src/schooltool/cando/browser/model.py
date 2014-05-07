@@ -168,6 +168,8 @@ class LayerView(flourish.form.DisplayForm):
 
 
 class LayerEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(ILayer)
     fields = fields.select('title')
 
@@ -421,6 +423,8 @@ class NodeView(flourish.form.DisplayForm):
 
 
 class NodeEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(INode)
     fields = fields.select('title', 'description', 'label')
 

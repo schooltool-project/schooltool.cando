@@ -510,6 +510,8 @@ class DocumentNodesTableParameters(flourish.viewlet.Viewlet):
 
 
 class DocumentEditView(flourish.form.Form, z3c.form.form.EditForm):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(IDocument)
     fields = fields.select('title', 'description')
 
@@ -751,6 +753,8 @@ class DocumentNodeAddNodeView(DocumentAddNodeBase, DocumentNodeMixin):
 
 class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
                            DocumentNodeMixin):
+
+    template = InheritTemplate(flourish.page.Page.template)
     fields = z3c.form.field.Fields(INode)
     fields = fields.select('title', 'description', 'label')
 
@@ -788,6 +792,7 @@ class DocumentNodeEditView(flourish.form.Form, z3c.form.form.EditForm,
 
 class DocumentAddSkillSetBase(flourish.form.AddForm):
 
+    template = InheritTemplate(flourish.page.Page.template)
     _skillset = None
     label = None
     fields = z3c.form.field.Fields(ISkillSet)
