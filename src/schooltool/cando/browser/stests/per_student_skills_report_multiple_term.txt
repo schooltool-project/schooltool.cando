@@ -151,7 +151,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit skill sets"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
     >>> manager.query.link('Done').click()
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
@@ -165,7 +166,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit layers"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Assign the skills to the course:
 
@@ -183,6 +185,10 @@ Log in as instructor and grade some skills in the first term section:
     >>> teacher = browsers.teacher
     >>> teacher.ui.login('jeffrey', 'pwd')
     >>> teacher.query.link('CanDo').click()
+    >>> navigator = teacher.query_all.css('.refine .navigator')[1]
+    >>> page = teacher.query.tag('html')
+    >>> navigator.ui.set_value('Q1')
+    >>> teacher.wait(lambda: page.expired)
 
 Add scores for the students:
 

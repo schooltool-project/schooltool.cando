@@ -198,6 +198,12 @@ that the cell stays as just valid.
     valid
     valid
 
+We would get a warning about unsaved changes, so delete the scores
+
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '01', '')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '02', '')
+    >>> teacher.ui.gradebook.worksheet.score('Cerna, Camila', '03', '')
+
 
 Student gradebook
 -----------------

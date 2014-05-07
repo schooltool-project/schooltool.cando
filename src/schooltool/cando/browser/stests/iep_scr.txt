@@ -120,7 +120,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit skill sets"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
     >>> manager.query.link('Done').click()
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
@@ -134,7 +135,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit layers"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Assign the skills to the course:
 

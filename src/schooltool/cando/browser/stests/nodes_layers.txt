@@ -78,7 +78,7 @@ Cluster is not in that list as it makes no sense to be one's own child.
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     Course
     DutyArea
@@ -87,27 +87,30 @@ After clicking the button for adding the Course layer as a child we see that
 it appears in the current children table and is no longer in the available
 children table.
 
-    >>> manager.query.xpath('//button[@name="add_item.course"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="course"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Course
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     DutyArea
 
 We can remove it and put it back.
 
-    >>> manager.query.xpath('//button[@name="remove_item.course"]').click()
+    >>> manager.query.xpath('//input[@value="course"]').click()
+    >>> manager.query.name('REMOVE_DISPLAYED_RESULTS').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     Course
     DutyArea
 
-    >>> manager.query.xpath('//button[@name="add_item.course"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="course"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Course
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     DutyArea
 
@@ -138,16 +141,17 @@ CyclicRelationship exception, so it is not available.
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     DutyArea
 
 We'll add DutyArea as the child layer of Course.
 
-    >>> manager.query.xpath('//button[@name="add_item.dutyarea"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="dutyarea"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     DutyArea
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
 
 We'll leave the edit children view and return the the layer view.  We still
@@ -171,11 +175,12 @@ child available.
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
 
-    >>> manager.query.xpath('//button[@name="add_item.competency"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="competency"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Competency
     >>> print manager.query.css('#available_table-ajax-available_table- h3').text
     There are none.
@@ -237,7 +242,7 @@ layers and the available layers.
     >>> manager.open(href)
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Cluster
     Competency
     Course
@@ -245,29 +250,32 @@ layers and the available layers.
 
 Adding the Cluster layer, we see how the tables change.
 
-    >>> manager.query.xpath('//button[@name="add_item.cluster"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="cluster"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Cluster
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     Course
     DutyArea
 
 We can remove it and put it back.
 
-    >>> manager.query.xpath('//button[@name="remove_item.cluster"]').click()
+    >>> manager.query.xpath('//input[@value="cluster"]').click()
+    >>> manager.query.name('REMOVE_DISPLAYED_RESULTS').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Cluster
     Competency
     Course
     DutyArea
 
-    >>> manager.query.xpath('//button[@name="add_item.cluster"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="cluster"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Cluster
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Competency
     Course
     DutyArea
@@ -281,39 +289,43 @@ to be added as children.  Note that the Math node cannot be its own child.
     >>> manager.open(href)
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Algebra I
     Calculus
 
 After clicking the button for adding the Algebra I node as a child we see that
 it appears in the child table and is no longer in the available children table.
 
-    >>> manager.query.xpath('//button[@name="add_item.algebra-i"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="algebra-i"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Algebra I
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Calculus
 
 We can remove it and put it back again.
 
-    >>> manager.query.xpath('//button[@name="remove_item.algebra-i"]').click()
+    >>> manager.query.xpath('//input[@value="algebra-i"]').click()
+    >>> manager.query.name('REMOVE_DISPLAYED_RESULTS').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Algebra I
     Calculus
 
-    >>> manager.query.xpath('//button[@name="add_item.algebra-i"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="algebra-i"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Algebra I
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Calculus
 
 We'll add Calculus as a child as well.  Then we see both children and the fact
 that no more children are available.
 
-    >>> manager.query.xpath('//button[@name="add_item.calculus"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="calculus"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Algebra I
     Calculus
     >>> print manager.query.css('#available_table-ajax-available_table- h3').text
@@ -335,21 +347,23 @@ CyclicRelationship exception, so it isn't available.
     >>> manager.open(href)
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Calculus
 
 We'll add it, even though it doesn't make any sense, and then remove it.
 
-    >>> manager.query.xpath('//button[@name="add_item.calculus"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="calculus"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Calculus
     >>> print manager.query.css('#available_table-ajax-available_table- h3').text
     There are none.
 
-    >>> manager.query.xpath('//button[@name="remove_item.calculus"]').click()
+    >>> manager.query.xpath('//input[@value="calculus"]').click()
+    >>> manager.query.name('REMOVE_DISPLAYED_RESULTS').click()
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Calculus
 
 Let's return the the Math node view.  We see that there are still no parents
@@ -394,7 +408,7 @@ available ones.
     >>> manager.open(href)
     >>> print manager.query.css('#current_table-ajax-current_table- h3').text
     There are none.
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Basic Algebra
     Basic Calculus
     Continuing Algebra
@@ -402,21 +416,23 @@ available ones.
 
 Let's add the two algebra skillsets and see how the tables have changed.
 
-    >>> manager.query.xpath('//button[@name="add_item.Basic Al1"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.Continui2"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="Basic Al1"]').click()
+    >>> manager.query.xpath('//input[@value="Continui2"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Basic Algebra
     Continuing Algebra
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Basic Calculus
     Continuing Calculus
 
 We'll add the other two skillsets and then remove them to see how the empty
 available skillsets table looks.
 
-    >>> manager.query.xpath('//button[@name="add_item.Basic Ca3"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.Continui4"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="Basic Ca3"]').click()
+    >>> manager.query.xpath('//input[@value="Continui4"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Basic Algebra
     Basic Calculus
     Continuing Algebra
@@ -424,12 +440,13 @@ available skillsets table looks.
     >>> print manager.query.css('#available_table-ajax-available_table- h3').text
     There are none.
 
-    >>> manager.query.xpath('//button[@name="remove_item.Basic Ca3"]').click()
-    >>> manager.query.xpath('//button[@name="remove_item.Continui4"]').click()
-    >>> print manager.query_all.css('#current_table-ajax-current_table- a').text
+    >>> manager.query.xpath('//input[@value="Basic Ca3"]').click()
+    >>> manager.query.xpath('//input[@value="Continui4"]').click()
+    >>> manager.query.name('REMOVE_DISPLAYED_RESULTS').click()
+    >>> print manager.query_all.css('#current_table-ajax-current_table- td a').text
     Basic Algebra
     Continuing Algebra
-    >>> print manager.query_all.css('#available_table-ajax-available_table- a').text
+    >>> print manager.query_all.css('#available_table-ajax-available_table- td a').text
     Basic Calculus
     Continuing Calculus
 

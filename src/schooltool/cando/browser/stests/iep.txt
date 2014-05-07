@@ -174,7 +174,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit skill sets"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
     >>> manager.query.link('Done').click()
 
     >>> sel = '//h2[contains(@class, "ui-accordion-header")]'
@@ -188,7 +189,8 @@ Set up skills:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = '//a[@title="Edit layers"]'
     >>> manager.query.xpath(sel).click()
-    >>> manager.query.id('form-buttons-add').click()
+    >>> manager.query.link('Select All').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Assign the skills to the course:
 
@@ -228,12 +230,7 @@ Let's activate IEP for Camila:
     >>> sel = 'a[title="Edit this plan information"]'
     >>> manager.query.css(sel).click()
     >>> manager.query.id('form-widgets-active-0').click()
-
-    >>> frame = manager.query.tag('iframe')
-    >>> manager.driver.switch_to_frame(frame.get_attribute('id'))
     >>> manager.driver.execute_script("CKEDITOR.instances['form-widgets-description'].setData('This is Camilas IEP')")
-    >>> manager.driver.switch_to_default_content()
-
     >>> manager.query.id('form-buttons-add').click()
 
     >>> print_details(manager)

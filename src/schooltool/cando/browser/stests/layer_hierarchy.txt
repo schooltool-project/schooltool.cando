@@ -36,7 +36,8 @@ First, we'll make layer4 the parent of layer2.
     >>> manager.query.link('Layers').click()
     >>> manager.query.link('Layer4').click()
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.layer2"]').click()
+    >>> manager.query.xpath('//input[@value="layer2"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Now, when we go to the search, we see layer4, then its child, layer2, then the
 orphans, sorted by title.
@@ -58,7 +59,8 @@ Next, we'll make layer2 the parent of layer5.
     >>> manager.query.link('Layers').click()
     >>> manager.query.link('Layer2').click()
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.layer5"]').click()
+    >>> manager.query.xpath('//input[@value="layer5"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Now, when we go to the search, we see layer4, then its child, layer2, then
 layer2's child, layer5, then the orphans, sorted by title.
@@ -81,7 +83,8 @@ will also have layer5 as a child.
     >>> manager.query.link('Layers').click()
     >>> manager.query.link('Layer6').click()
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.layer5"]').click()
+    >>> manager.query.xpath('//input[@value="layer5"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Now layer6 comes before layer5 in the sort.
 
@@ -102,7 +105,8 @@ Finally, we make Layer3 the parent of layer6.
     >>> manager.query.link('Layers').click()
     >>> manager.query.link('Layer3').click()
     >>> manager.query.xpath('//a[@title="Edit children"]').click()
-    >>> manager.query.xpath('//button[@name="add_item.layer6"]').click()
+    >>> manager.query.xpath('//input[@value="layer6"]').click()
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 We see the resulting sort of layers, no layer coming after its child, and we see
 our last remaining orphan at the end.

@@ -75,9 +75,13 @@ set:
     >>> manager.wait_no(information_accordion_content.is_displayed)
     >>> sel = 'a[title="Edit skill sets"]'
     >>> manager.query.css(sel).click()
-    >>> manager.query.name('add_item.Fraktion1').click()
-    >>> manager.query.name('add_item.Percents2').click()
-    >>> manager.query.name('add_item.Arithmet3').click()
+    >>> def add_item(value):
+    ...     sel = 'input[name="displayed.add_item.tokens"][value="%s"]' % value
+    ...     manager.query.css(sel).click()
+    >>> add_item('Fraktion1')
+    >>> add_item('Percents2')
+    >>> add_item('Arithmet3')
+    >>> manager.query.name('ADD_DISPLAYED_RESULTS').click()
 
 Set up a section:
 

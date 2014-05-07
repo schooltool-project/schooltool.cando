@@ -142,15 +142,15 @@ bottom two are only used to name skills and skillsets.
     >>> manager.query.link('Layer Hierarchy').click()
 
     >>> print_table(manager, '//table[@class="data relationships-table"]')
-    +--------------+---------------+---------------+--------+
-    | Title        | Parents       | Children      | Remove |
-    +--------------+---------------+---------------+--------+
-    | Craft        |               | Branch, Topic |        |
-    | Branch       | Craft         | Topic         |        |
-    | Topic        | Branch, Craft |               |        |
-    | Competencies |               |               |        |
-    | Competency   |               |               |        |
-    +--------------+---------------+---------------+--------+
+    +--------+--------------+---------------+---------------+
+    | Remove | Title        | Parents       | Children      |
+    +--------+--------------+---------------+---------------+
+    |        | Craft        |               | Branch, Topic |
+    |        | Branch       | Craft         | Topic         |
+    |        | Topic        | Branch, Craft |               |
+    |        | Competencies |               |               |
+    |        | Competency   |               |               |
+    +--------+--------------+---------------+---------------+
 
 The search view returns nodes mixed with skillsets and skills.
 
