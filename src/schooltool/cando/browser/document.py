@@ -715,10 +715,6 @@ class DocumentAddNodeBase(flourish.form.AddForm):
             data['description'] = u''
         node = Node(data['title'])
         z3c.form.form.applyChanges(self, node, data)
-        node.parents.add(removeSecurityProxy(self.context))
-        layer = self.get_layer()
-        if layer is not None:
-            node.layers.add(removeSecurityProxy(layer))
         return node
 
     def add(self, node):
@@ -726,6 +722,10 @@ class DocumentAddNodeBase(flourish.form.AddForm):
         chooser = INameChooser(nodes)
         name = chooser.chooseName(u'', node)
         nodes[name] = node
+        node.parents.add(removeSecurityProxy(self.context))
+        layer = self.get_layer()
+        if layer is not None:
+            node.layers.add(removeSecurityProxy(layer))
         return node
 
 
