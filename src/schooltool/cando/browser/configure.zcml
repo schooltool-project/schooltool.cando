@@ -929,12 +929,12 @@
        title="Skills"
        subtitle="Import Skill Data"
        for="schooltool.app.interfaces.ISchoolToolApplication"
-       content_template="templates/f_import.pt"
-       class="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+       content_template="templates/f_import_remote.pt"
+       class="schooltool.cando.browser.importer.SkillsRemoteImporter"
        permission="schooltool.edit" />
 
     <security:allow
-        interface="schooltool.cando.browser.importer.GlobalSkillsMegaImporter"
+        interface="schooltool.cando.browser.importer.SkillsImporterBase"
         crowds="managers clerks"
         permission="schooltool.edit" />
 

@@ -21,13 +21,15 @@ Skills importer.
 
 import zope.lifecycleevent
 from zope.security.proxy import removeSecurityProxy
-from zope.proxy import sameProxiedObjects
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.course.interfaces import ICourseContainer
 from schooltool.export.importer import (ImporterBase, FlourishMegaImporter,
     ERROR_INVALID_SCHOOL_YEAR, ERROR_MISSING_YEAR_ID, ERROR_INVALID_COURSE_ID)
+from schooltool.export.importer import FlourishRemoteMegaImporter
+from schooltool.export.importer import ImportTask
+from schooltool.export.importer import RemoteMegaImporter
 from schooltool.schoolyear.interfaces import ISchoolYearContainer
 
 from schooltool.requirement.interfaces import IScoreSystemContainer
@@ -86,6 +88,7 @@ class Changer(object):
 
 class SkillSetsImporter(ImporterBase):
 
+    title = _('Skill Sets')
     sheet_name = 'SkillSets'
 
     def process(self):
@@ -116,10 +119,12 @@ class SkillSetsImporter(ImporterBase):
             changes['label'] = label
             changes['retired'] = bool(retired)
             changes.notify()
+            self.progress(row, sh.nrows)
 
 
 class SkillsImporter(ImporterBase):
 
+    title = _('Skills')
     sheet_name = 'Skills'
 
     def process(self):
@@ -130,6 +135,7 @@ class SkillsImporter(ImporterBase):
 
         skillset_changes = dict([(k, Changer(v)) for k, v in skillsets.items()])
 
+        total_rows = sh.nrows * 2
         for row in range(1, sh.nrows):
             if (sh.cell_value(rowx=row, colx=0) == '' and
                 sh.cell_value(rowx=row, colx=1) == ''):
@@ -177,6 +183,7 @@ class SkillsImporter(ImporterBase):
                 changes['scoresystem'] = removeSecurityProxy(
                     scoresystems[scoresystem])
             skillset_changes[skillset.__name__].change(changes)
+            self.progress(row, total_rows)
 
         skillset = None
 
@@ -207,16 +214,19 @@ class SkillsImporter(ImporterBase):
                     self.error(row, 3, ERROR_INVALID_EQUIVALENT)
                     break
                 equiv.add(removeSecurityProxy(skillset[part]))
+            self.progress(row + sh.nrows, total_rows)
 
 
 class LayersImporter(ImporterBase):
 
+    title = _('Layers')
     sheet_name = 'Layers'
 
     def process(self):
         sh = self.sheet
         layers = ILayerContainer(self.context)
 
+        total_rows = sh.nrows * 2
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
@@ -231,6 +241,7 @@ class LayersImporter(ImporterBase):
                 layers[name].title = title
             else:
                 layers[name] = Layer(title)
+            self.progress(row, total_rows)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -249,10 +260,12 @@ class LayersImporter(ImporterBase):
                     self.error(row, 2, ERROR_INVALID_PARENTS)
                     break
                 layer.parents.add(removeSecurityProxy(layers[part]))
+            self.progress(row + sh.nrows, total_rows)
 
 
 class DocumentsImporter(ImporterBase):
 
+    title = _('Documents')
     sheet_name = 'Documents'
 
     def process(self):
@@ -287,10 +300,12 @@ class DocumentsImporter(ImporterBase):
                     self.error(row, 4, ERROR_INVALID_LAYERS)
                     break
                 document.hierarchy.add(removeSecurityProxy(layers[part]))
+            self.progress(row, sh.nrows)
 
 
 class NodesImporter(ImporterBase):
 
+    title = _('Nodes')
     sheet_name = 'Nodes'
 
     def process(self):
@@ -300,6 +315,7 @@ class NodesImporter(ImporterBase):
         skillsets = ISkillSetContainer(self.context)
         documents = IDocumentContainer(self.context)
 
+        total_rows = sh.nrows * 2
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
                 break
@@ -324,6 +340,7 @@ class NodesImporter(ImporterBase):
                 nodes[name].retired = retired
             else:
                 nodes[name] = Node(title, description, label, retired)
+            self.progress(row, total_rows)
 
         for row in range(1, sh.nrows):
             if sh.cell_value(rowx=row, colx=0) == '':
@@ -367,10 +384,12 @@ class NodesImporter(ImporterBase):
                     self.error(row, 7, ERROR_INVALID_SKILLSET)
                     break
                 node.skillsets.add(removeSecurityProxy(skillsets[part]))
+            self.progress(row + sh.nrows, total_rows)
 
 
 class CourseSkillsImporter(ImporterBase):
 
+    title = _('Course Skills')
     sheet_name = 'CourseSkills'
 
     def process(self):
@@ -416,10 +435,12 @@ class CourseSkillsImporter(ImporterBase):
                     self.error(row, 2, ERROR_INVALID_SKILLSET)
                     break
                 course_skills[part] = CourseSkillSet(skillsets[part])
+            self.progress(row, sh.nrows)
 
 
 class CourseNodesImporter(ImporterBase):
 
+    title = _('Course Nodes')
     sheet_name = 'CourseNodes'
 
     def process(self):
@@ -467,9 +488,15 @@ class CourseNodesImporter(ImporterBase):
                 node = nodes[part]
                 for skillset in node.skillsets:
                     course_skills[skillset.__name__] = CourseSkillSet(skillset)
+            self.progress(row, sh.nrows)
 
 
-class GlobalSkillsMegaImporter(FlourishMegaImporter):
+class SkillsImporterBase(object):
+
+    pass
+
+
+class GlobalSkillsMegaImporter(FlourishMegaImporter, SkillsImporterBase):
 
     def nextURL(self):
         app = ISchoolToolApplication(None)
@@ -489,3 +516,13 @@ class GlobalSkillsMegaImporter(FlourishMegaImporter):
             CourseNodesImporter,
             ]
 
+
+class SkillsRemoteMegaImporter(RemoteMegaImporter):
+
+    importers = GlobalSkillsMegaImporter.importers
+
+
+class SkillsRemoteImporter(FlourishRemoteMegaImporter, SkillsImporterBase):
+
+    def getTask(self):
+        return ImportTask(SkillsRemoteMegaImporter, self.context)
