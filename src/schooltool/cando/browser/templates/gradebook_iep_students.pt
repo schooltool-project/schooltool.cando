@@ -5,7 +5,7 @@ $(document).ready(function() {
     var students = ST.local.students;
     return function(e) {
         $.each(students, function(i, element) {
-            $(ST.dialogs.jquery_id(element)).addClass('iep-student');
+            $(ST.dialogs.jquery_id(element)).closest('tr').find('td').addClass('iep-student');
         });
     }
 }());

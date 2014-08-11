@@ -190,7 +190,7 @@
 
   <flourish:viewlet
       name="gradebook-iep-students"
-      view="schooltool.cando.browser.gradebook.SkillsGradebookOverview"
+      view="schooltool.cando.browser.gradebook.CanDoGradebookOverviewBase"
       manager="schooltool.skin.flourish.page.IPageContentManager"
       class=".iep.GradebookIEPStudents"
       render="template"

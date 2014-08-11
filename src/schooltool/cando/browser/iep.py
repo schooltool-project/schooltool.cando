@@ -406,9 +406,9 @@ class GradebookIEPStudents(flourish.viewlet.Viewlet):
 
     def students(self):
         result = []
-        for student in self.view.students:
-            if IStudentIEP(student).active:
-                result.append(student.username)
+        for info in self.view.students_info:
+            if IStudentIEP(info['object']).active:
+                result.append(info['username'])
         return result
 
 
