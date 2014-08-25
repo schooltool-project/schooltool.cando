@@ -2,10 +2,13 @@
 CHANGES
 =======
 
-2.8.1 (unreleased)
+2.8.1 (2014-08-25)
 ------------------
 
-- Nothing changed yet.
+- Fixed permission issue in gradebook view when students with active
+  IEP were withdrawn
+- Made importing skills a background task
+- Fixed parent and layer setting in node add view (https://launchpad.net/bugs/1353932)
 
 
 2.8.0 (2014-05-08)
