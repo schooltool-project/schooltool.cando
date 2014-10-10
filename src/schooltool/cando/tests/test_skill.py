@@ -21,9 +21,11 @@ Unit tests for groups
 import unittest
 import doctest
 
+from transaction import abort
 from zope.interface.verify import verifyObject
 from zope.app.testing import setup
 from zope.component import provideHandler, provideAdapter
+from zope.container.btree import BTreeContainer
 from zope.interface import implements
 
 from schooltool.app.interfaces import ISchoolToolApplication
@@ -31,6 +33,8 @@ from schooltool.relationship.tests import setUpRelationships
 #from schooltool.testing.catalog import setUpIntIds, tearDownIntIds
 #from schooltool.testing.catalog import setUpCatalogs, tearDownCatalogs
 from schooltool.requirement.interfaces import IScoreSystemContainer
+from schooltool.testing.setup import getIntegrationTestZCML
+from schooltool.testing.stubs import AppStub
 from schooltool.cando.interfaces import (
     ISkill,
     )
@@ -67,7 +71,8 @@ def doctest_Skill_Equivalency():
 
     Say we have three skills.
 
-        >>> sc = SkillSet('Carpentry')
+        >>> skills = app['skills']
+        >>> sc = skills['carpentry'] = SkillSet('Carpentry')
         >>> hammer = sc.add(Skill('Hammering'))
         >>> pound = sc.add(Skill('Pounding'))
         >>> whack = sc.add(Skill('Whacking'))
@@ -119,30 +124,31 @@ def doctest_Skill_Equivalency():
     """
 
 
-class AppStub(dict):
-    implements(ISchoolToolApplication)
-
-
 def setUp(test):
     setup.placefulSetUp()
     setup.setUpTraversal()
     setup.setUpAnnotations()
-    provideAdapter(lambda n: AppStub(), (None,), ISchoolToolApplication)
     provideAdapter(lambda a: {}, (ISchoolToolApplication,), IScoreSystemContainer)
     # XXX: no int id or catalog usage yet
     #setUpIntIds(test)
     #setUpCatalogs(test)
-    setUpRelationships()
+    zcml = getIntegrationTestZCML()
+    zcml.include('schooltool.schoolyear', file='schoolyear.zcml')
+    app = test.globs['app'] = AppStub()
+    app['skills'] = BTreeContainer()
+
 
 def tearDown(test):
     #tearDownCatalogs(test)
     #tearDownIntIds(test)
     setup.placefulTearDown()
+    abort()
 
 
 def test_suite():
     optionflags = (doctest.NORMALIZE_WHITESPACE |
                    doctest.ELLIPSIS |
+                   doctest.REPORT_ONLY_FIRST_FAILURE |
                    doctest.REPORT_NDIFF)
     return unittest.TestSuite([
         doctest.DocTestSuite(setUp=setUp, tearDown=tearDown,

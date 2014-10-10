@@ -212,6 +212,12 @@ class CanDoGradebookOverviewBase(object):
             longTitle = '%s: %s' % (activity.label, longTitle)
         return shortTitle, longTitle, bestScore
 
+    def getColumnAverages(self, table):
+        return []
+
+    def getTotalColumnAverages(self, table, journal_data):
+        return {}
+
 
 class ProjectsGradebookOverview(CanDoGradebookOverviewBase,
                                 FlourishGradebookOverview):

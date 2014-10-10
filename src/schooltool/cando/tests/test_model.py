@@ -21,6 +21,7 @@ Unit tests for groups
 import unittest
 import doctest
 
+from transaction import abort
 from zope.interface.verify import verifyObject
 from zope.app.testing import setup
 from zope.component import provideHandler
@@ -29,6 +30,8 @@ from zope.annotation.interfaces import IAttributeAnnotatable
 
 from schooltool.app.interfaces import ISchoolToolApplication
 from schooltool.relationship.tests import setUpRelationships
+from schooltool.testing.setup import getIntegrationTestZCML
+from schooltool.testing.stubs import AppStub
 from schooltool.cando.interfaces import (
     ILayer, ILayerContained, ILayerContainer,
     INode, INodeContained, INodeContainer,
@@ -52,7 +55,7 @@ from schooltool.cando.skill import (
 def doctest_Layers():
     """Tests for Layer.
 
-        >>> layers = LayerContainer()
+        >>> layers = app['layers'] = LayerContainer()
 
         >>> verifyObject(ILayerContainer, layers)
         True
@@ -82,15 +85,15 @@ def doctest_Layers():
     """
 
 
-def buildTestModel_crafts():
-    layers = LayerContainer()
+def buildTestModel_crafts(app):
+    layers = app['layers'] = LayerContainer()
     layers['craft'] = Layer('Craft')
     layers['branch'] = Layer('Branch')
     layers['branch'].parents.add(layers['craft'])
     layers['topic'] = Layer('Topic')
     layers['topic'].parents.add(layers['branch'])
 
-    nodes = NodeContainer()
+    nodes = app['nodes'] = NodeContainer()
     nodes['carpentry'] = Node('Carpentry')
     nodes['carpentry'].layers.add(layers['craft'])
     nodes['creative'] = Node('Creative')
@@ -112,9 +115,9 @@ def buildTestModel_crafts():
     return layers, nodes
 
 
-def buildTestModel_documents():
-    layers, nodes = buildTestModel_crafts()
-    documents = DocumentContainer()
+def buildTestModel_documents(app):
+    layers, nodes = buildTestModel_crafts(app)
+    documents = app['documents'] = DocumentContainer()
     main = documents['main'] = Document('Main Document')
     main.hierarchy.add(layers['craft'])
     main.hierarchy.add(layers['branch'])
@@ -125,7 +128,7 @@ def buildTestModel_documents():
 def doctest_Node():
     """Tests for Layer.
 
-        >>> layers, nodes = buildTestModel_crafts()
+        >>> layers, nodes = buildTestModel_crafts(app)
 
         >>> verifyObject(INodeContainer, nodes)
         True
@@ -142,7 +145,7 @@ def doctest_Node():
 def doctest_Node_parental_consistency():
     """Test node parent relationship constraints.
 
-        >>> layers, nodes = buildTestModel_crafts()
+        >>> layers, nodes = buildTestModel_crafts(app)
 
     Nodes can't have cycles.
 
@@ -221,7 +224,7 @@ def doctest_Node_parental_consistency():
 def doctest_Node_layer_consistency():
     """Test node layer relationship constraints.
 
-        >>> layers, nodes = buildTestModel_crafts()
+        >>> layers, nodes = buildTestModel_crafts(app)
 
         >>> nodes['bashing'] = Node('Bashing')
 
@@ -273,7 +276,7 @@ def doctest_Node_layer_consistency():
 def doctest_Node_findPaths():
     r"""Tests for node.findPaths
 
-        >>> layers, nodes = buildTestModel_crafts()
+        >>> layers, nodes = buildTestModel_crafts(app)
 
     Say, we also have an alternative, industry:
 
@@ -340,13 +343,15 @@ def doctest_Node_findPaths():
 def doctest_Node_skillsets():
     r"""Tests for node.skillsets.
 
-        >>> layers, nodes = buildTestModel_crafts()
+        >>> layers, nodes = buildTestModel_crafts(app)
 
     Nodes can have assigned skillsets.
 
-        >>> sc1 = SkillSet('Whacking with a hammer')
-        >>> sc2 = SkillSet('Whacking with a shoe')
-        >>> sc3 = SkillSet('Work place ethics')
+        >>> from zope.container.btree import BTreeContainer
+        >>> skills = app['skills'] = BTreeContainer()
+        >>> sc1 = skills['sc1'] = SkillSet('Whacking with a hammer')
+        >>> sc2 = skills['sc2'] = SkillSet('Whacking with a shoe')
+        >>> sc3 = skills['sc3'] = SkillSet('Work place ethics')
 
         >>> nodes['whacking'].skillsets.add(sc1)
         >>> nodes['whacking'].skillsets.add(sc2)
@@ -366,7 +371,7 @@ def doctest_Node_skillsets():
 def doctest_Document():
     """Tests for Document.
 
-        >>> documents = buildTestModel_documents()
+        >>> documents = buildTestModel_documents(app)
 
         >>> verifyObject(IDocumentContainer, documents)
         True
@@ -391,16 +396,21 @@ def setUp(test):
     setup.placefulSetUp()
     setup.setUpTraversal()
     setup.setUpAnnotations()
-    setUpRelationships()
     setUpModelConstraints(test)
+    zcml = getIntegrationTestZCML()
+    zcml.include('schooltool.schoolyear', file='schoolyear.zcml')
+    test.globs['app'] = AppStub()
+
 
 def tearDown(test):
     setup.placefulTearDown()
+    abort()
 
 
 def test_suite():
     optionflags = (doctest.NORMALIZE_WHITESPACE |
                    doctest.ELLIPSIS |
+                   doctest.REPORT_ONLY_FIRST_FAILURE |
                    doctest.REPORT_NDIFF)
     return unittest.TestSuite([
         doctest.DocTestSuite(setUp=setUp, tearDown=tearDown,
